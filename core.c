@@ -12,6 +12,8 @@ core_exec(Lorito_Interp interp)
   {
     switch (*pc)
     {
+      case OP_noop:
+        break;
       case OP_end:
         break;
       case OP_add:
@@ -21,6 +23,12 @@ core_exec(Lorito_Interp interp)
       case OP_mul:
         break;
       case OP_div:
+        break;
+      case OP_mod:
+        break;
+      case OP_not:
+        break;
+      case OP_mov:
         break;
       case OP_set:
         break;
@@ -32,23 +40,27 @@ core_exec(Lorito_Interp interp)
         break;
       case OP_isgt:
         break;
-      case OP_islt:
+      case OP_isge:
         break;
       case OP_and:
         break;
       case OP_or:
         break;
+      case OP_xor:
+        break;
       case OP_new:
         break;
       case OP_call:
         break;
-      case OP_load:
+      case OP_loadbc:
         break;
       case OP_read:
         break;
       case OP_write:
         break;
       case OP_gripe:
+        break;
+      case OP_hcf:
         break;
       default:
         // Error
