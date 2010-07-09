@@ -1,4 +1,8 @@
 HEADERS = config.h lorito.h microcode.h
 COMPILED = main.o core.o loader.o
+
+%.o: %.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+
 lorito: $(COMPILED) $(HEADERS)
-	cc $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
+	$(CC) $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
