@@ -38,6 +38,12 @@ struct lorito_opcode_t
   unsigned char dest;
   unsigned char src1;
   unsigned char src2;
+  union
+  {
+    int immediate;
+    int jumploc;
+    int offset;
+  };
 };
 
 struct lorito_reg_t
