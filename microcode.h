@@ -14,6 +14,7 @@ enum OPS_REGS {
 };
 
 enum OPS_ENUM {
+  // BEGIN OPS_ENUM
   OP_noop       = 0,
   OP_end        = 1,
   OP_add        = 2,
@@ -40,6 +41,7 @@ enum OPS_ENUM {
   OP_gripe      = 23,
 
   OP_hcf        = 31
+  // END OPS_ENUM
 };
 
 #endif /* LORITO_MICROCODE_H_GUARD */

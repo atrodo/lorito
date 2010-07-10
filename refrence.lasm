@@ -1,0 +1,29 @@
+# Refrence Lorito Asm file.
+
+# Every block begins with a sub header and ends with a block closer (.end;)
+.sub 'named'
+  
+.end;
+
+# Each block contains 0 or more statements of the form:
+#  (<Label>)? 
+#  ( <Destination Register> = )? 
+#  <Register Type>? <Opcode> 
+#  ( <Left Source> ,? | <Left Source> , <Right Source> )?
+#  ( : <Immediate> | : <Jump Location> | : <Offset> ) ;
+
+# Registers are the form "$(I | N | S | P)?(digit 0-31)"
+#  Yes, the type of the register is optional since we always declare the
+#  opcode's registers type
+
+# There is an implied return at the end of each block
+
+.sub 'block'
+  start: $I2 = INT ADD $I0, $I1;
+  label1:
+    INT IF $I0 :start;
+    $0 = INT ISEQ $I2, $3;
+  GOTO :end;
+
+  end: NOOP;
+.end;
