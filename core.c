@@ -3,6 +3,9 @@
 #include "lorito.h"
 #include "microcode.h"
 
+#define INVALID_OP(s) fprintf(stderr, "Invalid opcode: %s\n", s); *pc = -1;\
+  continue;
+
 void
 core_exec(Lorito_Interp *interp)
 {
