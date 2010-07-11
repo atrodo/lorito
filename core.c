@@ -120,6 +120,7 @@ core_exec(Lorito_Interp *interp)
         break;
       default:
         // Error
+        INVALID_OP("unknown");
         break;
     }
     
