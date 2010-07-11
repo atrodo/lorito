@@ -52,6 +52,15 @@ my %ops = (
   hcf        => 31
 ); 
 
+my %op_types = (
+
+  PMC => 0,
+  STR => 1,
+  NUM => 2,
+  INT => 3
+
+);
+
 #<goal> -> <seg>*
 sub goal
 {
@@ -87,6 +96,8 @@ sub seg
     pos($$str) = $pos;
     return;
   }
+
+  $result->{typed} = "code";
 
   my $named = &str($str);
   if (!defined $named)
@@ -242,7 +253,7 @@ sub opcode
     pos($$str) = $pos;
     return;
   }
-  return $result;
+  return lc $result;
 }
 
 #<lhs> -> <reg>
@@ -350,12 +361,85 @@ sub reg
   return $result;
 }
 
+# Given an op hash, turn it into binary
+# const MUST be decided from imm|jmp|offset before calling this.
+sub gen_op
+{
+  my $stmt = shift;
+
+  # Compose the opcode
+  my $op = $ops{$stmt->{opcode}};
+  die "Could not load opcode: ".$stmt->{opcode}
+    unless defined $op;
+  return pack("CCCCI"
+    ($op % (2**5-1)) | ( ($op_types{$stmt->{regtype} || "PMC"}) << 5 ),
+    ($stmt->{dest} || 0)+0,
+    ($stmt->{src1} || 0)+0,
+    ($stmt->{src2} || 0)+0,
+    ($stmt->{const} || 0)+0,
+  );
+}
+
 # Go!
 
 my $file = do { local $/; <> };
 
 $file =~ s/[#] [^\n]* $//xmsg;
 
-use Data::Dumper;
-print Dumper(goal(\$file));
+# Parse the file
+my $ast = goal(\$file);
 
+use Data::Dumper;
+warn Dumper($ast);
+
+# Generate the output
+foreach my $seg (@$ast)
+{
+  my $output = "";
+  if ($seg->{typed} eq "code")
+  {
+    $output .= pack("I", 0);
+    $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
+    $output .= pack("I", scalar(@{$seg->{stmts}}));
+
+    my %labels;
+    # Find all the labels first
+    foreach my $i (0..scalar(@{$seg->{stmts}})-1)
+    {
+      my $label = $seg->{stmts}->[$i]->{label};
+      $labels{$label} = $i
+        if defined $label and $label ne "";
+    }
+
+    # Generate the code
+    foreach my $stmt (@{$seg->{stmts}})
+    {
+      # Decide const
+      #<imm> | <jmp> | <offset>
+      $DB::single = 1;
+      if (exists $stmt->{imm})
+      {
+        $stmt->{const} = $stmt->{imm}+0;
+      } elsif (exists $stmt->{jmp}) {
+        $stmt->{const} = $labels{$stmt->{jmp}}+0;
+      } elsif (exists $stmt->{offset}) {
+        die "offsets are awkward right now, sorry";
+      } else {
+        $stmt->{const} = 0;
+      }
+
+      $output .= gen_op($stmt);
+    }
+  }
+  elsif ($seg->{typed} eq "data")
+  {
+    $output .= pack("I", 1);
+    $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
+    # ...
+  } else {
+    die "Could create segment of type ".$seg->{typed};
+  }
+
+  print $output;
+
+}
