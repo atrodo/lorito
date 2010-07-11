@@ -40,6 +40,7 @@ void
 core_exec(Lorito_Interp *interp)
 {
   Lorito_Ctx *ctx = interp->ctx;
+  Lorito_Reg *reg = &ctx->regs;
   int *pc = &ctx->pc;
 
   while (*pc >= 0)
@@ -47,9 +48,9 @@ core_exec(Lorito_Interp *interp)
     Lorito_Codeseg *codeseg = ctx->current_codeseg;
     if (*pc >= codeseg->length)
       return;
-    Lorito_Opcode op = ctx->current_codeseg->op[*pc];
-    int reg = REG_OF_OP(op.opcode);
-    int opcode = OP_OF_OP(op.opcode);
+    Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
+    int regtype = REG_OF_OP(op->opcode);
+    int opcode  =  OP_OF_OP(op->opcode);
 
     printf("PC: %d\n", *pc);
     printf("Opcode: %d\n", opcode);
@@ -59,8 +60,19 @@ core_exec(Lorito_Interp *interp)
       case OP_noop:
         break;
       case OP_end:
+        *pc = -1;
+        continue;
         break;
       case OP_add:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) + $I(op->src2);
+            printf("%d\n", $I(op->dest));
+            break;
+          default:
+            INVALID_OP("add");
+        }
         break;
       case OP_sub:
         break;
