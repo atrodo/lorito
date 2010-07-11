@@ -26,6 +26,9 @@ struct lorito_interp_t
   struct lorito_ctx_t* ctx;
   struct lorito_reg_t* regs;
   int next_fileid;
+
+  //
+  struct lorito_codeseg_t *last_seg;
 };
 typedef struct lorito_interp_t Lorito_Interp;
 
