@@ -22,15 +22,19 @@ struct lorito_interp_t
 {
   struct lorito_ctx_t* ctx;
   struct lorito_reg_t* regs;
+  int next_fileid;
 };
+typedef struct lorito_interp_t Lorito_Interp;
 
 struct lorito_codeseg_t
 {
   int fileid;
   int segid;
+  char* name;
   int length;
   struct lorito_opcode_t* op;
 };
+typedef struct lorito_codeseg_t Lorito_Codeseg;
 
 struct lorito_opcode_t
 {
@@ -45,11 +49,13 @@ struct lorito_opcode_t
     int offset;
   };
 };
+typedef struct lorito_opcode_t Lorito_Opcode;
 
 struct lorito_reg_t
 {
   int regs_i[REGNUM];
 };
+typedef struct lorito_reg_t Lorito_Reg;
 
 struct lorito_ctx_t
 {
@@ -58,7 +64,7 @@ struct lorito_ctx_t
   struct lorito_codeseg_t* current_codeseg;
   struct lorito_reg_t regs;
 };
+typedef struct lorito_ctx_t Lorito_Ctx;
 
-typedef struct lorito_interp_t Lorito_Interp;
 
 #endif /* LORITO_LORITO_H_GUARD */
