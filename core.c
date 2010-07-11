@@ -3,8 +3,38 @@
 #include "lorito.h"
 #include "microcode.h"
 
-#define INVALID_OP(s) fprintf(stderr, "Invalid opcode: %s\n", s); *pc = -1;\
+#define INVALID_OP(s) _opcode_error(s, regtype); *pc = -1;\
   continue;
+
+#define $I(x) (reg->regs_i[x])
+#define $N(x) (reg->regs_n[x])
+#define $S(x) (reg->regs_s[x])
+#define $P(x) (reg->regs_p[x])
+
+void
+_opcode_error(char *op, int typed)
+{
+  char *s;
+  switch(typed)
+  {
+    case OP_PMC:
+      s = "pmc";
+      break;
+    case OP_STR:
+      s = "str";
+      break;
+    case OP_NUM:
+      s = "num";
+      break;
+    case OP_INT:
+      s = "int";
+      break;
+    default:
+      s = "unknown";
+      break;
+  }
+  fprintf(stderr, "Invalid opcode: %s_%s\n", s, op);
+}
 
 void
 core_exec(Lorito_Interp *interp)
