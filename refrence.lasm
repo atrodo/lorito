@@ -23,7 +23,7 @@
   label1:
     INT IF $I0 :start;
     $0 = INT ISEQ $I2, $3;
-  GOTO :end;
+  : GOTO :end;
 
   end: NOOP;
 .end;

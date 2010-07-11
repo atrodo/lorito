@@ -6,7 +6,7 @@ use warnings;
 #<goal> -> <seg>*
 #<seg> -> sub <str> <stmt>* end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <jmp> | <offset> ) )? ;
-#<label> -> <id> :
+#<label> -> <id>? :
 #<dest>  -> <reg> =
 #<regtype> -> ( INT | NUM | STR | PMC )
 #<opcode> -> [ @OPS ]
@@ -180,18 +180,13 @@ sub stmt
   return $result;
 }
 
-#<label> -> <id> :
+#<label> -> <id>? :
 sub label
 {
   my $str = shift;
   my $pos = pos $$str;
 
   my $id = id($str);
-  if (!defined $id)
-  {
-    pos($$str) = $pos;
-    return;
-  }
 
   if ($$str !~ m/\G \s* : /ixmsgc)
   {
