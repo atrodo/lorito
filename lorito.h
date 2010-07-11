@@ -15,6 +15,8 @@
 #define SEG_code 0
 #define SEG_data 1
 
+#define INVALID_OP(s) fprintf(stderr, "Invalid opcode: %s\n", s); *pc = -2;
+
 struct lorito_interp_t;
 struct lorito_codeseg_t;
 struct lorito_opcode_t;
@@ -71,6 +73,5 @@ struct lorito_ctx_t
   struct lorito_reg_t regs;
 };
 typedef struct lorito_ctx_t Lorito_Ctx;
-
 
 #endif /* LORITO_LORITO_H_GUARD */

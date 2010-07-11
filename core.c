@@ -4,13 +4,24 @@
 #include "microcode.h"
 
 void
-core_exec(Lorito_Interp interp)
+core_exec(Lorito_Interp *interp)
 {
-  int *pc;
+  Lorito_Ctx *ctx = interp->ctx;
+  int *pc = &ctx->pc;
 
-  while (pc)
+  while (*pc >= 0)
   {
-    switch (*pc)
+    Lorito_Codeseg *codeseg = ctx->current_codeseg;
+    if (*pc >= codeseg->length)
+      return;
+    Lorito_Opcode op = ctx->current_codeseg->op[*pc];
+    int reg = REG_OF_OP(op.opcode);
+    int opcode = OP_OF_OP(op.opcode);
+
+    printf("PC: %d\n", *pc);
+    printf("Opcode: %d\n", opcode);
+
+    switch (opcode)
     {
       case OP_noop:
         break;
@@ -66,5 +77,7 @@ core_exec(Lorito_Interp interp)
         // Error
         break;
     }
+    
+    (*pc)++;
   }
 }
