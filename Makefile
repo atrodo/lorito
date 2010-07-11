@@ -1,8 +1,11 @@
-HEADERS = config.h lorito.h microcode.h
-COMPILED = main.o core.o loader.o
+HEADERS = config.h lorito.h microcode.h interp.h loader.h
+COMPILED = main.o interp.o core.o loader.o
 
 %.o: %.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+	$(CC) -g -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
 lorito: $(COMPILED) $(HEADERS)
-	$(CC) $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
+	$(CC) -g $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
+
+clean:
+	rm lorito $(COMPILED)
