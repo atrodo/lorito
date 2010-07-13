@@ -143,10 +143,10 @@ sub stmt
   my $lhs = lhs($str);
   if (defined $lhs)
   {
-    $result->{lhs} = $lhs;
+    $result->{src1} = $lhs;
     if ($$str =~ m/\G \s* , /ixmsgc)
     {
-      $result->{rhs} = rhs($str);
+      $result->{src2} = rhs($str);
     }
   }
 
@@ -371,7 +371,7 @@ sub gen_op
   my $op = $ops{$stmt->{opcode}};
   die "Could not load opcode: ".$stmt->{opcode}
     unless defined $op;
-  return pack("CCCCI"
+  return pack("CCCCI",
     ($op % (2**5-1)) | ( ($op_types{$stmt->{regtype} || "PMC"}) << 5 ),
     ($stmt->{dest} || 0)+0,
     ($stmt->{src1} || 0)+0,
