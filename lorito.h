@@ -18,8 +18,9 @@
 struct lorito_interp_t;
 struct lorito_codeseg_t;
 struct lorito_opcode_t;
-struct lorito_ctx_t;
+struct lorito_pmc_t;
 struct lorito_reg_t;
+struct lorito_ctx_t;
 
 struct lorito_interp_t
 {
@@ -57,9 +58,19 @@ struct lorito_opcode_t
 };
 typedef struct lorito_opcode_t Lorito_Opcode;
 
+struct lorito_pmc_t
+{
+  int size;
+  void *data;
+  int ptrnum;
+  struct lorito_pmc_t *ptrs;
+};
+typedef struct lorito_pmc_t Lorito_PMC;
+
 struct lorito_reg_t
 {
   int regs_i[REGNUM];
+  struct lorito_pmc_t *regs_p[REGNUM];
 };
 typedef struct lorito_reg_t Lorito_Reg;
 

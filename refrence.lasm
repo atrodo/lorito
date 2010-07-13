@@ -19,7 +19,14 @@
 # There is an implied return at the end of each block
 
 .sub 'block'
-  start: $I2 = INT ADD $I0, $I1;
+  start: 
+  $I1 = INT SET :3000;
+  $I0 = INT SET :200;
+  $I2 = INT ADD $I0, $I1;
+
+  $P0 = INT NEW :20;
+  $P1 = PMC NEW $P0;
+  $P2 = NEW $P0;
   label1:
     INT IF $I0 :start;
     $0 = INT ISEQ $I2, $3;

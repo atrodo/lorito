@@ -116,6 +116,17 @@ core_exec(Lorito_Interp *interp)
       case OP_xor:
         break;
       case OP_new:
+        switch (regtype)
+        {
+          case OP_INT:
+            $P(op->dest) = lorito_pmc_init(interp, $imm);
+            break;
+          case OP_PMC:
+            $P(op->dest) = lorito_pmc_init(interp, $P(op->src1)->size);
+            break;
+          default:
+            INVALID_OP("new");
+        }
         break;
       case OP_call:
         break;
