@@ -18,8 +18,8 @@
 struct lorito_interp_t;
 struct lorito_codeseg_t;
 struct lorito_opcode_t;
-struct lorito_reg_t;
 struct lorito_ctx_t;
+struct lorito_reg_t;
 
 struct lorito_interp_t
 {

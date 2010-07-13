@@ -11,6 +11,8 @@
 #define $S(x) (reg->regs_s[x])
 #define $P(x) (reg->regs_p[x])
 
+#define $imm op->immediate
+
 void
 _opcode_error(char *op, int typed)
 {
@@ -87,6 +89,15 @@ core_exec(Lorito_Interp *interp)
       case OP_mov:
         break;
       case OP_set:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $imm;
+            printf("%d\n", $I(op->dest));
+            break;
+          default:
+            INVALID_OP("set");
+        }
         break;
       case OP_goto:
         break;
