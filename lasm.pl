@@ -61,6 +61,10 @@ my %op_types = (
 
 );
 
+# Start of pattern.  Items common to all parsing patterns, including ignoring
+#  comments
+my $som = qr/\G (?: \s* [#] [^\n]* $)* \s* /xms;
+
 #<goal> -> <seg>*
 sub goal
 {
@@ -73,7 +77,7 @@ sub goal
     push @$result, $seg;
   }
 
-  $$str =~ m/\G \s* /ixmsgc;
+  $$str =~ m/$som /ixmsgc;
 
   if (pos($$str) != length($$str))
   {
@@ -91,7 +95,7 @@ sub seg
   my $pos = pos $$str;
   my $result  = {};
 
-  if ($$str !~ m/\G \s* [.]sub /ixmsgc)
+  if ($$str !~ m/$som [.]sub /ixmsgc)
   {
     pos($$str) = $pos;
     return;
@@ -113,7 +117,7 @@ sub seg
     push @{$result->{stmts}}, $stmt;
   }
 
-  if ($$str !~ m/\G \s* [.]end; /ixmsgc)
+  if ($$str !~ m/$som [.]end; /ixmsgc)
   {
     pos($$str) = $pos;
     return;
@@ -144,13 +148,13 @@ sub stmt
   if (defined $lhs)
   {
     $result->{src1} = $lhs;
-    if ($$str =~ m/\G \s* , /ixmsgc)
+    if ($$str =~ m/$som , /ixmsgc)
     {
       $result->{src2} = rhs($str);
     }
   }
 
-  if ($$str =~ m/\G \s* : /ixmsgc)
+  if ($$str =~ m/$som : /ixmsgc)
   {
     my $found = 0;
     if ($found == 0)
@@ -182,7 +186,7 @@ sub stmt
     }
   }
 
-  if ($$str !~ m/\G \s* ; /ixmsgc)
+  if ($$str !~ m/$som ; /ixmsgc)
   {
     pos($$str) = $pos;
     return;
@@ -199,7 +203,7 @@ sub label
 
   my $id = id($str);
 
-  if ($$str !~ m/\G \s* : /ixmsgc)
+  if ($$str !~ m/$som : /ixmsgc)
   {
     pos($$str) = $pos;
     return;
@@ -221,7 +225,7 @@ sub dest
     return;
   }
 
-  if ($$str !~ m/\G \s* = /ixmsgc)
+  if ($$str !~ m/$som = /ixmsgc)
   {
     pos($$str) = $pos;
     return;
@@ -236,7 +240,7 @@ sub regtype
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* (INT | NUM | STR | PMC)/ixmsgc;
+  my ($result) = $$str =~ m/$som (INT | NUM | STR | PMC)/ixmsgc;
   return $result;
 }
 
@@ -246,7 +250,7 @@ sub opcode
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* (\w*)/ixmsgc;
+  my ($result) = $$str =~ m/$som (\w*)/ixmsgc;
   
   if (!exists $ops{lc($result)})
   {
@@ -328,7 +332,7 @@ sub str
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* (?:') ([^']*(?:(?:\\')[^']*)*) (?:')/ixmsgc;
+  my ($result) = $$str =~ m/$som (?:') ([^']*(?:(?:\\')[^']*)*) (?:')/ixmsgc;
   return $result;
 }
 
@@ -338,7 +342,7 @@ sub int
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* (\d+)/ixmsgc;
+  my ($result) = $$str =~ m/$som (\d+)/ixmsgc;
   return $result;
 }
 
@@ -348,7 +352,7 @@ sub id
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* ( [[:alpha:]] \w* )/ixmsgc;
+  my ($result) = $$str =~ m/$som ( [[:alpha:]] \w* )/ixmsgc;
   return $result;
 }
 #<reg> ~> m/[$] [I | N | S | P]? ([\d]+)/xms
@@ -357,7 +361,7 @@ sub reg
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/\G \s* \$ [I N S P]? ([\d]+)/ixmsgc;
+  my ($result) = $$str =~ m/$som \$ [I N S P]? ([\d]+)/ixmsgc;
   return $result;
 }
 
@@ -383,8 +387,6 @@ sub gen_op
 # Go!
 
 my $file = do { local $/; <> };
-
-$file =~ s/[#] [^\n]* $//xmsg;
 
 # Parse the file
 my $ast = goal(\$file);
@@ -416,7 +418,6 @@ foreach my $seg (@$ast)
     {
       # Decide const
       #<imm> | <jmp> | <offset>
-      $DB::single = 1;
       if (exists $stmt->{imm})
       {
         $stmt->{const} = $stmt->{imm}+0;
