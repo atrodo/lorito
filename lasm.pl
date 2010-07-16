@@ -3,9 +3,11 @@
 use strict;
 use warnings;
 
-#<goal> -> <seg>*
-#<seg> -> sub <str> <stmt>* end;
+#<goal> -> ( <code> | <data> )*
+#<code> -> .sub <str> <stmt>* .end;
+#<data> -> .data <str> <data_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <jmp> | <offset> ) )? ;
+#<data_stmt> -> <label>? <const> ;
 #<label> -> <id>? :
 #<dest>  -> <reg> =
 #<regtype> -> ( INT | NUM | STR | PMC )
@@ -15,14 +17,17 @@ use warnings;
 #<imm> -> <int>
 #<jmp> -> <id>
 #<offset> -> ( <id> | <int> )
+#<const> -> ( <num> | <int> | <str> )
 
 #<str> ~> m/(?:') ([^']*(?:(?:\')[^']*)*) (?:')/xms
+#<str> ~> m/(?:") ([^"]*(?:(?:\")[^"]*)*) (?:")/xms
 #<int> ~> m/(\d+)/xms
+#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? )/xms
 #<id>  ~> m/( [[:alpha:]] \w* )/xms
 #<reg> ~> m/[$] [I | N | S | P]? ([\d]+)/xms
 
 # Load>    :r microcode.h
-# Convert> :'<,'>!perl -ne 'if (m/BEGIN OPS_ENUM/..m/END OPS_ENUM/) { s[//.*][]; s/^\s*OP_//; s/=/=>/; print $_ }'
+# Convert> :'<,'>!perl -ne 'if (m/BEGIN OPS_ENUM/..m/END OPS_ENUM/) { s[//][#]; s/^\s*OP_//; s/=/=>/; print $_ }'
 my %ops = (
   noop       => 0,
   end        => 1,
@@ -65,31 +70,60 @@ my %op_types = (
 #  comments
 my $som = qr/\G (?: \s* [#] [^\n]* $)* \s* /xms;
 
-#<goal> -> <seg>*
+# Set the max position the match has gotten to and reset the position
+my $max = 0;
+
+sub max
+{
+  my $str = shift;
+  my $last_pos = shift;
+
+  $DB::single = 1;
+  $max = (pos($$str) || 0) > $max ? pos($$str) : $max;
+  pos($$str) = $last_pos;
+  warn "$max\n";
+}
+
+#<goal> -> ( <code> | <data> )*
 sub goal
 {
   my $str = shift;
   my $pos = pos $$str;
   my $result  = [];
+  
+  $max = 0;
 
-  while (my $seg = &seg($str))
+  #while (my $code = &code($str))
+  while (pos($$str) || 0 != length($$str))
   {
-    push @$result, $seg;
+    my $code = &code($str);
+    if (defined $code)
+    {
+      push @$result, $code;
+      next;
+    }
+    my $data = &data($str);
+    if (defined $data)
+    {
+      push @$result, $data;
+      next;
+    }
+    last;
   }
 
   $$str =~ m/$som /ixmsgc;
 
   if (pos($$str) != length($$str))
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
   return $result;
 }
 
-#<seg> -> sub <str> <stmt>* end;
-sub seg
+#<code> -> .sub <str> <stmt>* .end;
+sub code
 {
   my $str = shift;
   my $pos = pos $$str;
@@ -97,7 +131,7 @@ sub seg
 
   if ($$str !~ m/$som [.]sub /ixmsgc)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -106,7 +140,7 @@ sub seg
   my $named = &str($str);
   if (!defined $named)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
   $result->{named} = $named;
@@ -119,7 +153,45 @@ sub seg
 
   if ($$str !~ m/$som [.]end; /ixmsgc)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
+    return;
+  }
+
+  return $result;
+}
+
+#<data> -> .data <str> <data_stmt>* .end;
+sub data
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result  = {};
+
+  if ($$str !~ m/$som [.]data /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  $result->{typed} = "data";
+
+  my $named = &str($str);
+  if (!defined $named)
+  {
+    max($str, $pos);
+    return;
+  }
+  $result->{named} = $named;
+
+  $result->{data} = [];
+  while (my $data_stmt = &data_stmt($str))
+  {
+    push @{$result->{datas}}, $data_stmt;
+  }
+
+  if ($$str !~ m/$som [.]end; /ixmsgc)
+  {
+    max($str, $pos);
     return;
   }
 
@@ -140,7 +212,7 @@ sub stmt
   $result->{opcode} = opcode($str);
   if (!defined $result->{opcode})
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -188,7 +260,34 @@ sub stmt
 
   if ($$str !~ m/$som ; /ixmsgc)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
+    return;
+  }
+
+  return $result;
+}
+
+#<data_stmt> -> <label>? <const> ;
+sub data_stmt
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result = {};
+
+  $result->{label} = label($str);
+
+  my $const = const($str);
+  if (!defined $const)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  $result->{const} = $const;
+
+  if ($$str !~ m/$som ; /ixmsgc)
+  {
+    max($str, $pos);
     return;
   }
 
@@ -205,7 +304,7 @@ sub label
 
   if ($$str !~ m/$som : /ixmsgc)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -221,13 +320,13 @@ sub dest
   my $reg = reg($str);
   if (!defined $reg)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
   if ($$str !~ m/$som = /ixmsgc)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -254,7 +353,7 @@ sub opcode
   
   if (!exists $ops{lc($result)})
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
   return lc $result;
@@ -269,7 +368,7 @@ sub lhs
   my $reg = reg($str);
   if (!defined $reg)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -285,7 +384,7 @@ sub rhs
   my $reg = reg($str);
   if (!defined $reg)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -301,7 +400,7 @@ sub imm
   my $reg = &int($str);
   if (!defined $reg)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -317,7 +416,7 @@ sub jmp
   my $reg = id($str);
   if (!defined $reg)
   {
-    pos($$str) = $pos;
+    max($str, $pos);
     return;
   }
 
@@ -326,13 +425,42 @@ sub jmp
 
 #<offset> -> ( <id> | <int> )
 
+#<const> -> ( <num> | <int> | <str> )
+sub const
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result;
+
+  $result = num($str);
+  return $result
+    if defined $result;
+
+  $result = &int($str);
+  return $result
+    if defined $result;
+
+  $result = str($str);
+  return $result
+    if defined $result;
+
+  return;
+}
+
 #<str> ~> m/(?:') ([^']*(?:(?:\')[^']*)*) (?:')/xms
+#<str> ~> m/(?:") ([^"]*(?:(?:\")[^"]*)*) (?:")/xms
 sub str
 {
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/$som (?:') ([^']*(?:(?:\\')[^']*)*) (?:')/ixmsgc;
+  my $result;
+
+  ($result) = $$str =~ m/$som (?:') ([^']*(?:(?:\\')[^']*)*) (?:')/ixmsgc;
+  return $result
+    if defined $result;
+
+  ($result) = $$str =~ m/$som (?:") ([^"]*(?:(?:\\")[^"]*)*) (?:")/ixmsgc;
   return $result;
 }
 
@@ -343,6 +471,16 @@ sub int
   my $pos = pos $$str;
 
   my ($result) = $$str =~ m/$som (\d+)/ixmsgc;
+  return $result;
+}
+
+#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? )/xms
+sub num
+{
+  my $str = shift;
+  my $pos = pos $$str;
+
+  my ($result) = $$str =~ m/$som ( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? ) /ixmsgc;
   return $result;
 }
 
@@ -391,6 +529,18 @@ my $file = do { local $/; <> };
 # Parse the file
 my $ast = goal(\$file);
 
+if (!defined $ast)
+{
+  warn "Could not parse lasm file\n";
+  my $to_max = substr($file, 0, $max);
+  my @lines = $to_max =~ m/(\n)/g;
+
+  $file =~ s/\s/ /xmsg;
+  warn "At line:  ".scalar(@lines)."\n";
+  warn "Error near:\n\t".sprintf("%s[%s]%s\n", substr($file, $max-10, 10), substr($file, $max, 1), substr($file, $max+1, 10) );
+  exit;
+}
+
 use Data::Dumper;
 warn Dumper($ast);
 
@@ -417,7 +567,7 @@ foreach my $seg (@$ast)
     foreach my $stmt (@{$seg->{stmts}})
     {
       # Decide const
-      #<imm> | <jmp> | <offset>
+      # <imm> | <jmp> | <offset>
       if (exists $stmt->{imm})
       {
         $stmt->{const} = $stmt->{imm}+0;

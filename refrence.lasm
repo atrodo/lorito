@@ -1,7 +1,7 @@
 # Refrence Lorito Asm file.
 
 # Every block begins with a sub header and ends with a block closer (.end;)
-.sub '#named'
+.sub "#named"
   
 .end;
 
@@ -33,4 +33,10 @@
   : GOTO :end;
 
   end: NOOP;
+.end;
+
+.data 'block'
+  i0: 1;
+  n0: 1.1;
+  s0: "Hello World!\n";
 .end;
