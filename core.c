@@ -70,21 +70,60 @@ core_exec(Lorito_Interp *interp)
         {
           case OP_INT:
             $I(op->dest) = $I(op->src1) + $I(op->src2);
-            printf("%d\n", $I(op->dest));
             break;
           default:
             INVALID_OP("add");
         }
         break;
       case OP_sub:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) - $I(op->src2);
+            break;
+          default:
+            INVALID_OP("sub");
+        }
         break;
       case OP_mul:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) * $I(op->src2);
+            break;
+          default:
+            INVALID_OP("mul");
+        }
         break;
       case OP_div:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) / $I(op->src2);
+            break;
+          default:
+            INVALID_OP("div");
+        }
         break;
       case OP_mod:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) % $I(op->src2);
+            break;
+          default:
+            INVALID_OP("mod");
+        }
         break;
       case OP_not:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = ~ $I(op->src1);
+            break;
+          default:
+            INVALID_OP("not");
+        }
         break;
       case OP_mov:
         break;
@@ -104,16 +143,64 @@ core_exec(Lorito_Interp *interp)
       case OP_if:
         break;
       case OP_iseq:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) == $I(op->src2);
+            break;
+          default:
+            INVALID_OP("iseq");
+        }
         break;
       case OP_isgt:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) > $I(op->src2);
+            break;
+          default:
+            INVALID_OP("isgt");
+        }
         break;
       case OP_isge:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) >= $I(op->src2);
+            break;
+          default:
+            INVALID_OP("isge");
+        }
         break;
       case OP_and:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) & $I(op->src2);
+            break;
+          default:
+            INVALID_OP("and");
+        }
         break;
       case OP_or:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) | $I(op->src2);
+            break;
+          default:
+            INVALID_OP("or");
+        }
         break;
       case OP_xor:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) ^ $I(op->src2);
+            break;
+          default:
+            INVALID_OP("xor");
+        }
         break;
       case OP_new:
         switch (regtype)
