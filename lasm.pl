@@ -279,13 +279,14 @@ sub data_stmt
 
   $result->{label} = label($str);
 
-  my $const = const($str);
+  my ($type, $const) = const($str);
   if (!defined $const)
   {
     max($str, $pos);
     return;
   }
 
+  $result->{type} = $type;
   $result->{const} = $const;
 
   if ($$str !~ m/$som ; /ixmsgc)
@@ -486,15 +487,15 @@ sub const
   my $result;
 
   $result = num($str);
-  return $result
+  return (num => $result)
     if defined $result;
 
   $result = &int($str);
-  return $result
+  return ('int' => $result)
     if defined $result;
 
   $result = str($str);
-  return $result
+  return (str => $result)
     if defined $result;
 
   return;
