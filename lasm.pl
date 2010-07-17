@@ -24,7 +24,7 @@ use warnings;
 #<str> ~> m/(?:') ([^']*(?:(?:\')[^']*)*) (?:')/xms
 #<str> ~> m/(?:") ([^"]*(?:(?:\")[^"]*)*) (?:")/xms
 #<int> ~> m/(\d+)/xms
-#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? )/xms
+#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [+-]? [e] \d+)? )/xms
 #<id>  ~> m/( [[:alpha:]] \w* )/xms
 #<reg> ~> m/[$] [I | N | S | P]? ([\d]+)/xms
 
@@ -528,13 +528,24 @@ sub int
   return $result;
 }
 
-#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? )/xms
+# The num re is not exactly correct, since we also match ints, but this is
+#  easier to read and understand for the grammer
+#<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [+-]? [e] \d+)? )/xms
 sub num
 {
   my $str = shift;
   my $pos = pos $$str;
 
-  my ($result) = $$str =~ m/$som ( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? ) /ixmsgc;
+  my ($result) = $$str =~ m/$som ( 
+      [+-]? \d+ 
+      (?: 
+        [.] \d+ 
+        |
+        [+-]? [e] \d+
+        |
+        [.] \d+ [+-]? [e] \d+
+      )
+    ) /ixmsgc;
   return $result;
 }
 
