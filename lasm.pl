@@ -8,7 +8,7 @@ use warnings;
 #<goal> -> ( <code> | <data> )*
 #<code> -> .sub <str> <stmt>* .end;
 #<data> -> .data <str> <data_stmt>* .end;
-#<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <jmp> | <offset> ) )? ;
+#<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
 #<data_stmt> -> <label>? <const> ;
 #<label> -> <id>? :
 #<dest>  -> <reg> =
@@ -18,7 +18,7 @@ use warnings;
 #<rhs> -> <reg>
 #<imm> -> <int>
 #<jmp> -> <id>
-#<offset> -> ( <id> | <int> )
+#<offset> -> ( <str> | <id> )? [ <id> ( [+-] <int> )? ]
 #<const> -> ( <num> | <int> | <str> )
 
 #<str> ~> m/(?:') ([^']*(?:(?:\')[^']*)*) (?:')/xms
@@ -82,7 +82,6 @@ sub max
   my $str = shift;
   my $last_pos = shift;
 
-  $DB::single = 1;
   $max = (pos($$str) || 0) > $max ? pos($$str) : $max;
   pos($$str) = $last_pos;
   warn "$max\n";
@@ -202,7 +201,7 @@ sub data
   return $result;
 }
 
-#<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <jmp> | <offset> ) )? ;
+#<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
 sub stmt
 {
   my $str = shift;
@@ -244,20 +243,20 @@ sub stmt
     }
     if ($found == 0)
     {
-      my $jmp = jmp($str);
-      if (defined $jmp)
-      {
-        $found = 1;
-        $result->{jmp} = $jmp;
-      }
-    }
-    if ($found == 0)
-    {
       my $offset = offset($str);
       if (defined $offset)
       {
         $found = 1;
         $result->{offset} = $offset;
+      }
+    }
+    if ($found == 0)
+    {
+      my $jmp = jmp($str);
+      if (defined $jmp)
+      {
+        $found = 1;
+        $result->{jmp} = $jmp;
       }
     }
   }
@@ -427,7 +426,57 @@ sub jmp
   return $reg;
 }
 
-#<offset> -> ( <id> | <int> )
+#<offset> -> ( <str> | <id> )? [ <id> ( [+-] <int> )? ]
+sub offset
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result = {};
+
+  $DB::single = 1;
+
+  my $block = str($str);
+  if (!defined $block)
+  {
+    $block = id($str);
+  }
+  $result->{block} = $block;
+
+  if ($$str !~ m/$som [[] /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  my $id = id($str);
+
+  if (!defined $id)
+  {
+    max($str, $pos);
+    return;
+  }
+  $result->{id} = $id;
+
+  if ($$str =~ m/$som ([+-]) /ixmsgc)
+  {
+    my $sign = $1;
+    my $int = &int($str);
+    if (!defined $int)
+    {
+      max($str, $pos);
+      return;
+    }
+    $result->{offset} = $sign.$int;
+  }
+
+  if ($$str !~ m/$som []] /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  return $result;
+}
 
 #<const> -> ( <num> | <int> | <str> )
 sub const
