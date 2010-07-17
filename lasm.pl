@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+=for grammer
+
 #<goal> -> ( <code> | <data> )*
 #<code> -> .sub <str> <stmt>* .end;
 #<data> -> .data <str> <data_stmt>* .end;
@@ -25,6 +27,8 @@ use warnings;
 #<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [e] \d+)? )/xms
 #<id>  ~> m/( [[:alpha:]] \w* )/xms
 #<reg> ~> m/[$] [I | N | S | P]? ([\d]+)/xms
+
+=cut
 
 # Load>    :r microcode.h
 # Convert> :'<,'>!perl -ne 'if (m/BEGIN OPS_ENUM/..m/END OPS_ENUM/) { s[//][#]; s/^\s*OP_//; s/=/=>/; print $_ }'
