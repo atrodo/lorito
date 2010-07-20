@@ -143,6 +143,18 @@ core_exec(Lorito_Interp *interp)
         *pc = $imm;
         continue;
       case OP_if:
+        switch (regtype)
+        {
+          case OP_INT:
+            if ($I(op->src1) != 0)
+            {
+              *pc = $imm;
+              continue;
+            }
+            break;
+          default:
+            INVALID_OP("if");
+        }
         break;
       case OP_iseq:
         switch (regtype)
