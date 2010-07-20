@@ -2,6 +2,7 @@
 
 #include "lorito.h"
 #include "microcode.h"
+#include "interp.h"
 
 #define INVALID_OP(s) _opcode_error(s, regtype); *pc = -1;\
   continue;
