@@ -140,7 +140,8 @@ core_exec(Lorito_Interp *interp)
         }
         break;
       case OP_goto:
-        break;
+        *pc = $imm;
+        continue;
       case OP_if:
         break;
       case OP_iseq:
