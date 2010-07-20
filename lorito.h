@@ -17,6 +17,7 @@
 
 struct lorito_interp_t;
 struct lorito_codeseg_t;
+struct lorito_dataseg_t;
 struct lorito_opcode_t;
 struct lorito_pmc_t;
 struct lorito_reg_t;
@@ -42,6 +43,16 @@ struct lorito_codeseg_t
   struct lorito_opcode_t* op;
 };
 typedef struct lorito_codeseg_t Lorito_Codeseg;
+
+struct lorito_dataseg_t
+{
+  int fileid;
+  int segid;
+  char* name;
+  int length;
+  void* data;
+};
+typedef struct lorito_dataseg_t Lorito_Dataseg;
 
 struct lorito_opcode_t
 {

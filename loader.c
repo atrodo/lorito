@@ -57,6 +57,31 @@ loadbc(Lorito_Interp *interp, char* filename)
 
       interp->last_seg = codeseg;
     }
+
+    if (typed == SEG_data)
+    {
+      Lorito_Dataseg *dataseg;
+      int length = 0;
+
+      dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
+      dataseg->fileid = fileid;
+      dataseg->segid = segid++;
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      dataseg->name = (char *) malloc(sizeof(char) * length);
+      read = fread(dataseg->name, sizeof(char), length, input);
+      // or die
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      dataseg->length = length;
+      dataseg->data = (void *) malloc(sizeof(Lorito_Opcode) * length);
+      read = fread(dataseg->data, sizeof(Lorito_Opcode), length, input);
+      // or die
+
+      //interp->last_seg = codeseg;
+    }
   }
 
 }
