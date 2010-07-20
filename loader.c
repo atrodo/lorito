@@ -25,7 +25,6 @@ loadbc(Lorito_Interp *interp, char* filename)
 
   while (!feof(input))
   {
-    Lorito_Codeseg *codeseg;
     int read = 0;
     int typed = 0;
 
@@ -36,6 +35,7 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     if (typed == SEG_code)
     {
+      Lorito_Codeseg *codeseg;
       int length = 0;
 
       codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
