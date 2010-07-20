@@ -435,8 +435,6 @@ sub offset
   my $pos = pos $$str;
   my $result = {};
 
-  $DB::single = 1;
-
   my $block = str($str);
   if (!defined $block)
   {
