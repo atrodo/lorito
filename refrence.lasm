@@ -22,6 +22,7 @@
   start: 
   $I3 = INT SET :'block'[i0+1];
   $I4 = INT SET :block[i0+1];
+  $I5 = INT SET :block[i0];
   $I1 = INT SET :3000;
   $I0 = INT SET :200;
   $I2 = INT ADD $I0, $I1;
@@ -41,5 +42,6 @@
   i0: 1;
   i1: 200;
   n0: 1.1;
-  s0: "Hello World!\n";
+      255;
+  s0: "Hello World!";
 .end;

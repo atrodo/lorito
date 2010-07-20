@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use POSIX qw/ceil/;
 
 =for grammer
 
@@ -186,7 +187,7 @@ sub data
   }
   $result->{named} = $named;
 
-  $result->{data} = [];
+  $result->{datas} = [];
   while (my $data_stmt = &data_stmt($str))
   {
     push @{$result->{datas}}, $data_stmt;
@@ -610,6 +611,53 @@ use Data::Dumper;
 warn Dumper($ast);
 
 # Generate the output
+
+# Generate all the data block labels
+my %data;
+my %data_cache;
+my $data_output = "";
+
+foreach my $seg (@$ast)
+{
+  if ($seg->{typed} eq "data")
+  {
+    $data{$seg->{named}} = {};
+    my $current = $data{$seg->{named}};
+    foreach my $data (@{$seg->{datas}})
+    {
+      if (defined $data->{label})
+      {
+        $current->{$data->{label}} = length($data_output);
+      }
+      if ($data->{type} eq "str")
+      {
+        $data_output .= pack("U0Z*", $data->{const});
+        #$data_output .= pack("IU*", length($data->{const})+1, $data->{const});
+      } elsif ($data->{type} eq "int") {
+        if ($data->{const} < 0)
+        {
+          $data_output .= pack("I", $data->{const});
+        } else {
+          $data_output .= pack("i", $data->{const});
+        }
+      } elsif ($data->{type} eq "num") {
+        $data_output .= pack("d", $data->{const});
+      }
+    }
+  }
+}
+if (length $data_output > 0)
+{
+  my $output = "";
+  $output .= pack("I", 1);
+  $output .= pack("IZ*", length("data")+1, "data");
+  my $len = ceil(length($data_output) / 8);
+  $output .= pack("I", $len);
+  $output .= pack("Z$len", $data_output);
+  print $output;
+}
+
+# Generate all the output for the segments
 foreach my $seg (@$ast)
 {
   my $output = "";
@@ -639,7 +687,21 @@ foreach my $seg (@$ast)
       } elsif (exists $stmt->{jmp}) {
         $stmt->{const} = $labels{$stmt->{jmp}}+0;
       } elsif (exists $stmt->{offset}) {
-        die "offsets are awkward right now, sorry";
+        #die "offsets are awkward right now, sorry";
+        my $data_block;
+        if (defined $stmt->{offset}->{block})
+        {
+          $data_block = $data{$stmt->{offset}->{block}};
+        } else {
+          $data_block = $data{$seg->{named}};
+        }
+        die "Could not find a usable block name"
+          if !defined $data_block;
+
+        my $offset = $data_block->{$stmt->{offset}->{id}};
+        die "Could not find a usable id in block"
+          if !defined $offset;
+        $stmt->{const} = $offset + ($stmt->{offset}->{offset} || 0);
       } else {
         $stmt->{const} = 0;
       }
@@ -649,8 +711,8 @@ foreach my $seg (@$ast)
   }
   elsif ($seg->{typed} eq "data")
   {
-    $output .= pack("I", 1);
-    $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
+    #$output .= pack("I", 1);
+    #$output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
     # ...
   } else {
     die "Could create segment of type ".$seg->{typed};
