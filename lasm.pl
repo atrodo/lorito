@@ -651,7 +651,8 @@ if (length $data_output > 0)
   $output .= pack("IZ*", length("data")+1, "data");
   my $len = ceil(length($data_output) / 8);
   $output .= pack("I", $len);
-  $output .= pack("Z$len", $data_output);
+  $output .= $data_output;
+  $output .= pack("a".($len * 8 - length($data_output)), "");
   print $output;
 }
 
