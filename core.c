@@ -116,6 +116,36 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("mod");
         }
         break;
+      case OP_and:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) & $I(op->src2);
+            break;
+          default:
+            INVALID_OP("and");
+        }
+        break;
+      case OP_or:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) | $I(op->src2);
+            break;
+          default:
+            INVALID_OP("or");
+        }
+        break;
+      case OP_xor:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) ^ $I(op->src2);
+            break;
+          default:
+            INVALID_OP("xor");
+        }
+        break;
       case OP_not:
         switch (regtype)
         {
@@ -124,36 +154,6 @@ core_exec(Lorito_Interp *interp)
             break;
           default:
             INVALID_OP("not");
-        }
-        break;
-      case OP_mov:
-        break;
-      case OP_set:
-        switch (regtype)
-        {
-          case OP_INT:
-            $I(op->dest) = $imm;
-            printf("%d\n", $I(op->dest));
-            break;
-          default:
-            INVALID_OP("set");
-        }
-        break;
-      case OP_goto:
-        *pc = $imm;
-        continue;
-      case OP_if:
-        switch (regtype)
-        {
-          case OP_INT:
-            if ($I(op->src1) != 0)
-            {
-              *pc = $imm;
-              continue;
-            }
-            break;
-          default:
-            INVALID_OP("if");
         }
         break;
       case OP_iseq:
@@ -186,34 +186,33 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("isge");
         }
         break;
-      case OP_and:
+      case OP_goto:
+        *pc = $imm;
+        continue;
+      case OP_if:
         switch (regtype)
         {
           case OP_INT:
-            $I(op->dest) = $I(op->src1) & $I(op->src2);
+            if ($I(op->src1) != 0)
+            {
+              *pc = $imm;
+              continue;
+            }
             break;
           default:
-            INVALID_OP("and");
+            INVALID_OP("if");
         }
         break;
-      case OP_or:
-        switch (regtype)
-        {
-          case OP_INT:
-            $I(op->dest) = $I(op->src1) | $I(op->src2);
-            break;
-          default:
-            INVALID_OP("or");
-        }
+      case OP_set:
         break;
-      case OP_xor:
+      case OP_load_imm:
         switch (regtype)
         {
           case OP_INT:
-            $I(op->dest) = $I(op->src1) ^ $I(op->src2);
+            $I(op->dest) = $imm;
             break;
           default:
-            INVALID_OP("xor");
+            INVALID_OP("load_imm");
         }
         break;
       case OP_new:
@@ -231,7 +230,7 @@ core_exec(Lorito_Interp *interp)
         break;
       case OP_call:
         break;
-      case OP_loadbc:
+      case OP_loadlib:
         break;
       case OP_read:
         break;
