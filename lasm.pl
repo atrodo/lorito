@@ -32,34 +32,62 @@ use POSIX qw/ceil/;
 =cut
 
 # Load>    :r microcode.h
-# Convert> :'<,'>!perl -ne 'if (m/BEGIN OPS_ENUM/..m/END OPS_ENUM/) { s[//][#]; s/^\s*OP_//; s/=/=>/; print $_ }'
+# Convert> :'<,'>!perl -ne 'if (m/BEGIN OPS_ENUM/..m/END OPS_ENUM/) { s[//][\#]; s/^\s*OP_/  /; s/=/=>/; print $_ }'
 my %ops = (
+  # BEGIN OPS_ENUM
+
+  # Execution Ops
   noop       => 0,
   end        => 1,
+
+  # Math Ops
   add        => 2,
   sub        => 3,
   mul        => 4,
   div        => 5,
   mod        => 6,
-  not        => 7,
-  mov        => 8,
-  set        => 9,
-  goto       => 10,
-  if         => 11,
-  iseq       => 12,
-  isgt       => 13,
-  isge       => 14,
-  and        => 15,
-  or         => 16,
-  xor        => 17,
-  new        => 18,
-  call       => 19,
-  loadbc     => 20,
-  read       => 21,
-  write      => 22,
-  gripe      => 23,
+  and        => 7,
+  or         => 8,
+  xor        => 9,
+  not        => 10,
+  shl        => 11,
+  shr        => 12,
 
-  hcf        => 31
+  # Comparison Ops
+  iseq       => 13,
+  isgt       => 14,
+  isge       => 15,
+
+  # Flow Control Ops
+  goto       => 16,
+  if         => 17,
+
+  # Register Manipulation Ops
+  set        => 18,
+  load_const => 19,
+  load_imm   => 20,
+  coerce_int => 21,
+  coerce_num => 22,
+  coerce_str => 23,
+
+  # PMC Ops
+  new        => 24,
+  store      => 25,
+  load       => 26,
+  push_arg   => 27,
+  pop_arg    => 28,
+  call       => 29,
+
+  # Environment Ops
+  loadlib    => 30,
+  read       => 31,
+  write      => 32,
+  say        => 33,
+  gripe      => 34,
+
+  # These Ops
+  hcf        => 63
+  # END OPS_ENUM
 ); 
 
 my %op_types = (
@@ -578,7 +606,7 @@ sub gen_op
   die "Could not load opcode: ".$stmt->{opcode}
     unless defined $op;
   return pack("CCCCI",
-    ($op % (2**5-1)) | ( ($op_types{$stmt->{regtype} || "PMC"}) << 5 ),
+    ($op % (2**6-1)) | ( ($op_types{$stmt->{regtype} || "PMC"}) << 6 ),
     ($stmt->{dest} || 0)+0,
     ($stmt->{src1} || 0)+0,
     ($stmt->{src2} || 0)+0,
