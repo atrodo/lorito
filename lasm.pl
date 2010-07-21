@@ -113,7 +113,7 @@ sub max
 
   $max = (pos($$str) || 0) > $max ? pos($$str) : $max;
   pos($$str) = $last_pos;
-  warn "$max\n";
+  #warn "$max\n";
 }
 
 #<goal> -> ( <code> | <data> )*
@@ -634,7 +634,7 @@ if (!defined $ast)
 }
 
 use Data::Dumper;
-warn Dumper($ast);
+#warn Dumper($ast);
 
 # Generate the output
 
@@ -674,6 +674,8 @@ foreach my $seg (@$ast)
 }
 if (length $data_output > 0)
 {
+  #$DB::single = 1;
+
   my $output = "";
   $output .= pack("I", 1);
   $output .= pack("IZ*", length("data")+1, "data");
