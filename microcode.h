@@ -3,8 +3,8 @@
 #ifndef LORITO_MICROCODE_H_GUARD
 #define LORITO_MICROCODE_H_GUARD
 
-#define REG_OF_OP(o) (o >> 5)
-#define  OP_OF_OP(o) (o & 0x1F)
+#define REG_OF_OP(o) (o >> 6)
+#define  OP_OF_OP(o) (o & 0x3F)
 
 enum OPS_REGS {
   OP_PMC = 0,
@@ -15,32 +15,58 @@ enum OPS_REGS {
 
 enum OPS_ENUM {
   // BEGIN OPS_ENUM
+
+  // Execution Ops
   OP_noop       = 0,
   OP_end        = 1,
+
+  // Math Ops
   OP_add        = 2,
   OP_sub        = 3,
   OP_mul        = 4,
   OP_div        = 5,
   OP_mod        = 6,
-  OP_not        = 7,
-  OP_mov        = 8,
-  OP_set        = 9,
-  OP_goto       = 10,
-  OP_if         = 11,
-  OP_iseq       = 12,
-  OP_isgt       = 13,
-  OP_isge       = 14,
-  OP_and        = 15,
-  OP_or         = 16,
-  OP_xor        = 17,
-  OP_new        = 18,
-  OP_call       = 19,
-  OP_loadbc     = 20,
-  OP_read       = 21,
-  OP_write      = 22,
-  OP_gripe      = 23,
+  OP_and        = 7,
+  OP_or         = 8,
+  OP_xor        = 9,
+  OP_not        = 10,
+  OP_shl        = 11,
+  OP_shr        = 12,
 
-  OP_hcf        = 31
+  // Comparison Ops
+  OP_iseq       = 13,
+  OP_isgt       = 14,
+  OP_isge       = 15,
+
+  // Flow Control Ops
+  OP_goto       = 16,
+  OP_if         = 17,
+
+  // Register Manipulation Ops
+  OP_set        = 18,
+  OP_load_const = 19,
+  OP_load_imm   = 20,
+  OP_coerce_int = 21,
+  OP_coerce_num = 22,
+  OP_coerce_str = 23,
+
+  // PMC Ops
+  OP_new        = 24,
+  OP_store      = 25,
+  OP_load       = 26,
+  OP_push_arg   = 27,
+  OP_pop_arg    = 28,
+  OP_call       = 29,
+
+  // Environment Ops
+  OP_loadlib    = 30,
+  OP_read       = 31,
+  OP_write      = 32,
+  OP_say        = 33,
+  OP_gripe      = 34,
+
+  // These Ops
+  OP_hcf        = 63
   // END OPS_ENUM
 };
 
