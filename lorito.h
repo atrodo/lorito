@@ -16,6 +16,7 @@
 #define SEG_data 1
 
 struct lorito_interp_t;
+struct lorito_file_t;
 struct lorito_codeseg_t;
 struct lorito_dataseg_t;
 struct lorito_opcode_t;
@@ -33,6 +34,17 @@ struct lorito_interp_t
   struct lorito_codeseg_t *last_seg;
 };
 typedef struct lorito_interp_t Lorito_Interp;
+
+struct lorito_file_t
+{
+  int fileid;
+  char* name;
+  int codeseg_count;
+  struct lorito_codeseg_t* codeseg;
+  int dataseg_count;
+  struct lorito_dataseg_t* dataseg;
+};
+typedef struct lorito_file_t Lorito_File;
 
 struct lorito_codeseg_t
 {
