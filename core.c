@@ -156,6 +156,26 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("not");
         }
         break;
+      case OP_shl:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) << $I(op->src2);
+            break;
+          default:
+            INVALID_OP("shl");
+        }
+        break;
+      case OP_shr:
+        switch (regtype)
+        {
+          case OP_INT:
+            $I(op->dest) = $I(op->src1) >> $I(op->src2);
+            break;
+          default:
+            INVALID_OP("shr");
+        }
+        break;
       case OP_iseq:
         switch (regtype)
         {
