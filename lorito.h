@@ -49,6 +49,7 @@ typedef struct lorito_file_t Lorito_File;
 struct lorito_codeseg_t
 {
   int fileid;
+  struct lorito_file_t *file;
   int segid;
   char* name;
   int length;
@@ -59,6 +60,7 @@ typedef struct lorito_codeseg_t Lorito_Codeseg;
 struct lorito_dataseg_t
 {
   int fileid;
+  struct lorito_file_t *file;
   int segid;
   char* name;
   int length;

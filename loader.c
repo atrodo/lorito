@@ -23,6 +23,22 @@ loadbc(Lorito_Interp *interp, char* filename)
     return;
   }
 
+  if (fileid >= interp->allocated_file)
+  {
+    interp->allocated_file += 4;
+    interp->files = realloc(interp->files, interp->allocated_file);
+    if (interp->files == NULL)
+      abort();
+  }
+
+  Lorito_File *file = &interp->files[fileid];
+  file->fileid = fileid;
+  file->name = filename;
+  file->codeseg_count = 0;
+  file->dataseg_count = 0;
+  file->codesegs = NULL;
+  file->datasegs = NULL;
+
   while (!feof(input))
   {
     int read = 0;
@@ -35,11 +51,17 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     if (typed == SEG_code)
     {
-      Lorito_Codeseg *codeseg;
+      file->codesegs = realloc(file->codesegs, file->codeseg_count+1);
+      if (interp->files == NULL)
+        abort();
+      Lorito_Codeseg *codeseg = &file->codesegs[file->codeseg_count];
+      file->codeseg_count++;
+
       int length = 0;
 
-      codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
+      //codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
       codeseg->fileid = fileid;
+      codeseg->file = file;
       codeseg->segid = segid++;
 
       read = fread(&length, sizeof(int), 1, input);
@@ -60,11 +82,17 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     if (typed == SEG_data)
     {
-      Lorito_Dataseg *dataseg;
+      file->datasegs = realloc(file->datasegs, file->dataseg_count+1);
+      if (interp->files == NULL)
+        abort();
+      Lorito_Dataseg *dataseg = &file->datasegs[file->dataseg_count];
+      file->dataseg_count++;
+
       int length = 0;
 
-      dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
+      //dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
       dataseg->fileid = fileid;
+      dataseg->file = file;
       dataseg->segid = segid++;
 
       read = fread(&length, sizeof(int), 1, input);
