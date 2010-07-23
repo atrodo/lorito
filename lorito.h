@@ -106,7 +106,7 @@ typedef struct lorito_str_t Lorito_STR;
 struct lorito_reg_t
 {
   int regs_i[REGNUM];
-  double regs_f[REGNUM];
+  double regs_n[REGNUM];
   struct lorito_str_t regs_s[REGNUM];
   struct lorito_pmc_t *regs_p[REGNUM];
 };
