@@ -287,7 +287,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_STR:
-            fprintf(stdout, "%s", $S(op->src1)->data);
+            fprintf(stdout, "%s", $S(op->src1).data);
             break;
           default:
             INVALID_OP("write");
@@ -297,7 +297,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_STR:
-            fprintf(stderr, "%s", $S(op->src1)->data);
+            fprintf(stderr, "%s", $S(op->src1).data);
             break;
           default:
             INVALID_OP("gripe");
