@@ -244,7 +244,7 @@ core_exec(Lorito_Interp *interp)
                   : $I(op->src2)
                 ;
 
-              if (offset+length >= data->length)
+              if (offset+length > data->length)
               {
                 INVALID_OP("load_const: outside range");
               }
