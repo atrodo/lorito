@@ -721,8 +721,12 @@ foreach my $seg (@$ast)
         if (defined $stmt->{offset}->{block})
         {
           $data_block = $data{$stmt->{offset}->{block}};
-        } else {
+        }
+        elsif (defined $data{$seg->{named}})
+        {
           $data_block = $data{$seg->{named}};
+        } else {
+          $data_block = $data{''};
         }
         die "Could not find a usable block name"
           if !defined $data_block;
