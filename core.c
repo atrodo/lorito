@@ -293,6 +293,16 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("write");
         }
         break;
+      case OP_say:
+        switch (regtype)
+        {
+          case OP_STR:
+            fprintf(stdout, "%s\n", $S(op->src1).data);
+            break;
+          default:
+            INVALID_OP("say");
+        }
+        break;
       case OP_gripe:
         switch (regtype)
         {
