@@ -4,6 +4,8 @@
 #include "microcode.h"
 #include "interp.h"
 
+#include <stdio.h>
+
 #define INVALID_OP(s) _opcode_error(s, regtype); *pc = -1;\
   continue;
 
@@ -282,8 +284,24 @@ core_exec(Lorito_Interp *interp)
       case OP_read:
         break;
       case OP_write:
+        switch (regtype)
+        {
+          case OP_STR:
+            fprintf(stdout, "%s", $S(op->src1)->data);
+            break;
+          default:
+            INVALID_OP("write");
+        }
         break;
       case OP_gripe:
+        switch (regtype)
+        {
+          case OP_STR:
+            fprintf(stderr, "%s", $S(op->src1)->data);
+            break;
+          default:
+            INVALID_OP("gripe");
+        }
         break;
       case OP_hcf:
         break;
