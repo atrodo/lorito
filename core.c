@@ -5,6 +5,7 @@
 #include "interp.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define INVALID_OP(s) _opcode_error(s, regtype); *pc = -1;\
   continue;
@@ -228,28 +229,49 @@ core_exec(Lorito_Interp *interp)
       case OP_set:
         break;
       case OP_load_const:
+        ;  // C oddity that stops the declare below working
+        Lorito_Dataseg *data = ctx->current_dataseg;
+
         switch (regtype)
         {
           // Read src2 bytes from the data block at offset src1+imm
+          case OP_STR:
+            {
+              unsigned int offset = $imm + $I(op->src1);
+
+              int length = $I(op->src2) == 0 
+                  ? strlen(&((char *)data->data)[offset])+1
+                  : $I(op->src2)
+                ;
+
+              if (offset+length >= data->length)
+              {
+                INVALID_OP("load_const: outside range");
+              }
+
+              $S(op->dest).size = length;
+              $S(op->dest).data = malloc(sizeof(char) * length);
+              strcpy($S(op->dest).data, &((char *) data->data)[offset]);
+              break;
+            }
           case OP_INT:
-            ;  // C oddity that stops the declare below working
-            Lorito_Dataseg *data = ctx->current_dataseg;
-
-            int length = $I(op->src2) == 0 ? sizeof(int) : $I(op->src2);
-
-            unsigned int offset = $imm + $I(op->src1);
-
-            if (length > sizeof(int))
             {
-              INVALID_OP("load_const: length too long");
+              int length = $I(op->src2) == 0 ? sizeof(int) : $I(op->src2);
+
+              unsigned int offset = $imm + $I(op->src1);
+
+              if (length > sizeof(int))
+              {
+                INVALID_OP("load_const: length too long");
+              }
+              if (offset+length >= data->length)
+              {
+                INVALID_OP("load_const: outside range");
+              }
+              $I(op->dest) = ((int *) data->data)[offset];
+              $I(op->dest) &= (~0 >> ((4 - length) * 8));
+              break;
             }
-            if (offset+length >= data->length)
-            {
-              INVALID_OP("load_const: outside range");
-            }
-            $I(op->dest) = ((int *) data->data)[offset];
-            $I(op->dest) &= (~0 >> ((4 - length) * 8));
-            break;
           default:
             INVALID_OP("load_const");
         }

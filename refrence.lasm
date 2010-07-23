@@ -20,6 +20,10 @@
 
 .sub 'block'
   start: 
+  $S0 = STR LOAD_CONST :[s0];
+  STR SAY $S0;
+  STR GRIPE $S0;
+
   $I3 = INT LOAD_IMM :'block'[i0+1];
   $I4 = INT LOAD_IMM :block[i0+1];
   $I4 = INT LOAD_CONST :block[i0+1];
