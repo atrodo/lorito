@@ -22,6 +22,7 @@
   start: 
   $I3 = INT LOAD_IMM :'block'[i0+1];
   $I4 = INT LOAD_IMM :block[i0+1];
+  $I4 = INT LOAD_CONST :block[i0+1];
   $I1 = INT LOAD_IMM :3000;
   $I0 = INT LOAD_IMM :200;
   $I2 = INT ADD $I0, $I1;

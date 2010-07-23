@@ -225,6 +225,33 @@ core_exec(Lorito_Interp *interp)
         break;
       case OP_set:
         break;
+      case OP_load_const:
+        switch (regtype)
+        {
+          // Read src2 bytes from the data block at offset src1+imm
+          case OP_INT:
+            ;  // C oddity that stops the declare below working
+            Lorito_Dataseg *data = ctx->current_dataseg;
+
+            int length = $I(op->src2) == 0 ? sizeof(int) : $I(op->src2);
+
+            unsigned int offset = $imm + $I(op->src1);
+
+            if (length > sizeof(int))
+            {
+              INVALID_OP("load_const: length too long");
+            }
+            if (offset+length >= data->length)
+            {
+              INVALID_OP("load_const: outside range");
+            }
+            $I(op->dest) = ((int *) data->data)[offset];
+            $I(op->dest) &= (~0 >> ((4 - length) * 8));
+            break;
+          default:
+            INVALID_OP("load_const");
+        }
+        break;
       case OP_load_imm:
         switch (regtype)
         {
