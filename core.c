@@ -58,8 +58,8 @@ core_exec(Lorito_Interp *interp)
     int regtype = REG_OF_OP(op->opcode);
     int opcode  =  OP_OF_OP(op->opcode);
 
-    printf("PC: %d\n", *pc);
-    printf("Opcode: %d\n", opcode);
+    //printf("PC: %d\n", *pc);
+    //printf("Opcode: %d\n", opcode);
 
     switch (opcode)
     {
