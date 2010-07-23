@@ -103,7 +103,7 @@ loadbc(Lorito_Interp *interp, char* filename)
 
       read = fread(&length, sizeof(int), 1, input);
       // or die
-      dataseg->length = length;
+      dataseg->length = length * sizeof(Lorito_Opcode);
       dataseg->data = (void *) malloc(sizeof(Lorito_Opcode) * length);
       read = fread(dataseg->data, sizeof(Lorito_Opcode), length, input);
       // or die

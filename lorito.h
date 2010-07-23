@@ -54,6 +54,7 @@ struct lorito_codeseg_t
   struct lorito_file_t *file;
   int segid;
   char* name;
+  // In opcodes
   int length;
   struct lorito_opcode_t* op;
 };
@@ -65,6 +66,7 @@ struct lorito_dataseg_t
   struct lorito_file_t *file;
   int segid;
   char* name;
+  // In bytes
   int length;
   void* data;
 };
