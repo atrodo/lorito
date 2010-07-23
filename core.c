@@ -227,6 +227,24 @@ core_exec(Lorito_Interp *interp)
         }
         break;
       case OP_set:
+        switch (regtype)
+        {
+          case OP_PMC:
+            $P(op->dest) = $P(op->src1);
+            break;
+          case OP_STR:
+            $S(op->dest).size = $S(op->src1).size;
+            $S(op->dest).data = $S(op->src1).data;
+            break;
+          case OP_NUM:
+            $N(op->dest) = $N(op->src1);
+            break;
+          case OP_INT:
+            $I(op->dest) = $I(op->src1);
+            break;
+          default:
+            INVALID_OP("set");
+        }
         break;
       case OP_load_const:
         ;  // C oddity that stops the declare below working
