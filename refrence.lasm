@@ -34,6 +34,8 @@
   $P0 = INT NEW :20;
   $P1 = PMC NEW $P0;
   $P2 = NEW $P0;
+  $I5 = INT LOAD_IMM :5;
+  $P2 = INT STORE $I1, $I5;
 
   $I1 = INT LOAD_IMM :3000;
   $I3 = INT LOAD_IMM :0;
