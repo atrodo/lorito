@@ -321,6 +321,28 @@ core_exec(Lorito_Interp *interp)
         // dest = PMC to store to, src1 = src, src2 = offset, imm = size
         switch (regtype)
         {
+          case OP_NUM:
+            {
+              int length = $imm == 0 ? sizeof(double) : $imm;
+
+              unsigned int offset = $I(op->src2);
+
+              if (length > sizeof(double))
+              {
+                INVALID_OP("load_const: length too long");
+              }
+              if (offset+length >= $P(op->dest)->size)
+              {
+                INVALID_OP("load_const: outside range");
+              }
+              if ($P(op->dest) == $P(op->src1))
+              {
+                INVALID_OP("load_const: Same PMC");
+              }
+
+              memcpy(&$P(op->dest)[offset], &$N(op->src1), length);
+              break;
+            }
           case OP_INT:
             {
               int length = $imm == 0 ? sizeof(int) : $imm;
