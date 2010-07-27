@@ -6,9 +6,6 @@
 Lorito_Ctx *
 lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg);
 
-Lorito_PMC *
-lorito_pmc_init(Lorito_Interp *interp, int size);
-
 Lorito_Interp *
 lorito_init();
 

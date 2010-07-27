@@ -3,6 +3,7 @@
 #include "lorito.h"
 #include "microcode.h"
 #include "interp.h"
+#include "pmc.h"
 
 #include <stdio.h>
 #include <string.h>

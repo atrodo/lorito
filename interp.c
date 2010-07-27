@@ -43,20 +43,6 @@ lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
   return result;
 }
 
-Lorito_PMC *
-lorito_pmc_init(Lorito_Interp *interp, int size)
-{
-  Lorito_PMC *result = (Lorito_PMC *) malloc(sizeof(Lorito_PMC));
-  result->size = size;
-
-  result->ptrnum = ((int) size / sizeof(void *)) / 2;
-  if (result->ptrnum < 4)
-    result->ptrnum = 4;
-  result->data = malloc(size);
-  result->ptrs = (Lorito_PMC *) malloc(result->ptrnum * sizeof(void *));
-  return result;
-}
-
 Lorito_Interp *
 lorito_init()
 {

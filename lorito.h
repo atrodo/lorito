@@ -91,7 +91,8 @@ struct lorito_pmc_t
 {
   int size;
   void *data;
-  int ptrnum;
+  int ptr_count;
+  int ptr_last;
   struct lorito_pmc_t *ptrs;
 };
 typedef struct lorito_pmc_t Lorito_PMC;
