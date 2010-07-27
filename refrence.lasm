@@ -37,6 +37,9 @@
   $I5 = INT LOAD_IMM :5;
   $P2 = INT STORE $I1, $I5;
 
+  $I5 = INT LOAD_IMM :9;
+  $P2 = PMC STORE $P0, $I5;
+
   $I1 = INT LOAD_IMM :3000;
   $I3 = INT LOAD_IMM :0;
   $I5 = INT LOAD_IMM :1;

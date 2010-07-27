@@ -322,6 +322,29 @@ core_exec(Lorito_Interp *interp)
         // dest = PMC to store to, src1 = src, src2 = offset, imm = size
         switch (regtype)
         {
+          case OP_PMC:
+            {
+              int length = sizeof(int);
+              unsigned int offset = $I(op->src2);
+
+              if (offset+length >= $P(op->dest)->size)
+              {
+                INVALID_OP("store: outside range");
+              }
+              if ($P(op->dest) == $P(op->src1))
+              {
+                INVALID_OP("store: Same PMC");
+              }
+
+              // Encode the PMC address into memory
+              Lorito_PMC *output = lorito_pmc_encode(interp, $P(op->dest), $I(op->src2), $P(op->src1));
+
+              if ((output == NULL) || (output != $P(op->dest)))
+              {
+                INVALID_OP("store: error saving PMC");
+              }
+              break;
+            }
           case OP_NUM:
             {
               int length = $imm == 0 ? sizeof(double) : $imm;
