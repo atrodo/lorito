@@ -330,15 +330,15 @@ core_exec(Lorito_Interp *interp)
 
               if (length > sizeof(double))
               {
-                INVALID_OP("load_const: length too long");
+                INVALID_OP("store: length too long");
               }
               if (offset+length >= $P(op->dest)->size)
               {
-                INVALID_OP("load_const: outside range");
+                INVALID_OP("store: outside range");
               }
               if ($P(op->dest) == $P(op->src1))
               {
-                INVALID_OP("load_const: Same PMC");
+                INVALID_OP("store: Same PMC");
               }
 
               memcpy(&$P(op->dest)[offset], &$N(op->src1), length);
@@ -352,15 +352,15 @@ core_exec(Lorito_Interp *interp)
 
               if (length > sizeof(int))
               {
-                INVALID_OP("load_const: length too long");
+                INVALID_OP("store: length too long");
               }
               if (offset+length >= $P(op->dest)->size)
               {
-                INVALID_OP("load_const: outside range");
+                INVALID_OP("store: outside range");
               }
               if ($P(op->dest) == $P(op->src1))
               {
-                INVALID_OP("load_const: Same PMC");
+                INVALID_OP("store: Same PMC");
               }
 
               memcpy(&$P(op->dest)[offset], &$I(op->src1), length);
