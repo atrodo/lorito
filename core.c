@@ -405,6 +405,9 @@ core_exec(Lorito_Interp *interp)
           case OP_STR:
             fprintf(stdout, "%s", $S(op->src1).data);
             break;
+          case OP_INT:
+            fprintf(stdout, "%d", $I(op->src1));
+            break;
           default:
             INVALID_OP("write");
         }
@@ -415,6 +418,9 @@ core_exec(Lorito_Interp *interp)
           case OP_STR:
             fprintf(stdout, "%s\n", $S(op->src1).data);
             break;
+          case OP_INT:
+            fprintf(stdout, "%d\n", $I(op->src1));
+            break;
           default:
             INVALID_OP("say");
         }
@@ -424,6 +430,9 @@ core_exec(Lorito_Interp *interp)
         {
           case OP_STR:
             fprintf(stderr, "%s", $S(op->src1).data);
+            break;
+          case OP_INT:
+            fprintf(stderr, "%d", $I(op->src1));
             break;
           default:
             INVALID_OP("gripe");
