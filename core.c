@@ -385,10 +385,6 @@ core_exec(Lorito_Interp *interp)
               {
                 INVALID_OP("store: outside range");
               }
-              if ($P(op->dest) == $P(op->src1))
-              {
-                INVALID_OP("store: Same PMC");
-              }
 
               memcpy(&$P(op->dest)[offset], &$I(op->src1), length);
               break;
