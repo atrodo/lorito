@@ -390,7 +390,7 @@ core_exec(Lorito_Interp *interp)
               break;
             }
           default:
-            INVALID_OP("new");
+            INVALID_OP("store");
         }
         break;
       case OP_call:
