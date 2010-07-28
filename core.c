@@ -327,6 +327,10 @@ core_exec(Lorito_Interp *interp)
               int length = sizeof(int);
               unsigned int offset = $I(op->src2);
 
+              if ($P(op->dest) == NULL)
+              {
+                INVALID_OP("store: cannot store to null pmc");
+              }
               if (offset+length >= $P(op->dest)->size)
               {
                 INVALID_OP("store: outside range");
@@ -347,6 +351,10 @@ core_exec(Lorito_Interp *interp)
 
               unsigned int offset = $I(op->src2);
 
+              if ($P(op->dest) == NULL)
+              {
+                INVALID_OP("store: cannot store to null pmc");
+              }
               if (length > sizeof(double))
               {
                 INVALID_OP("store: length too long");
@@ -365,6 +373,10 @@ core_exec(Lorito_Interp *interp)
 
               unsigned int offset = $I(op->src2);
 
+              if ($P(op->dest) == NULL)
+              {
+                INVALID_OP("store: cannot store to null pmc");
+              }
               if (length > sizeof(int))
               {
                 INVALID_OP("store: length too long");
