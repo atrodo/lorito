@@ -331,10 +331,6 @@ core_exec(Lorito_Interp *interp)
               {
                 INVALID_OP("store: outside range");
               }
-              if ($P(op->dest) == $P(op->src1))
-              {
-                INVALID_OP("store: Same PMC");
-              }
 
               // Encode the PMC address into memory
               Lorito_PMC *output = lorito_pmc_encode(interp, $P(op->dest), $I(op->src2), $P(op->src1));
@@ -358,10 +354,6 @@ core_exec(Lorito_Interp *interp)
               if (offset+length >= $P(op->dest)->size)
               {
                 INVALID_OP("store: outside range");
-              }
-              if ($P(op->dest) == $P(op->src1))
-              {
-                INVALID_OP("store: Same PMC");
               }
 
               memcpy(&$P(op->dest)[offset], &$N(op->src1), length);

@@ -33,10 +33,6 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
   {
     return result;
   }
-  if (dest == src)
-  {
-    return result;
-  }
 
   // Reuse a slot if there is one, otherwise make one.
   int current = *(int *) (src->data + offset);
