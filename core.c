@@ -364,7 +364,7 @@ core_exec(Lorito_Interp *interp)
                 INVALID_OP("store: outside range");
               }
 
-              memcpy(&$P(op->dest)[offset], &$N(op->src1), length);
+              memcpy(&$P(op->dest)->data[offset], &$N(op->src1), length);
               break;
             }
           case OP_INT:
@@ -386,7 +386,7 @@ core_exec(Lorito_Interp *interp)
                 INVALID_OP("store: outside range");
               }
 
-              memcpy(&$P(op->dest)[offset], &$I(op->src1), length);
+              memcpy(&$P(op->dest)->data[offset], &$I(op->src1), length);
               break;
             }
           default:
