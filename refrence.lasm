@@ -21,24 +21,46 @@
 .sub 'block'
   start: 
   $S0 = STR LOAD_CONST :[s0];
-  STR SAY $S0;
-  STR GRIPE $S0;
+  #STR SAY $S0;
+  #STR GRIPE $S0;
 
   $I3 = INT LOAD_IMM :'block'[i0+1];
   $I4 = INT LOAD_IMM :block[i0+1];
   $I4 = INT LOAD_CONST :block[i0+1];
   $I1 = INT LOAD_IMM :3000;
-  $I0 = INT LOAD_IMM :200;
+  #$I0 = INT LOAD_IMM :200;
   $I2 = INT ADD $I0, $I1;
 
   $P0 = INT NEW :20;
   $P1 = PMC NEW $P0;
   $P2 = NEW $P0;
   $I5 = INT LOAD_IMM :5;
+  #INT SAY $I1;
   $P2 = INT STORE $I1, $I5;
+  $I3 = INT LOAD $P2, $I5;
+  #INT SAY $I3;
+
+  $I6 = INT LOAD_IMM :20;
+  $I7 = INT LOAD_IMM :0;
+  $I9 = INT LOAD_IMM :1;
+  $S1 = STR LOAD_CONST :[s1];
+  loop:
+    INT WRITE $I6;
+    STR WRITE $S1;
+    $I8 = INT LOAD $P2, $I7 :1;
+    INT SAY $I8;
+    $I6 = INT SUB $I6, $I9;
+    $I7 = INT ADD $I7, $I9;
+    $I10 = INT ISEQ $I6, $I0;
+    INT IF $I10 :last_loop;
+    : GOTO :loop;
+  
+  last_loop:
 
   $I5 = INT LOAD_IMM :9;
   $P2 = PMC STORE $P0, $I5;
+  $P3 = PMC LOAD $P2, $I5;
+  $I3 = INT LOAD $P2, $I5;
 
   $I1 = INT LOAD_IMM :3000;
   $I3 = INT LOAD_IMM :0;
@@ -55,9 +77,11 @@
 .end;
 
 .data 'block'
+  s1: " - ";
   i0: 1;
   i1: 200;
   n0: 1.1;
       255;
   s0: "Hello World!";
+      30;
 .end;

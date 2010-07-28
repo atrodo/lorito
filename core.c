@@ -393,6 +393,79 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("store");
         }
         break;
+      case OP_load:
+        // dest = dest, src1 = PMC to load from, src2 = offset, imm = size
+        switch (regtype)
+        {
+          case OP_PMC:
+            {
+              int length = sizeof(int);
+              unsigned int offset = $I(op->src2);
+
+              // If the src PMC is null, set dest to null and be done.
+              if ($P(op->src1) == NULL)
+              {
+                $P(op->dest) = NULL;
+                break;
+              }
+              if (offset+length >= $P(op->src1)->size)
+              {
+                INVALID_OP("load: outside range");
+              }
+
+              // Decode the PMC address into memory
+              $P(op->dest) = lorito_pmc_decode(interp, $P(op->src1), $I(op->src2));
+
+              break;
+            }
+          case OP_NUM:
+            {
+              int length = $imm == 0 ? sizeof(double) : $imm;
+
+              unsigned int offset = $I(op->src2);
+
+              if ($P(op->src1) == NULL)
+              {
+                INVALID_OP("load: cannot load from a null pmc");
+              }
+              if (length > sizeof(double))
+              {
+                INVALID_OP("load: length too long");
+              }
+              if (offset+length >= $P(op->dest)->size)
+              {
+                INVALID_OP("load: outside range");
+              }
+
+              memcpy(&$N(op->dest), &$P(op->src1)[offset], length);
+              break;
+            }
+          case OP_INT:
+            {
+              int length = $imm == 0 ? sizeof(int) : $imm;
+
+              unsigned int offset = $I(op->src2);
+
+              if ($P(op->src1) == NULL)
+              {
+                INVALID_OP("load: cannot load from a null pmc");
+              }
+              if (length > sizeof(int))
+              {
+                INVALID_OP("load: length too long");
+              }
+              if (offset+length > $P(op->src1)->size)
+              {
+                INVALID_OP("load: outside range");
+              }
+
+              memcpy(&$I(op->dest), &$P(op->src1)->data[offset], length);
+              break;
+            }
+          default:
+            INVALID_OP("load");
+        }
+        break;
       case OP_call:
         break;
       case OP_loadlib:

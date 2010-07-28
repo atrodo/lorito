@@ -10,6 +10,6 @@ Lorito_PMC *
 lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PMC *src);
 
 Lorito_PMC *
-lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *dest, int offset);
+lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset);
 
 #endif /* LORITO_PMC_H_GUARD */

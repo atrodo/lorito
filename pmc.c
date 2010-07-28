@@ -59,6 +59,27 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
 }
 
 Lorito_PMC *
-lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *dest, int offset)
+lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
 {
+  Lorito_PMC * result = NULL;
+  // Sanity checks
+  int length = sizeof(int);
+
+  if (src == NULL)
+  {
+    return result;
+  }
+  if (offset+length >= src->size)
+  {
+    return result;
+  }
+
+  int current = *(int *) (src->data + offset);
+  if ((current > 0) && (current <= src->ptr_count))
+  {
+    // Even if the new PMC is null, we're going to keep using it.
+    //dest->ptrs[current] = *src;
+    result = &src->ptrs[current];
+  }
+  return result;
 }
