@@ -49,7 +49,9 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
       if (dest->ptrs == NULL)
         abort();
     }
-    *(int *) (src->data + offset) = ++dest->ptr_last;
+    current = ++dest->ptr_last;
+    *(int *) (dest->data + offset) = current;
+    dest->ptrs[current] = *src;
     result = dest;
   }
   return result;
