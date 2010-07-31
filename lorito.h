@@ -30,6 +30,8 @@ struct lorito_interp_t
   struct lorito_reg_t* regs;
   int next_fileid;
 
+  unsigned short magic;
+
   int allocated_file;
   struct lorito_file_t *files;
   //
@@ -89,6 +91,8 @@ typedef struct lorito_opcode_t Lorito_Opcode;
 
 struct lorito_pmc_t
 {
+  unsigned short magic;  // Magic identifier, changes per interp.
+
   int size;
   void *data;
   int ptr_count;

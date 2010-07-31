@@ -4,6 +4,8 @@
 #include "interp.h"
 #include "loader.h"
 
+#include <stdlib.h>
+
 Lorito_Ctx *
 lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
 {
@@ -53,6 +55,8 @@ lorito_init()
   result->next_fileid = 0;
   result->allocated_file = 0;
   result->files = NULL;
+
+  result->magic = (unsigned short int) rand();
 
   return result;
 }

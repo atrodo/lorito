@@ -7,6 +7,8 @@ Lorito_PMC *
 lorito_pmc_init(Lorito_Interp *interp, int size)
 {
   Lorito_PMC *result = (Lorito_PMC *) malloc(sizeof(Lorito_PMC));
+
+  result->magic = interp->magic;
   result->size = size;
 
   result->ptr_count = ((int) size / sizeof(void *)) / 2;
