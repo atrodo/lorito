@@ -2,6 +2,7 @@
 
 #include "lorito.h"
 #include "pmc.h"
+#include "internal_pmc.h"
 
 Lorito_PMC *
 lorito_pmc_init(Lorito_Interp *interp, int size)

@@ -89,12 +89,30 @@ struct lorito_opcode_t
 };
 typedef struct lorito_opcode_t Lorito_Opcode;
 
+enum INTERNAL_PMC_ENUM {
+  NOT_INTERNAL = 0,
+
+  BOX_INT      = 1,
+  BOX_NUM      = 2,
+  BOX_STR      = 3,
+
+  FILE_BLOCK   = 4,
+  CODE_BLOCK   = 5,
+  DATA_BLOCK   = 6,
+ 
+  CONTEXT      = 7,
+  C_METHOD     = 8
+};
+typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
+
 struct lorito_pmc_t
 {
   unsigned short magic;  // Magic identifier, changes per interp.
+  unsigned short internal_type;
 
   int size;
   void *data;
+
   int ptr_count;
   int ptr_last;
   struct lorito_pmc_t *ptrs;
