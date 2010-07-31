@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use POSIX qw/ceil/;
 
-=for grammer
+=for grammar
 
 #<goal> -> ( <code> | <data> )*
 #<code> -> .sub <str> <stmt>* .end;
@@ -556,7 +556,7 @@ sub int
 }
 
 # The num re is not exactly correct, since we also match ints, but this is
-#  easier to read and understand for the grammer
+#  easier to read and understand for the grammar
 #<num> ~> m/( [+-]? \d+ (?: [.] \d+)? (?: [+-]? [e] \d+)? )/xms
 sub num
 {

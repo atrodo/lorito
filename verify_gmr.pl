@@ -12,7 +12,7 @@ my $FH = $bFH;
 while(<>)
 {
   my $s = $_;
-  if (/^=for grammer/../^=cut/)
+  if (/^=for grammar/../^=cut/)
   {
     $FH = $aFH;
   } else {
