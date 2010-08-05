@@ -4,6 +4,7 @@
 #include "microcode.h"
 #include "interp.h"
 #include "pmc.h"
+#include "internal_pmc.h"
 
 #include <stdio.h>
 #include <string.h>
