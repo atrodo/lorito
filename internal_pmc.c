@@ -7,7 +7,7 @@
 Lorito_PMC *
 lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal internal, void *payload)
 {
-  Lorito_PMC *result = lorito_pmc_init(interp, size);
+  Lorito_PMC *result;
 
   if (internal == NOT_INTERNAL)
     return result;
@@ -15,6 +15,11 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
   switch (internal)
   {
     case BOX_INT:
+      result = lorito_pmc_init(interp, sizeof(int));
+      result->internal_type = internal;
+      *(int *) result->data = *(int *) payload;
+      result->internal_int = *(int *) payload;
+      break;
     case BOX_NUM:
     case BOX_STR:
 

@@ -306,6 +306,19 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("load_imm");
         }
         break;
+      case OP_coerce_int:
+        switch (regtype)
+        {
+          case OP_PMC:
+            $P(op->dest) = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
+            break;
+          case OP_INT:
+            $I(op->dest) = $I(op->src1);
+            break;
+          default:
+            INVALID_OP("coerce_int");
+        }
+        break;
       case OP_new:
         switch (regtype)
         {
