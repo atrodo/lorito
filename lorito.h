@@ -111,7 +111,7 @@ struct lorito_pmc_t
   unsigned short internal_type;
 
   int size;
-  void *data;
+  unsigned char *data;
 
   int ptr_count;
   int ptr_last;
