@@ -58,6 +58,18 @@ enum OPS_ENUM {
   OP_pop_arg    = 28,
   OP_call       = 29,
 
+  OP_push_ret   = 39,
+  OP_pop_ret    = 40,
+  OP_clr_reg    = 41,
+
+  OP_clr_arg    = 42,
+  
+  OP_lookup     = 35,
+  OP_ctx        = 36,
+  OP_new_ctx    = 38,
+
+  OP_block      = 37,
+
   // Environment Ops
   OP_loadlib    = 30,
   OP_read       = 31,
