@@ -116,6 +116,13 @@ struct lorito_pmc_t
   int ptr_count;
   int ptr_last;
   struct lorito_pmc_t *ptrs;
+
+  // The data for the internal types
+  union {
+    int internal_int;
+    double internal_num;
+    void *internal_ptr;
+  };
 };
 typedef struct lorito_pmc_t Lorito_PMC;
 
