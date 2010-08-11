@@ -482,6 +482,17 @@ core_exec(Lorito_Interp *interp)
         break;
       case OP_call:
         break;
+      case OP_block:
+        switch (regtype)
+        {
+          case OP_INT: ;
+            Lorito_File *cur_file = ctx->current_file;
+            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CODE_BLOCK, &cur_file->codesegs[$imm % cur_file->codeseg_count]);
+            break;
+          default:
+            INVALID_OP("block");
+        }
+        break;
       case OP_loadlib:
         break;
       case OP_read:

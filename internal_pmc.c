@@ -25,6 +25,10 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
 
     case FILE_BLOCK:
     case CODE_BLOCK:
+      result = lorito_pmc_init(interp, 0);
+      result->internal_type = internal;
+      result->internal_ptr = payload;
+      break;
     case DATA_BLOCK:
 
     case CONTEXT:
