@@ -89,6 +89,12 @@ struct lorito_opcode_t
 };
 typedef struct lorito_opcode_t Lorito_Opcode;
 
+#define IS_INTERNAL(p) (p->internal_type != NOT_INTERNAL)
+#define IS_CODE(p)     (p->internal_type == CODE_BLOCK || p->internal_type == C_METHOD)
+#define IS_BOXED(p)    (p->internal_type == BOX_INT || p->internal_type == BOX_NUM || p->internal_type == BOX_STR)
+
+#define IS_CTX(p)      (p->internal_type == CONTEXT)
+
 enum INTERNAL_PMC_ENUM {
   NOT_INTERNAL = 0,
 

@@ -36,6 +36,9 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
       break;
 
     case CONTEXT:
+      result = lorito_pmc_init(interp, 0);
+      result->internal_type = internal;
+      result->internal_ptr = payload;
       break;
     case C_METHOD:
       break;

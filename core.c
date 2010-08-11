@@ -493,6 +493,37 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("block");
         }
         break;
+      case OP_new_ctx:
+        switch (regtype)
+        {
+          case OP_PMC: ;
+            Lorito_Ctx *next_ctx = ctx;
+            if ($P(op->src2) != NULL && IS_CTX($P(op->src2)))
+            {
+              next_ctx = (Lorito_Ctx *) $P(op->src2)->internal_ptr;
+            }
+            if (!IS_CODE($P(op->src1)))
+            {
+              INVALID_OP("new_ctx: must pass a code block");
+            }
+            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Ctx *) $P(op->src1)->internal_ptr);
+            new_ctx->pc = $imm;
+            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, new_ctx);
+            break;
+          default:
+            INVALID_OP("new_ctx");
+        }
+        break;
+      case OP_ctx:
+        switch (regtype)
+        {
+          case OP_PMC: ;
+            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, ctx);
+            break;
+          default:
+            INVALID_OP("ctx");
+        }
+        break;
       case OP_loadlib:
         break;
       case OP_read:
