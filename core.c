@@ -482,6 +482,60 @@ core_exec(Lorito_Interp *interp)
         break;
       case OP_call:
         break;
+      case OP_push_arg:
+        switch (regtype)
+        {
+          case OP_INT: ;
+            ctx->args[ctx->args_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
+            ctx->args_cnt++;
+            break;
+          default:
+            INVALID_OP("push_arg");
+        }
+        break;
+      case OP_pop_arg:
+        switch (regtype)
+        {
+          case OP_INT: ;
+            if ((ctx->args_cnt == 0)|| (!IS_BOX_INT(ctx->args[ctx->args_cnt])))
+            {
+              $I(op->dest) = 0;
+              break;
+            }
+            $I(op->dest) = ctx->args[ctx->args_cnt]->internal_int;
+            ctx->args_cnt--;
+            break;
+          default:
+            INVALID_OP("pop_arg");
+        }
+        break;
+      case OP_push_ret:
+        switch (regtype)
+        {
+          case OP_INT: ;
+            ctx->rets[ctx->rets_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
+            ctx->rets_cnt++;
+            break;
+          default:
+            INVALID_OP("push_ret");
+        }
+        break;
+      case OP_pop_ret:
+        switch (regtype)
+        {
+          case OP_INT: ;
+            if ((ctx->rets_cnt == 0)|| (!IS_BOX_INT(ctx->rets[ctx->rets_cnt])))
+            {
+              $I(op->dest) = 0;
+              break;
+            }
+            $I(op->dest) = ctx->rets[ctx->rets_cnt]->internal_int;
+            ctx->rets_cnt--;
+            break;
+          default:
+            INVALID_OP("pop_ret");
+        }
+        break;
       case OP_block:
         switch (regtype)
         {

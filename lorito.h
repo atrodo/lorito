@@ -93,6 +93,7 @@ typedef struct lorito_opcode_t Lorito_Opcode;
 #define IS_CODE(p)     (p->internal_type == CODE_BLOCK || p->internal_type == C_METHOD)
 #define IS_BOXED(p)    (p->internal_type == BOX_INT || p->internal_type == BOX_NUM || p->internal_type == BOX_STR)
 
+#define IS_BOX_INT(p)  (p->internal_type == BOX_INT)
 #define IS_CTX(p)      (p->internal_type == CONTEXT)
 
 enum INTERNAL_PMC_ENUM {
@@ -156,6 +157,11 @@ struct lorito_ctx_t
   struct lorito_codeseg_t* current_codeseg;
   struct lorito_dataseg_t* current_dataseg;
   struct lorito_reg_t regs;
+
+  unsigned int args_cnt;
+  struct lorito_pmc_t *args[32];
+  unsigned int rets_cnt;
+  struct lorito_pmc_t *rets[32];
 };
 typedef struct lorito_ctx_t Lorito_Ctx;
 
