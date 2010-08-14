@@ -67,7 +67,15 @@ core_exec(Lorito_Interp *interp)
     }
 
     if (*pc >= codeseg->length)
-      return;
+    {
+      interp->ctx = ctx->next_ctx;
+      if ((interp->ctx == NULL) || (interp->ctx->current_codeseg == NULL))
+      {
+        return;
+      }
+      ctx_chgd = 1;
+      continue;
+    }
     Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
     int regtype = REG_OF_OP(op->opcode);
     int opcode  =  OP_OF_OP(op->opcode);
@@ -499,6 +507,7 @@ core_exec(Lorito_Interp *interp)
         }
         interp->ctx = (Lorito_Ctx *)$P(op->src1)->internal_ptr;
         ctx_chgd = 1;
+        (*pc)++;
         continue;
       case OP_push_arg:
         switch (regtype)
