@@ -51,9 +51,21 @@ core_exec(Lorito_Interp *interp)
   Lorito_Reg *reg = &ctx->regs;
   int *pc = &ctx->pc;
 
+  Lorito_Codeseg *codeseg = ctx->current_codeseg;
+  int ctx_chgd = 1;
+
   while (*pc >= 0)
   {
-    Lorito_Codeseg *codeseg = ctx->current_codeseg;
+    if (ctx_chgd == 1)
+    {
+      ctx = interp->ctx;
+      reg = &ctx->regs;
+      pc = &ctx->pc;
+
+      codeseg = ctx->current_codeseg;
+      ctx_chgd = 0;
+    }
+
     if (*pc >= codeseg->length)
       return;
     Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
@@ -481,7 +493,13 @@ core_exec(Lorito_Interp *interp)
         }
         break;
       case OP_call:
-        break;
+        if (!IS_CTX($P(op->src1)))
+        {
+          INVALID_OP("call: missing required context pmc");
+        }
+        interp->ctx = (Lorito_Ctx *)$P(op->src1)->internal_ptr;
+        ctx_chgd = 1;
+        continue;
       case OP_push_arg:
         switch (regtype)
         {
@@ -560,7 +578,8 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
-            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Ctx *) $P(op->src1)->internal_ptr);
+            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Codeseg *) $P(op->src1)->internal_ptr);
+            Lorito_Codeseg *c = (Lorito_Codeseg *) $P(op->src1)->internal_ptr;
             new_ctx->pc = $imm;
             $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, new_ctx);
             break;
