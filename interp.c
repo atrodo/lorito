@@ -31,7 +31,7 @@ lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
     // If there is only one, use it
     if (file->dataseg_count == 1)
     {
-      result->current_dataseg = &file->datasegs[0];
+      result->current_dataseg = file->datasegs[0];
     }
 
     // If there is one with the same name, use it
