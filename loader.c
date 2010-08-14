@@ -54,7 +54,9 @@ loadbc(Lorito_Interp *interp, char* filename)
       file->codesegs = realloc(file->codesegs, file->codeseg_count+1);
       if (interp->files == NULL)
         abort();
-      Lorito_Codeseg *codeseg = &file->codesegs[file->codeseg_count];
+      //Lorito_Codeseg *codeseg = file->codesegs[file->codeseg_count];
+      Lorito_Codeseg *codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
+      file->codesegs[file->codeseg_count] = codeseg;
       file->codeseg_count++;
 
       int length = 0;
@@ -85,7 +87,9 @@ loadbc(Lorito_Interp *interp, char* filename)
       file->datasegs = realloc(file->datasegs, file->dataseg_count+1);
       if (interp->files == NULL)
         abort();
-      Lorito_Dataseg *dataseg = &file->datasegs[file->dataseg_count];
+      //Lorito_Dataseg *dataseg = file->datasegs[file->dataseg_count];
+      Lorito_Dataseg *dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
+      file->datasegs[file->dataseg_count] = dataseg;
       file->dataseg_count++;
 
       int length = 0;

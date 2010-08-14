@@ -44,9 +44,9 @@ struct lorito_file_t
   int fileid;
   char* name;
   int codeseg_count;
-  struct lorito_codeseg_t* codesegs;
+  struct lorito_codeseg_t** codesegs;
   int dataseg_count;
-  struct lorito_dataseg_t* datasegs;
+  struct lorito_dataseg_t** datasegs;
 };
 typedef struct lorito_file_t Lorito_File;
 
