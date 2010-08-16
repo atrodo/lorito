@@ -510,27 +510,38 @@ core_exec(Lorito_Interp *interp)
         (*pc)++;
         continue;
       case OP_push_arg:
-        switch (regtype)
         {
-          case OP_INT: ;
-            ctx->args[ctx->args_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
-            ctx->args_cnt++;
-            break;
-          default:
-            INVALID_OP("push_arg");
+          Lorito_Ctx *src1 = ctx;
+          if ($P(op->src1) != NULL)
+          {
+            if (!IS_CTX($P(op->src1)))
+            {
+              INVALID_OP("push_arg: missing required context pmc");
+            }
+            src1 = (Lorito_Ctx *) $P(op->src1)->internal_ptr;
+          }
+          switch (regtype)
+          {
+            case OP_INT: ;
+              src1->args[src1->args_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src2));
+              src1->args_cnt++;
+              break;
+            default:
+              INVALID_OP("push_arg");
+          }
         }
         break;
       case OP_pop_arg:
         switch (regtype)
         {
           case OP_INT: ;
-            if ((ctx->args_cnt == 0)|| (!IS_BOX_INT(ctx->args[ctx->args_cnt])))
+            if ((ctx->args_cnt == 0) || (!IS_BOX_INT(ctx->args[ctx->args_cnt-1])))
             {
               $I(op->dest) = 0;
               break;
             }
-            $I(op->dest) = ctx->args[ctx->args_cnt]->internal_int;
             ctx->args_cnt--;
+            $I(op->dest) = ctx->args[ctx->args_cnt]->internal_int;
             break;
           default:
             INVALID_OP("pop_arg");
@@ -548,19 +559,30 @@ core_exec(Lorito_Interp *interp)
         }
         break;
       case OP_pop_ret:
-        switch (regtype)
         {
-          case OP_INT: ;
-            if ((ctx->rets_cnt == 0)|| (!IS_BOX_INT(ctx->rets[ctx->rets_cnt])))
+          Lorito_Ctx *src1 = ctx;
+          if ($P(op->src1) != NULL)
+          {
+            if (!IS_CTX($P(op->src1)))
             {
-              $I(op->dest) = 0;
-              break;
+              INVALID_OP("push_ret: missing required context pmc");
             }
-            $I(op->dest) = ctx->rets[ctx->rets_cnt]->internal_int;
-            ctx->rets_cnt--;
-            break;
-          default:
-            INVALID_OP("pop_ret");
+            src1 = (Lorito_Ctx *) $P(op->src1)->internal_ptr;
+          }
+          switch (regtype)
+          {
+            case OP_INT: ;
+              if ((src1->rets_cnt == 0) || (!IS_BOX_INT(src1->rets[src1->rets_cnt-1])))
+              {
+                $I(op->dest) = 0;
+                break;
+              }
+              src1->rets_cnt--;
+              $I(op->dest) = src1->rets[src1->rets_cnt]->internal_int;
+              break;
+            default:
+              INVALID_OP("pop_ret");
+          }
         }
         break;
       case OP_block:
