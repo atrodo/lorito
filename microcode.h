@@ -54,15 +54,17 @@ enum OPS_ENUM {
   OP_new        = 24,
   OP_store      = 25,
   OP_load       = 26,
+
   OP_push_arg   = 27,
   OP_pop_arg    = 28,
+  OP_cnt_arg    = 42,
+
   OP_call       = 29,
 
   OP_push_ret   = 39,
   OP_pop_ret    = 40,
-  OP_clr_reg    = 41,
+  OP_cnt_ret    = 41,
 
-  OP_clr_arg    = 42,
   
   OP_lookup     = 35,
   OP_ctx        = 36,

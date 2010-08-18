@@ -76,13 +76,13 @@ my %ops = (
   load       => 26,
   push_arg   => 27,
   pop_arg    => 28,
-  clr_arg    => 42,
+  cnt_arg    => 42,
 
   call       => 29,
 
   push_ret   => 39,
   pop_ret    => 40,
-  clr_ret    => 41,
+  cnt_ret    => 41,
 
   lookup     => 35,
   ctx        => 36,
