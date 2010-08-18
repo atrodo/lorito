@@ -12,6 +12,29 @@
 #include "lorito.h"
 #include <stdio.h>
 
+void file_info(Lorito_Interp *interp)
+{
+  int i, j;
+
+  for (i = 0; i < interp->next_fileid; i++)
+  {
+    Lorito_File *file = &interp->files[i];
+    printf("%s\n", file->name);
+    for (j = 0; j < file->dataseg_count; j++)
+    {
+      Lorito_Dataseg *dataseg = file->datasegs[j];
+      printf(" DSegNum:  %d\n", dataseg->segid);
+      printf(" DSegName: %s\n", dataseg->name);
+    }
+    for (j = 0; j < file->codeseg_count; j++)
+    {
+      Lorito_Codeseg *codeseg = file->codesegs[j];
+      printf(" CSegNum:  %d\n", codeseg->segid);
+      printf(" CSegName: %s\n", codeseg->name);
+    }
+  }
+}
+
 void
 loadbc(Lorito_Interp *interp, char* filename)
 {
