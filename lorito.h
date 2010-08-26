@@ -21,6 +21,7 @@ struct lorito_codeseg_t;
 struct lorito_dataseg_t;
 struct lorito_opcode_t;
 struct lorito_pmc_t;
+struct lorito_str_t;
 struct lorito_reg_t;
 struct lorito_ctx_t;
 
@@ -142,9 +143,13 @@ struct lorito_pmc_t
 
   // The data for the internal types
   union {
-    int internal_int;
-    double internal_num;
-    void *internal_ptr;
+    int boxed_int;
+    double boxed_num;
+    struct lorito_str_t *boxed_str;
+    struct lorito_file_t *file;
+    struct lorito_codeseg_t *code;
+    struct lorito_dataseg_t *data;
+    struct lorito_ctx_t *ctx;
   };
 };
 typedef struct lorito_pmc_t Lorito_PMC;

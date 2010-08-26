@@ -18,7 +18,7 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
       result = lorito_pmc_init(interp, sizeof(int));
       result->internal_type = internal;
       *(int *) result->data = *(int *) payload;
-      result->internal_int = *(int *) payload;
+      result->boxed_int = *(int *) payload;
       break;
     case BOX_NUM:
       break;
@@ -30,7 +30,7 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
     case CODE_BLOCK:
       result = lorito_pmc_init(interp, 0);
       result->internal_type = internal;
-      result->internal_ptr = payload;
+      result->code = payload;
       break;
     case DATA_BLOCK:
       break;
@@ -39,7 +39,7 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
     case CONTEXT:
       result = lorito_pmc_init(interp, 0);
       result->internal_type = internal;
-      result->internal_ptr = payload;
+      result->ctx = payload;
       break;
     case C_METHOD:
       break;

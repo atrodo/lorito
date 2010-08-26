@@ -505,7 +505,7 @@ core_exec(Lorito_Interp *interp)
         {
           INVALID_OP("call: missing required context pmc");
         }
-        interp->ctx = (Lorito_Ctx *)$P(op->src1)->internal_ptr;
+        interp->ctx = $P(op->src1)->ctx;
         ctx_chgd = 1;
         (*pc)++;
         continue;
@@ -518,7 +518,7 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("push_arg: missing required context pmc");
             }
-            src1 = (Lorito_Ctx *) $P(op->src1)->internal_ptr;
+            src1 = $P(op->src1)->ctx;
           }
           switch (regtype)
           {
@@ -541,7 +541,7 @@ core_exec(Lorito_Interp *interp)
               break;
             }
             ctx->args_cnt--;
-            $I(op->dest) = ctx->args[ctx->args_cnt]->internal_int;
+            $I(op->dest) = ctx->args[ctx->args_cnt]->boxed_int;
             break;
           default:
             INVALID_OP("pop_arg");
@@ -567,7 +567,7 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("push_ret: missing required context pmc");
             }
-            src1 = (Lorito_Ctx *) $P(op->src1)->internal_ptr;
+            src1 = $P(op->src1)->ctx;
           }
           switch (regtype)
           {
@@ -578,7 +578,7 @@ core_exec(Lorito_Interp *interp)
                 break;
               }
               src1->rets_cnt--;
-              $I(op->dest) = src1->rets[src1->rets_cnt]->internal_int;
+              $I(op->dest) = src1->rets[src1->rets_cnt]->boxed_int;
               break;
             default:
               INVALID_OP("pop_ret");
@@ -603,14 +603,14 @@ core_exec(Lorito_Interp *interp)
             Lorito_Ctx *next_ctx = ctx;
             if ($P(op->src2) != NULL && IS_CTX($P(op->src2)))
             {
-              next_ctx = (Lorito_Ctx *) $P(op->src2)->internal_ptr;
+              next_ctx = $P(op->src2)->ctx;
             }
             if (!IS_CODE($P(op->src1)))
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
-            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Codeseg *) $P(op->src1)->internal_ptr);
-            Lorito_Codeseg *c = (Lorito_Codeseg *) $P(op->src1)->internal_ptr;
+            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, $P(op->src1)->code);
+            Lorito_Codeseg *c = $P(op->src1)->code;
             new_ctx->pc = $imm;
             $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, new_ctx);
             break;
