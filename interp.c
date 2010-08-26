@@ -52,7 +52,6 @@ lorito_init()
 {
   Lorito_Interp *result = (Lorito_Interp *) malloc(sizeof(Lorito_Interp));
   result->ctx = lorito_ctx_init(NULL, NULL);
-  result->regs = &result->ctx->regs;
 
   result->next_fileid = 0;
   result->allocated_file = 0;

@@ -27,7 +27,6 @@ struct lorito_ctx_t;
 struct lorito_interp_t
 {
   struct lorito_ctx_t* ctx;
-  struct lorito_reg_t* regs;
   int next_fileid;
 
   unsigned short magic;
