@@ -97,6 +97,7 @@ typedef struct lorito_opcode_t Lorito_Opcode;
 #define IS_CODE_BLOCK(p) (p->internal_type == CODE_BLOCK  )
 #define IS_DATA_BLOCK(p) (p->internal_type == DATA_BLOCK  )
 #define IS_CTX(p)        (p->internal_type == CONTEXT     )
+#define IS_LOOKUP(p)     (p->internal_type == LOOKUP      )
 #define IS_C_METHOD(p)   (p->internal_type == C_METHOD    )
 
 #define IS_CODE(p)       (p->internal_type == CODE_BLOCK   \
@@ -123,7 +124,8 @@ enum INTERNAL_PMC_ENUM {
   DATA_BLOCK   = 6,
  
   CONTEXT      = 7,
-  C_METHOD     = 8
+  LOOKUP       = 8,
+  C_METHOD     = 9
 };
 typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
 

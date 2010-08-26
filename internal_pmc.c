@@ -35,6 +35,7 @@ lorito_internal_pmc_init(Lorito_Interp *interp, int size, Lorito_Internal intern
     case DATA_BLOCK:
       break;
 
+    case LOOKUP:
     case CONTEXT:
       result = lorito_pmc_init(interp, 0);
       result->internal_type = internal;
