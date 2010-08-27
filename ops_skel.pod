@@ -2,7 +2,7 @@
 
 =head1 lorito opcode definitions
 
-=for verify_begin
+=begin verify_begin
 
 =end verify_begin
 
@@ -120,6 +120,6 @@ Do nothing.  Waste a cycle.
 
 =head3 hcf
 
-=for verify_end
+=begin verify_end
 
 =end verify_end

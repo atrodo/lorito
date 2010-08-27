@@ -87,7 +87,7 @@ my $suffix = "";
   open $curFH, "<", "ops_skel.pod";
   while (my $line = <$curFH>)
   {
-    if ($line =~ m[^=for \s+ verify_begin]xms .. $line =~ m[^=end \s+ verify_end]xms )
+    if ($line =~ m[^=begin \s+ verify_begin]xms .. $line =~ m[^=end \s+ verify_end]xms )
     {
       $DB::single = 1;
       $in_prefix = 0;
