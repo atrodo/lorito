@@ -42,7 +42,7 @@ my %ops = (
 
   # Math Ops
   add        => 2,
-  sub        => 3,
+  'sub'      => 3,
   mul        => 4,
   div        => 5,
   mod        => 6,

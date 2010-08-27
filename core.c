@@ -85,6 +85,7 @@ core_exec(Lorito_Interp *interp)
 
     switch (opcode)
     {
+      // BEGIN CORE_OPS
       case OP_noop:
         break;
       case OP_end:
@@ -529,8 +530,8 @@ core_exec(Lorito_Interp *interp)
             default:
               INVALID_OP("push_arg");
           }
+          break;
         }
-        break;
       case OP_pop_arg:
         switch (regtype)
         {
@@ -583,8 +584,8 @@ core_exec(Lorito_Interp *interp)
             default:
               INVALID_OP("pop_ret");
           }
+          break;
         }
-        break;
       case OP_block:
         switch (regtype)
         {
@@ -677,6 +678,7 @@ core_exec(Lorito_Interp *interp)
         // Error
         INVALID_OP("unknown");
         break;
+      // END CORE_OPS
     }
     
     (*pc)++;

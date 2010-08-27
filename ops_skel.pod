@@ -1,0 +1,125 @@
+=pod
+
+=head1 lorito opcode definitions
+
+=for verify_begin
+
+=end verify_begin
+
+=head2 Execution Ops
+
+=head3 noop
+
+=over
+
+=item Registers
+
+None
+
+=item Description
+
+Do nothing.  Waste a cycle.
+
+=back
+
+=head3 end
+
+=head3 add
+
+=head3 sub
+
+=head3 mul
+
+=head3 div
+
+=head3 mod
+
+=head3 and
+
+=head3 or
+
+=head3 xor
+
+=head3 not
+
+=head3 shl
+
+=head3 shr
+
+=head2 Comparison Ops
+
+=head3 iseq
+
+=head3 isgt
+
+=head3 isge
+
+=head2 Flow Control Ops
+
+=head3 goto
+
+=head3 if
+
+=head2 Register Manipulation Ops
+
+=head3 set
+
+=head3 load_const
+
+=head3 load_imm
+
+=head3 coerce_int
+
+=head3 coerce_num
+
+=head3 coerce_str
+
+=head2 PMC Ops
+
+=head3 new
+
+=head3 store
+
+=head3 load
+
+=head3 push_arg
+
+=head3 pop_arg
+
+=head3 cnt_arg
+
+=head3 call
+
+=head3 push_ret
+
+=head3 pop_ret
+
+=head3 cnt_ret
+
+=head3 lookup
+
+=head3 ctx
+
+=head3 new_ctx
+
+=head3 block
+
+=head2 Environment Ops
+
+=head3 loadlib
+
+=head3 read
+
+=head3 write
+
+=head3 say
+
+=head3 gripe
+
+=head2 These Ops
+
+=head3 hcf
+
+=for verify_end
+
+=end verify_end
