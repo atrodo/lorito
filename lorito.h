@@ -165,7 +165,7 @@ struct lorito_reg_t
 {
   int regs_i[REGNUM];
   double regs_n[REGNUM];
-  struct lorito_str_t regs_s[REGNUM];
+  struct lorito_str_t *regs_s[REGNUM];
   struct lorito_pmc_t *regs_p[REGNUM];
 };
 typedef struct lorito_reg_t Lorito_Reg;

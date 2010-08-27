@@ -256,8 +256,8 @@ core_exec(Lorito_Interp *interp)
             $P(op->dest) = $P(op->src1);
             break;
           case OP_STR:
-            $S(op->dest).size = $S(op->src1).size;
-            $S(op->dest).data = $S(op->src1).data;
+            $S(op->dest)->size = $S(op->src1)->size;
+            $S(op->dest)->data = $S(op->src1)->data;
             break;
           case OP_NUM:
             $N(op->dest) = $N(op->src1);
@@ -290,9 +290,10 @@ core_exec(Lorito_Interp *interp)
                 INVALID_OP("load_const: outside range");
               }
 
-              $S(op->dest).size = length;
-              $S(op->dest).data = malloc(sizeof(char) * length);
-              strcpy($S(op->dest).data, &((char *) data->data)[offset]);
+              $S(op->dest) = malloc(sizeof(Lorito_STR));
+              $S(op->dest)->size = length;
+              $S(op->dest)->data = malloc(sizeof(char) * length);
+              strcpy($S(op->dest)->data, &((char *) data->data)[offset]);
               break;
             }
           case OP_INT:
@@ -637,7 +638,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_STR:
-            fprintf(stdout, "%s", $S(op->src1).data);
+            fprintf(stdout, "%s", $S(op->src1)->data);
             break;
           case OP_INT:
             fprintf(stdout, "%d", $I(op->src1));
@@ -650,7 +651,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_STR:
-            fprintf(stdout, "%s\n", $S(op->src1).data);
+            fprintf(stdout, "%s\n", $S(op->src1)->data);
             break;
           case OP_INT:
             fprintf(stdout, "%d\n", $I(op->src1));
@@ -663,7 +664,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_STR:
-            fprintf(stderr, "%s", $S(op->src1).data);
+            fprintf(stderr, "%s", $S(op->src1)->data);
             break;
           case OP_INT:
             fprintf(stderr, "%d", $I(op->src1));
