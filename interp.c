@@ -17,6 +17,7 @@ lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
   result->current_file = NULL;
 
   result->args_cnt = 0;
+  result->rets_cnt = 0;
 
   if (codeseg != NULL)
   {
