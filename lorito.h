@@ -16,13 +16,14 @@
 #define SEG_data 1
 
 struct lorito_interp_t;
+struct lorito_opcode_t;
+struct lorito_reg_t;
+struct lorito_pmc_t;
+
+struct lorito_str_t;
 struct lorito_file_t;
 struct lorito_codeseg_t;
 struct lorito_dataseg_t;
-struct lorito_opcode_t;
-struct lorito_pmc_t;
-struct lorito_str_t;
-struct lorito_reg_t;
 struct lorito_ctx_t;
 
 struct lorito_interp_t
@@ -38,6 +39,114 @@ struct lorito_interp_t
   struct lorito_codeseg_t *last_seg;
 };
 typedef struct lorito_interp_t Lorito_Interp;
+
+struct lorito_opcode_t
+{
+  unsigned char opcode;
+  unsigned char dest;
+  unsigned char src1;
+  unsigned char src2;
+  union
+  {
+    int immediate;
+    int jumploc;
+    int offset;
+  };
+};
+typedef struct lorito_opcode_t Lorito_Opcode;
+
+struct lorito_reg_t
+{
+  int regs_i[REGNUM];
+  double regs_n[REGNUM];
+  struct lorito_str_t *regs_s[REGNUM];
+  struct lorito_pmc_t *regs_p[REGNUM];
+};
+typedef struct lorito_reg_t Lorito_Reg;
+
+struct lorito_pmc_t
+{
+  unsigned short magic;  // Magic identifier, changes per interp.
+  unsigned short internal_type;
+
+  int size;
+  unsigned char *data;
+
+  int ptr_count;
+  int ptr_last;
+  struct lorito_pmc_t *ptrs;
+
+  // Lookup method
+  struct lorito_pmc_t *lookup;
+  // VTable PMC for lookup
+  struct lorito_pmc_t *vtable;
+
+  // The data for the internal types
+  union {
+    int boxed_int;
+    double boxed_num;
+    struct lorito_str_t *boxed_str;
+    struct lorito_file_t *file;
+    struct lorito_codeseg_t *code;
+    struct lorito_dataseg_t *data;
+    struct lorito_ctx_t *ctx;
+  };
+};
+typedef struct lorito_pmc_t Lorito_PMC;
+
+// Internal PMCs
+
+// The enum of internal PMCs
+enum INTERNAL_PMC_ENUM {
+  NOT_INTERNAL = 0,
+
+  BOX_INT      = 1,
+  BOX_NUM      = 2,
+  BOX_STR      = 3,
+
+  FILE_BLOCK   = 4,
+  CODE_BLOCK   = 5,
+  DATA_BLOCK   = 6,
+ 
+  CONTEXT      = 7,
+  LOOKUP       = 8,
+  C_METHOD     = 9
+};
+typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
+
+// Macros for Internal PMCs.
+#define IS_INTERNAL(p)   (p->internal_type != NOT_INTERNAL)
+#define IS_BOX_INT(p)    (p->internal_type == BOX_INT     )
+#define IS_BOX_NUM(p)    (p->internal_type == BOX_NUM     )
+#define IS_BOX_STR(p)    (p->internal_type == BOX_STR     )
+#define IS_FILE_BLOCK(p) (p->internal_type == FILE_BLOCK  )
+#define IS_CODE_BLOCK(p) (p->internal_type == CODE_BLOCK  )
+#define IS_DATA_BLOCK(p) (p->internal_type == DATA_BLOCK  )
+#define IS_CONTEXT(p)    (p->internal_type == CONTEXT     )
+#define IS_LOOKUP(p)     (p->internal_type == LOOKUP      )
+#define IS_C_METHOD(p)   (p->internal_type == C_METHOD    )
+
+#define IS_CODE(p)       (p->internal_type == CODE_BLOCK   \
+                       || p->internal_type == C_METHOD    )
+
+#define IS_CALLABLE(p)   (p->internal_type == CODE_BLOCK   \
+                       || p->internal_type == C_METHOD     \
+                       || p->internal_type == CONTEXT     )
+
+#define IS_CTX(p)        (p->internal_type == LOOKUP       \
+                       || p->internal_type == CONTEXT     )
+
+#define IS_BOXED(p)      (p->internal_type == BOX_INT      \
+                       || p->internal_type == BOX_NUM      \
+                       || p->internal_type == BOX_STR     )
+
+
+struct lorito_str_t
+{
+  int size;
+  void *data;
+};
+typedef struct lorito_str_t Lorito_STR;
 
 struct lorito_file_t
 {
@@ -74,104 +183,9 @@ struct lorito_dataseg_t
 };
 typedef struct lorito_dataseg_t Lorito_Dataseg;
 
-struct lorito_opcode_t
-{
-  unsigned char opcode;
-  unsigned char dest;
-  unsigned char src1;
-  unsigned char src2;
-  union
-  {
-    int immediate;
-    int jumploc;
-    int offset;
-  };
-};
-typedef struct lorito_opcode_t Lorito_Opcode;
-
-#define IS_INTERNAL(p)   (p->internal_type != NOT_INTERNAL)
-#define IS_BOX_INT(p)    (p->internal_type == BOX_INT     )
-#define IS_BOX_NUM(p)    (p->internal_type == BOX_NUM     )
-#define IS_BOX_STR(p)    (p->internal_type == BOX_STR     )
-#define IS_FILE_BLOCK(p) (p->internal_type == FILE_BLOCK  )
-#define IS_CODE_BLOCK(p) (p->internal_type == CODE_BLOCK  )
-#define IS_DATA_BLOCK(p) (p->internal_type == DATA_BLOCK  )
-#define IS_CTX(p)        (p->internal_type == CONTEXT     )
-#define IS_LOOKUP(p)     (p->internal_type == LOOKUP      )
-#define IS_C_METHOD(p)   (p->internal_type == C_METHOD    )
-
-#define IS_CODE(p)       (p->internal_type == CODE_BLOCK   \
-                       || p->internal_type == C_METHOD    )
-
-#define IS_CALLABLE(p)   (p->internal_type == CODE_BLOCK   \
-                       || p->internal_type == C_METHOD     \
-                       || p->internal_type == CONTEXT     )
-
-#define IS_BOXED(p)      (p->internal_type == BOX_INT      \
-                       || p->internal_type == BOX_NUM      \
-                       || p->internal_type == BOX_STR     )
-
-
-enum INTERNAL_PMC_ENUM {
-  NOT_INTERNAL = 0,
-
-  BOX_INT      = 1,
-  BOX_NUM      = 2,
-  BOX_STR      = 3,
-
-  FILE_BLOCK   = 4,
-  CODE_BLOCK   = 5,
-  DATA_BLOCK   = 6,
- 
-  CONTEXT      = 7,
-  LOOKUP       = 8,
-  C_METHOD     = 9
-};
-typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
-
-struct lorito_pmc_t
-{
-  unsigned short magic;  // Magic identifier, changes per interp.
-  unsigned short internal_type;
-
-  int size;
-  unsigned char *data;
-
-  int ptr_count;
-  int ptr_last;
-  struct lorito_pmc_t *ptrs;
-
-  // The data for the internal types
-  union {
-    int boxed_int;
-    double boxed_num;
-    struct lorito_str_t *boxed_str;
-    struct lorito_file_t *file;
-    struct lorito_codeseg_t *code;
-    struct lorito_dataseg_t *data;
-    struct lorito_ctx_t *ctx;
-  };
-};
-typedef struct lorito_pmc_t Lorito_PMC;
-
-struct lorito_str_t
-{
-  int size;
-  void *data;
-};
-typedef struct lorito_str_t Lorito_STR;
-
-struct lorito_reg_t
-{
-  int regs_i[REGNUM];
-  double regs_n[REGNUM];
-  struct lorito_str_t *regs_s[REGNUM];
-  struct lorito_pmc_t *regs_p[REGNUM];
-};
-typedef struct lorito_reg_t Lorito_Reg;
-
 struct lorito_ctx_t
 {
+  struct lorito_pmc_t pmc;
   struct lorito_ctx_t* next_ctx;
   int pc;
   struct lorito_file_t* current_file;
