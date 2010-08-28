@@ -103,15 +103,29 @@ my $suffix = "";
         };
         $skel->{$1} = $current;
       }
-      if ($line =~ m[^=item \s+ Registers]xms .. $line =~ m[^=(item|back) \s+]xms)
+      if ($line =~ m[^=item \s+ Registers]xms ... $line =~ m[^=(item|back) \s+]xms)
       {
-        $current->{reg} ||= "";
-        $current->{reg} .= $line;
+        $current->{reg} = "" if !exists $current->{reg};
+        if ($line !~ m[^=]xms)
+        {
+          $current->{reg} .= $line;
+        }
       }
-      if ($line =~ m[^=item \s+ Description]xms .. $line =~ m[^=(item|back) \s+]xms)
+      if ($line =~ m[^=item \s+ Description]xms ... $line =~ m[^=(item|back) \s+]xms)
       {
-        $current->{desc} ||= "";
-        $current->{desc} .= $line;
+        $current->{desc} = "" if !exists $current->{desc};
+        if ($line !~ m[^=]xms)
+        {
+          $current->{desc} .= $line;
+        }
+      }
+      if ($line =~ m[^=item \s+ Example]xms ... $line =~ m[^=(item|back) \s+]xms)
+      {
+        $current->{example} = "" if !exists $current->{example};
+        if ($line !~ m[^=]xms)
+        {
+          $current->{example} .= $line;
+        }
       }
     }
     else
@@ -204,11 +218,20 @@ foreach my $op (@ops)
     print "Any\n" if $seen_any == 0;
     print "\n";
 
-    print $skel->{$op}->{reg} || "=item Registers\n\nNone\n";
+    print "=item Registers\n\n";
+    print $skel->{$op}->{reg} || "";
     print "\n";
 
-    print $skel->{$op}->{desc} || "=item Description\n";
+    print "=item Description\n\n";
+    print $skel->{$op}->{desc} || "";
     print "\n";
+
+    if (exists $skel->{$op}->{example})
+    {
+      print "=item Example\n\n";
+      print $skel->{$op}->{example} || "";
+      print "\n";
+    }
 
     print "=back\n\n";
   }
