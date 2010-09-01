@@ -24,9 +24,33 @@ Do nothing.  Waste a cycle.
 
 =head3 end
 
+=item Registers
+
+None
+
+=item Description
+
+Stop the interperter, cleanly.
+
 =head3 add
 
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Add $src1 and $src2 and store result in $dest.
+
 =head3 sub
+
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Subtract $src1 and $src2 and store result in $dest.
 
 =head3 mul
 
@@ -69,6 +93,21 @@ Do nothing.  Waste a cycle.
 =head3 load_imm
 
 =head3 coerce_int
+
+=item Registers
+
+$dest, INT($src1)
+
+=item Description
+
+Convert the int in $src1 into the form of $dest and stores the result into
+$dest.
+
+=item Example
+
+  $P1 = PMC COERCE_INT $I1;
+
+$P1 will contain a boxed integer.
 
 =head3 coerce_num
 
