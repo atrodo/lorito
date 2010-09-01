@@ -89,7 +89,6 @@ my $suffix = "";
   {
     if ($line =~ m[^=begin \s+ verify_begin]xms .. $line =~ m[^=end \s+ verify_end]xms )
     {
-      $DB::single = 1;
       $in_prefix = 0;
       if ($line =~ m[^=head2 \s+ (.+)$ ]xms)
       {
