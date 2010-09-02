@@ -59,11 +59,15 @@ core_exec(Lorito_Interp *interp)
     if (ctx_chgd == 1)
     {
       ctx = interp->ctx;
+      //printf("typed: %d\n", ctx->pmc.magic);
+      //printf("typed: %d\n", ((Lorito_PMC *)ctx)->magic);
       reg = &ctx->regs;
       pc = &ctx->pc;
 
       codeseg = ctx->current_codeseg;
       ctx_chgd = 0;
+      //printf("SegNum:  %d\n", codeseg->segid);
+      //printf("SegName: %s\n", codeseg->name);
     }
 
     if (*pc >= codeseg->length)
@@ -80,7 +84,7 @@ core_exec(Lorito_Interp *interp)
     int regtype = REG_OF_OP(op->opcode);
     int opcode  =  OP_OF_OP(op->opcode);
 
-    //printf("PC: %d\n", *pc);
+    //printf("PC:     %d\n", *pc);
     //printf("Opcode: %d\n", opcode);
 
     switch (opcode)

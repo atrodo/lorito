@@ -103,6 +103,10 @@ loadbc(Lorito_Interp *interp, char* filename)
       // or die
 
       interp->last_seg = codeseg;
+
+      printf("SegNum:  %d\n", codeseg->segid);
+      printf("SegName: %s\n", codeseg->name);
+
     }
 
     if (typed == SEG_data)
@@ -136,6 +140,9 @@ loadbc(Lorito_Interp *interp, char* filename)
       // or die
 
       //interp->last_seg = codeseg;
+      printf("DSegNum:  %d\n", dataseg->segid);
+      printf("DSegName: %s\n", dataseg->name);
+
     }
   }
 
