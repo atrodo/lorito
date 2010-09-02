@@ -1,0 +1,52 @@
+=head1 Design of Lorito
+
+=head2 Less Magic == More Magic
+
+I've designed Lorito with a few things in mind.  
+
+=over
+
+=item It has to be minimal
+
+One of the mixed blessings of Parrot is the large number of opcodes.  Lorito
+takes the opposite approach and tries to keep the number of opcodes to a bare
+minimum.  This means that only isgt appears, since both isgt and islt can be
+implemented with only one opcode.  As well, there are no opcodes that can be
+done with as a call on a PMC.
+
+=item It has to do things very predicably
+
+Opcodes are a fixed size, and except for a few, well documented cases, only
+operate on a single register set at a time.  So an "INT ADD" will only operate
+on integers.  Magical opcodes, like PMC ADD, don't exist.  They end up method
+calls, and only make sense when the PMC implements the methods.
+
+=item It has simplier, more flexable PMCs
+
+PMCs can be thought of as chunks of memory.  They are addressed and manipulated
+like a real machine would manipulate RAM.  The differance is that PMCs have
+memory bounds, method dispatch and magic pointers.  Objects and PMC are
+combined in Lorito, so a PMC has the ablity to lookup and call methods just
+like Objects.  Outside of the PMC is a table of PMC pointers.  When code 
+"encodes" a PMC into the memory, it saves an index into the magic PMC table 
+so that when the memory is "decoded" a PMC is returned.  This prevents 
+arbitrary pointer manipulation that can lead to serious breaches if Lorito 
+was sandboxed.
+
+=item It has to do common things fast
+
+Some operations happen a lot in dyanmic langages.  Method lookup and dispatch
+is one of those operations.  A portion of the opcodes above and beyond the
+inital goal of 20 are dedicated to doing method lookup and calls quickly.
+
+=item It has to allow for arbitrary method lookups
+
+Dynamic languages have a vast array of ways to do method lookups.  Lorito
+can't dictate one way.  So, each PMC has a lookup PMC which is callable and
+a vtable PMC.  The lookup opcode calls the lookup PMC with the vtable PMC
+and returns a callable PMC back.  That puts all of the method lookup
+responsiblity into the hands of the language writters.
+
+=back
+
+
