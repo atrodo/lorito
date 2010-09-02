@@ -349,10 +349,10 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_INT:
-            $P(op->dest) = lorito_pmc_init(interp, $imm);
+            $P(op->dest) = lorito_pmc_new(interp, $imm);
             break;
           case OP_PMC:
-            $P(op->dest) = lorito_pmc_init(interp, $P(op->src1)->size);
+            $P(op->dest) = lorito_pmc_new(interp, $P(op->src1)->size);
             break;
           default:
             INVALID_OP("new");
@@ -615,8 +615,8 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
-            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, $P(op->src1)->code);
-            Lorito_Codeseg *c = $P(op->src1)->code;
+            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Codeseg *) $P(op->src1));
+            Lorito_Codeseg *c = (Lorito_Codeseg *) $P(op->src1);
             new_ctx->pc = $imm;
             $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, new_ctx);
             break;
@@ -625,6 +625,16 @@ core_exec(Lorito_Interp *interp)
         }
         break;
       case OP_ctx:
+        switch (regtype)
+        {
+          case OP_PMC: ;
+            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, ctx);
+            break;
+          default:
+            INVALID_OP("ctx");
+        }
+        break;
+      case OP_lookup:
         switch (regtype)
         {
           case OP_PMC: ;

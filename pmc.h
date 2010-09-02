@@ -4,7 +4,10 @@
 #define LORITO_PMC_H_GUARD
 
 Lorito_PMC *
-lorito_pmc_init(Lorito_Interp *interp, int size);
+lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target);
+
+Lorito_PMC *
+lorito_pmc_new(Lorito_Interp *interp, int size);
 
 Lorito_PMC *
 lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PMC *src);

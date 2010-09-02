@@ -5,12 +5,40 @@
 #include "internal_pmc.h"
 
 Lorito_PMC *
-lorito_pmc_init(Lorito_Interp *interp, int size)
+lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target)
+{
+  Lorito_PMC *result = target;
+
+  result->magic = interp->magic;
+  int size = result->size;
+
+  result->ptr_count = 0;
+  result->ptr_last = 0;
+  result->data = NULL;
+  result->ptrs = NULL;
+
+  if (size > 0)
+  {
+    result->ptr_count = ((int) size / sizeof(void *)) / 2;
+    if (result->ptr_count < 4)
+      result->ptr_count = 4;
+    result->data = malloc(size);
+    result->ptrs = (Lorito_PMC *) malloc(result->ptr_count * sizeof(Lorito_PMC *));
+  }
+
+  return result;
+}
+
+Lorito_PMC *
+lorito_pmc_new(Lorito_Interp *interp, int size)
 {
   Lorito_PMC *result = (Lorito_PMC *) malloc(sizeof(Lorito_PMC));
 
-  result->magic = interp->magic;
   result->size = size;
+
+  return lorito_pmc_init(interp, result);
+  /*
+  result->magic = interp->magic;
 
   result->ptr_count = ((int) size / sizeof(void *)) / 2;
   if (result->ptr_count < 4)
@@ -19,6 +47,7 @@ lorito_pmc_init(Lorito_Interp *interp, int size)
   result->ptrs = (Lorito_PMC *) malloc(result->ptr_count * sizeof(Lorito_PMC *));
   result->ptr_last = 0;
   return result;
+  */
 }
 
 Lorito_PMC *
