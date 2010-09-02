@@ -64,37 +64,7 @@ struct lorito_reg_t
 };
 typedef struct lorito_reg_t Lorito_Reg;
 
-struct lorito_pmc_t
-{
-  unsigned short magic;  // Magic identifier, changes per interp.
-  unsigned short internal_type;
 
-  int size;
-  unsigned char *data;
-
-  int ptr_count;
-  int ptr_last;
-  struct lorito_pmc_t *ptrs;
-
-  // Lookup method
-  struct lorito_pmc_t *lookup;
-  // VTable PMC for lookup
-  struct lorito_pmc_t *vtable;
-
-  // The data for the internal types
-  union {
-    int boxed_int;
-    double boxed_num;
-    struct lorito_str_t *boxed_str;
-    struct lorito_file_t *file;
-    struct lorito_codeseg_t *code;
-    struct lorito_dataseg_t *data;
-    struct lorito_ctx_t *ctx;
-  };
-};
-typedef struct lorito_pmc_t Lorito_PMC;
-
-// Internal PMCs
 
 // The enum of internal PMCs
 enum INTERNAL_PMC_ENUM {
@@ -113,6 +83,38 @@ enum INTERNAL_PMC_ENUM {
   C_METHOD     = 9
 };
 typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
+
+struct lorito_pmc_t
+{
+  unsigned short magic;  // Magic identifier, changes per interp.
+  Lorito_Internal internal_type;
+
+  int size;
+  unsigned char *data;
+
+  int ptr_count;
+  int ptr_last;
+  struct lorito_pmc_t *ptrs;
+
+  // Lookup method
+  struct lorito_pmc_t *lookup;
+  // VTable PMC for lookup
+  struct lorito_pmc_t *vtable;
+
+  // The data for the internal types
+  /*
+  union {
+    int boxed_int;
+    double boxed_num;
+    struct lorito_str_t *boxed_str;
+    struct lorito_file_t *file;
+    struct lorito_codeseg_t *code;
+    struct lorito_dataseg_t *data;
+    struct lorito_ctx_t *ctx;
+  };
+  */
+};
+typedef struct lorito_pmc_t Lorito_PMC;
 
 // Macros for Internal PMCs.
 #define IS_INTERNAL(p)   (p->internal_type != NOT_INTERNAL)
@@ -141,8 +143,11 @@ typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
                        || p->internal_type == BOX_STR     )
 
 
+// Internal PMCs
+
 struct lorito_str_t
 {
+  struct lorito_pmc_t pmc;
   int size;
   void *data;
 };
@@ -150,6 +155,7 @@ typedef struct lorito_str_t Lorito_STR;
 
 struct lorito_file_t
 {
+  struct lorito_pmc_t pmc;
   int fileid;
   char* name;
   int codeseg_count;
@@ -161,6 +167,7 @@ typedef struct lorito_file_t Lorito_File;
 
 struct lorito_codeseg_t
 {
+  struct lorito_pmc_t pmc;
   int fileid;
   struct lorito_file_t *file;
   int segid;
@@ -173,6 +180,7 @@ typedef struct lorito_codeseg_t Lorito_Codeseg;
 
 struct lorito_dataseg_t
 {
+  struct lorito_pmc_t pmc;
   int fileid;
   struct lorito_file_t *file;
   int segid;

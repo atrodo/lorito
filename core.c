@@ -511,7 +511,7 @@ core_exec(Lorito_Interp *interp)
         {
           INVALID_OP("call: missing required context pmc");
         }
-        interp->ctx = $P(op->src1)->ctx;
+        interp->ctx = (Lorito_Ctx *) $P(op->src1);
         ctx_chgd = 1;
         (*pc)++;
         continue;
@@ -524,7 +524,7 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("push_arg: missing required context pmc");
             }
-            src1 = $P(op->src1)->ctx;
+            src1 = (Lorito_Ctx *) $P(op->src1);
           }
           switch (regtype)
           {
@@ -547,7 +547,7 @@ core_exec(Lorito_Interp *interp)
               break;
             }
             ctx->args_cnt--;
-            $I(op->dest) = ctx->args[ctx->args_cnt]->boxed_int;
+            $I(op->dest) = *(int *) ctx->args[ctx->args_cnt]->data;
             break;
           default:
             INVALID_OP("pop_arg");
@@ -573,7 +573,7 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("push_ret: missing required context pmc");
             }
-            src1 = $P(op->src1)->ctx;
+            src1 = (Lorito_Ctx *) $P(op->src1);
           }
           switch (regtype)
           {
@@ -584,7 +584,7 @@ core_exec(Lorito_Interp *interp)
                 break;
               }
               src1->rets_cnt--;
-              $I(op->dest) = src1->rets[src1->rets_cnt]->boxed_int;
+              $I(op->dest) = *(int *) src1->rets[src1->rets_cnt]->data;
               break;
             default:
               INVALID_OP("pop_ret");
@@ -609,7 +609,7 @@ core_exec(Lorito_Interp *interp)
             Lorito_Ctx *next_ctx = ctx;
             if ($P(op->src2) != NULL && IS_CTX($P(op->src2)))
             {
-              next_ctx = $P(op->src2)->ctx;
+              next_ctx = (Lorito_Ctx *) $P(op->src2);
             }
             if (!IS_CODE($P(op->src1)))
             {
