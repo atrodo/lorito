@@ -336,7 +336,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_PMC:
-            $P(op->dest) = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
+            $P(op->dest) = lorito_box_int_new(interp, $I(op->src1));
             break;
           case OP_INT:
             $I(op->dest) = $I(op->src1);
@@ -529,7 +529,7 @@ core_exec(Lorito_Interp *interp)
           switch (regtype)
           {
             case OP_INT: ;
-              src1->args[src1->args_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src2));
+              src1->args[src1->args_cnt] = lorito_box_int_new(interp, $I(op->src2));
               src1->args_cnt++;
               break;
             default:
@@ -557,7 +557,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_INT: ;
-            ctx->rets[ctx->rets_cnt] = lorito_internal_pmc_init(interp, 0, BOX_INT, &$I(op->src1));
+            ctx->rets[ctx->rets_cnt] = lorito_box_int_new(interp, $I(op->src1));
             ctx->rets_cnt++;
             break;
           default:
@@ -596,7 +596,8 @@ core_exec(Lorito_Interp *interp)
         {
           case OP_INT: ;
             Lorito_File *cur_file = ctx->current_file;
-            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CODE_BLOCK, cur_file->codesegs[$imm % cur_file->codeseg_count]);
+            // Should we clone or use the code_block we have?
+            $P(op->dest) = (Lorito_PMC *) cur_file->codesegs[$imm % cur_file->codeseg_count];
             break;
           default:
             INVALID_OP("block");
@@ -615,10 +616,9 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
-            Lorito_Ctx *new_ctx = lorito_ctx_init(next_ctx, (Lorito_Codeseg *) $P(op->src1));
-            Lorito_Codeseg *c = (Lorito_Codeseg *) $P(op->src1);
+            Lorito_Ctx *new_ctx = lorito_ctx_new(interp, next_ctx, (Lorito_Codeseg *) $P(op->src1));
             new_ctx->pc = $imm;
-            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, new_ctx);
+            $P(op->dest) = new_ctx;
             break;
           default:
             INVALID_OP("new_ctx");
@@ -628,21 +628,13 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_PMC: ;
-            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, ctx);
+            $P(op->dest) = (Lorito_PMC *) ctx;
             break;
           default:
             INVALID_OP("ctx");
         }
         break;
       case OP_lookup:
-        switch (regtype)
-        {
-          case OP_PMC: ;
-            $P(op->dest) = lorito_internal_pmc_init(interp, 0, CONTEXT, ctx);
-            break;
-          default:
-            INVALID_OP("ctx");
-        }
         break;
       case OP_loadlib:
         break;

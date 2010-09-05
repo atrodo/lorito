@@ -34,7 +34,7 @@ struct lorito_interp_t
   unsigned short magic;
 
   int allocated_file;
-  struct lorito_file_t *files;
+  struct lorito_file_t **files;
   //
   struct lorito_codeseg_t *last_seg;
 };

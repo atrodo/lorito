@@ -10,6 +10,7 @@
 //   Data
 
 #include "lorito.h"
+#include "internal_pmc.h"
 #include <stdio.h>
 
 void file_info(Lorito_Interp *interp)
@@ -18,7 +19,7 @@ void file_info(Lorito_Interp *interp)
 
   for (i = 0; i < interp->next_fileid; i++)
   {
-    Lorito_File *file = &interp->files[i];
+    Lorito_File *file = interp->files[i];
     printf("%s\n", file->name);
     for (j = 0; j < file->dataseg_count; j++)
     {
@@ -54,13 +55,15 @@ loadbc(Lorito_Interp *interp, char* filename)
       abort();
   }
 
+  /*
   Lorito_File *file = &interp->files[fileid];
+  lorito_pmc_init(interp, (Lorito_PMC *) file);
+  */
+
+  Lorito_File *file = lorito_file_new(interp, filename);
+  interp->files[fileid] = file;
+
   file->fileid = fileid;
-  file->name = filename;
-  file->codeseg_count = 0;
-  file->dataseg_count = 0;
-  file->codesegs = NULL;
-  file->datasegs = NULL;
 
   while (!feof(input))
   {
@@ -74,33 +77,31 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     if (typed == SEG_code)
     {
-      file->codesegs = realloc(file->codesegs, file->codeseg_count+1);
+      int length = 0;
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      char *name = (char *) malloc(sizeof(char) * length);
+      read = fread(name, sizeof(char), length, input);
+      // or die
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      Lorito_Opcode *op = (Lorito_Opcode *) malloc(sizeof(Lorito_Opcode) * length);
+      read = fread(op, sizeof(Lorito_Opcode), length, input);
+      // or die
+
+      file->codesegs = realloc(file->codesegs, file->codeseg_count+1 );
       if (interp->files == NULL)
         abort();
-      //Lorito_Codeseg *codeseg = file->codesegs[file->codeseg_count];
-      Lorito_Codeseg *codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
+
+      Lorito_Codeseg *codeseg = lorito_code_block_new(interp, name, length, op);
       file->codesegs[file->codeseg_count] = codeseg;
       file->codeseg_count++;
 
-      int length = 0;
-
-      //codeseg = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
       codeseg->fileid = fileid;
       codeseg->file = file;
       codeseg->segid = segid++;
-
-      read = fread(&length, sizeof(int), 1, input);
-      // or die
-      codeseg->name = (char *) malloc(sizeof(char) * length);
-      read = fread(codeseg->name, sizeof(char), length, input);
-      // or die
-
-      read = fread(&length, sizeof(int), 1, input);
-      // or die
-      codeseg->length = length;
-      codeseg->op = (Lorito_Opcode *) malloc(sizeof(Lorito_Opcode) * length);
-      read = fread(codeseg->op, sizeof(Lorito_Opcode), length, input);
-      // or die
 
       interp->last_seg = codeseg;
 
@@ -111,35 +112,34 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     if (typed == SEG_data)
     {
+      int length = 0;
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      char *name = (char *) malloc(sizeof(char) * length);
+      read = fread(name, sizeof(char), length, input);
+      // or die
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+
+      void *data = (void *) malloc(sizeof(Lorito_Opcode) * length);
+      read = fread(data, sizeof(Lorito_Opcode), length, input);
+      // or die
+
       file->datasegs = realloc(file->datasegs, file->dataseg_count+1);
       if (interp->files == NULL)
         abort();
-      //Lorito_Dataseg *dataseg = file->datasegs[file->dataseg_count];
-      Lorito_Dataseg *dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
-      file->datasegs[file->dataseg_count] = dataseg;
-      file->dataseg_count++;
 
-      int length = 0;
+      Lorito_Dataseg *dataseg = lorito_data_block_new(interp, name, length, data);
 
-      //dataseg = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
       dataseg->fileid = fileid;
       dataseg->file = file;
       dataseg->segid = segid++;
 
-      read = fread(&length, sizeof(int), 1, input);
-      // or die
-      dataseg->name = (char *) malloc(sizeof(char) * length);
-      read = fread(dataseg->name, sizeof(char), length, input);
-      // or die
+      file->datasegs[file->dataseg_count] = dataseg;
+      file->dataseg_count++;
 
-      read = fread(&length, sizeof(int), 1, input);
-      // or die
-      dataseg->length = length * sizeof(Lorito_Opcode);
-      dataseg->data = (void *) malloc(sizeof(Lorito_Opcode) * length);
-      read = fread(dataseg->data, sizeof(Lorito_Opcode), length, input);
-      // or die
-
-      //interp->last_seg = codeseg;
       printf("DSegNum:  %d\n", dataseg->segid);
       printf("DSegName: %s\n", dataseg->name);
 

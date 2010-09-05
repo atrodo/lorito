@@ -3,9 +3,6 @@
 #ifndef LORITO_INTERP_H_GUARD
 #define LORITO_INTERP_H_GUARD
 
-Lorito_Ctx *
-lorito_ctx_init(Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg);
-
 Lorito_Interp *
 lorito_init();
 
