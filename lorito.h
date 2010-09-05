@@ -151,7 +151,7 @@ struct lorito_str_t
   int size;
   void *data;
 };
-typedef struct lorito_str_t Lorito_STR;
+typedef struct lorito_str_t Lorito_Str;
 
 struct lorito_file_t
 {

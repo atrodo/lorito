@@ -294,7 +294,7 @@ core_exec(Lorito_Interp *interp)
                 INVALID_OP("load_const: outside range");
               }
 
-              $S(op->dest) = malloc(sizeof(Lorito_STR));
+              $S(op->dest) = malloc(sizeof(Lorito_Str));
               $S(op->dest)->size = length;
               $S(op->dest)->data = malloc(sizeof(char) * length);
               strcpy($S(op->dest)->data, &((char *) data->data)[offset]);
