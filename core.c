@@ -58,6 +58,8 @@ core_exec(Lorito_Interp *interp)
   {
     if (ctx_chgd == 1)
     {
+      Lorito_Ctx *old_ctx = ctx;
+
       ctx = interp->ctx;
       //printf("typed: %d\n", ctx->pmc.magic);
       //printf("typed: %d\n", ((Lorito_PMC *)ctx)->magic);
@@ -68,6 +70,27 @@ core_exec(Lorito_Interp *interp)
       ctx_chgd = 0;
       //printf("SegNum:  %d\n", codeseg->segid);
       //printf("SegName: %s\n", codeseg->name);
+
+      if (IS_LOOKUP(((Lorito_PMC *) old_ctx)))
+      {
+        Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
+        int regtype = REG_OF_OP(op->opcode);
+        int opcode  =  OP_OF_OP(op->opcode);
+
+        if (opcode != OP_lookup)
+        {
+          // Shouldn't happen, but
+          INVALID_OP("loookup: lookup did not return to lookup opcode");
+        }
+
+        $P(op->dest) = lorito_pop_arg(interp, old_ctx);
+        if (!IS_CODE($P(op->dest)))
+        {
+          INVALID_OP("loookup: lookup did not return code block");
+        }
+        (*pc)++;
+      }
+
     }
 
     if (*pc >= codeseg->length)
@@ -634,7 +657,29 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("ctx");
         }
         break;
-      case OP_lookup:
+      case OP_lookup:;
+        if (!IS_CODE($P(op->src1)->lookup))
+        {
+          INVALID_OP("loookup: lookup must be code");
+        }
+        Lorito_Ctx *lookup_ctx = lorito_lookup_new(interp, ctx, (Lorito_Codeseg *) $P(op->src1)->lookup);
+
+        lorito_push_arg(interp, lookup_ctx, $P(op->src1)->vtable);
+
+        switch (regtype)
+        {
+          case OP_STR: ;
+            lorito_push_arg(interp, lookup_ctx, lorito_box_str_new(interp, $S(op->src2)));
+            break;
+          default:
+            INVALID_OP("lookup");
+        }
+        interp->ctx = (Lorito_Ctx *) lookup_ctx;
+        ctx_chgd = 1;
+        // Do not update the pc.  When this returns, code at the begining of
+        //  the loop with handle it on return.
+        //(*pc)++;
+        continue;
         break;
       case OP_loadlib:
         break;

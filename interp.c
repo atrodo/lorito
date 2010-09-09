@@ -33,3 +33,14 @@ lorito_run(Lorito_Interp *interp)
   core_exec(interp);
   return 0;
 }
+
+void
+lorito_push_arg(Lorito_Interp *interp, Lorito_Ctx *target, Lorito_PMC *item)
+{
+}
+
+Lorito_PMC *
+lorito_pop_arg(Lorito_Interp *interp, Lorito_Ctx *target)
+{
+}
+
