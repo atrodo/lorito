@@ -171,4 +171,25 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *code
 Lorito_Ctx *
 lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
 {
+  Lorito_Ctx *result = lorito_ctx_new(interp, next_ctx, codeseg);
+
+  result->pmc.internal_type = LOOKUP;
+
+  return result;
+}
+
+Lorito_C_Method *
+lorito_c_method_new(Lorito_Interp *interp, lorito_c_method target)
+{
+  Lorito_C_Method *result = (Lorito_C_Method *) malloc(sizeof(Lorito_C_Method));
+
+  result->pmc.size = 0;
+  result->pmc.internal_type = C_METHOD;
+
+  lorito_pmc_init(interp, (Lorito_PMC *) result);
+
+  result->method = target;
+  result->method_data = NULL;
+
+  return result;
 }

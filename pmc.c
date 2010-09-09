@@ -17,6 +17,12 @@ lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target)
   result->data = NULL;
   result->ptrs = NULL;
 
+  //if (result->lookup == NULL)
+  {
+    result->lookup = interp->default_lookup;
+    result->vtable = NULL;
+  }
+
   if (size > 0)
   {
     result->ptr_count = ((int) size / sizeof(void *)) / 2;
@@ -114,4 +120,9 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
     result = &src->ptrs[current];
   }
   return result;
+}
+
+void
+lorito_pmc_default_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
+{
 }

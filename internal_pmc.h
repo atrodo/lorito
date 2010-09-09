@@ -30,4 +30,7 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *code
 Lorito_Ctx *
 lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg);
 
+Lorito_C_Method *
+lorito_c_method_new(Lorito_Interp *interp, lorito_c_method target);
+
 #endif /* LORITO_INTERNAL_PMC_H_GUARD */

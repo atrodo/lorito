@@ -25,6 +25,7 @@ struct lorito_file_t;
 struct lorito_codeseg_t;
 struct lorito_dataseg_t;
 struct lorito_ctx_t;
+struct lorito_c_method_t;
 
 struct lorito_interp_t
 {
@@ -37,6 +38,8 @@ struct lorito_interp_t
   struct lorito_file_t **files;
   //
   struct lorito_codeseg_t *last_seg;
+
+  struct lorito_pmc_t *default_lookup;
 };
 typedef struct lorito_interp_t Lorito_Interp;
 
@@ -207,5 +210,15 @@ struct lorito_ctx_t
   struct lorito_pmc_t *rets[32];
 };
 typedef struct lorito_ctx_t Lorito_Ctx;
+
+typedef void (*lorito_c_method)(Lorito_Interp *interp, Lorito_Ctx *ctx);
+
+struct lorito_c_method_t
+{
+  struct lorito_pmc_t pmc;
+  lorito_c_method method;
+  void *method_data;
+};
+typedef struct lorito_c_method_t Lorito_C_Method;
 
 #endif /* LORITO_LORITO_H_GUARD */

@@ -3,6 +3,7 @@
 #include "lorito.h"
 #include "interp.h"
 #include "loader.h"
+#include "pmc.h"
 #include "internal_pmc.h"
 
 #include <stdlib.h>
@@ -18,6 +19,8 @@ lorito_init()
   result->files = NULL;
 
   result->magic = (unsigned short int) rand();
+
+  result->default_lookup = (Lorito_PMC *) lorito_c_method_new(result, lorito_pmc_default_lookup);
 
   return result;
 }
