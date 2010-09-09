@@ -618,7 +618,7 @@ core_exec(Lorito_Interp *interp)
             }
             Lorito_Ctx *new_ctx = lorito_ctx_new(interp, next_ctx, (Lorito_Codeseg *) $P(op->src1));
             new_ctx->pc = $imm;
-            $P(op->dest) = new_ctx;
+            $P(op->dest) = (Lorito_PMC *) new_ctx;
             break;
           default:
             INVALID_OP("new_ctx");

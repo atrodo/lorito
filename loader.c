@@ -91,7 +91,7 @@ loadbc(Lorito_Interp *interp, char* filename)
       read = fread(op, sizeof(Lorito_Opcode), length, input);
       // or die
 
-      file->codesegs = realloc(file->codesegs, file->codeseg_count+1 );
+      file->codesegs = realloc(file->codesegs, (file->codeseg_count+1)  * sizeof(Lorito_Dataseg *));
       if (interp->files == NULL)
         abort();
 
@@ -127,7 +127,7 @@ loadbc(Lorito_Interp *interp, char* filename)
       read = fread(data, sizeof(Lorito_Opcode), length, input);
       // or die
 
-      file->datasegs = realloc(file->datasegs, file->dataseg_count+1);
+      file->datasegs = realloc(file->datasegs, (file->dataseg_count+1) * sizeof(Lorito_Dataseg *));
       if (interp->files == NULL)
         abort();
 

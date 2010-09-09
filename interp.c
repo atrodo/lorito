@@ -17,6 +17,7 @@ lorito_init()
   result->next_fileid = 0;
   result->allocated_file = 0;
   result->files = NULL;
+  result->last_seg = NULL;
 
   result->magic = (unsigned short int) rand();
 
