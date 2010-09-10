@@ -25,10 +25,10 @@ Lorito_Dataseg *
 lorito_data_block_new(Lorito_Interp *interp, char *name, int length, void *data);
 
 Lorito_Ctx *
-lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg);
+lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg);
 
 Lorito_Ctx *
-lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg);
+lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg);
 
 Lorito_C_Method *
 lorito_c_method_new(Lorito_Interp *interp, lorito_c_method target);

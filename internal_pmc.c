@@ -122,8 +122,13 @@ lorito_data_block_new(Lorito_Interp *interp, char *name, int length, void *data)
 }
 
 Lorito_Ctx *
-lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
+lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
 {
+  if (codeseg != NULL && !IS_CODE(codeseg))
+  {
+    fprintf(stderr, "Invalid code block to lorito_ctx_new\n");
+    return NULL;
+  }
   Lorito_Ctx *result = (Lorito_Ctx *) malloc(sizeof(Lorito_Ctx));
 
   result->pmc.size = 0;
@@ -139,9 +144,9 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *code
   result->args_cnt = 0;
   result->rets_cnt = 0;
 
-  if (codeseg != NULL)
+  if (codeseg != NULL && IS_CODE_BLOCK(((Lorito_PMC *) codeseg)))
   {
-    Lorito_File *file = codeseg->file;
+    Lorito_File *file = ((Lorito_Codeseg *) codeseg)->file;
     result->current_file = file;
 
     // Figure out which data block to use
@@ -169,7 +174,7 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *code
 }
 
 Lorito_Ctx *
-lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_Codeseg *codeseg)
+lorito_lookup_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
 {
   Lorito_Ctx *result = lorito_ctx_new(interp, next_ctx, codeseg);
 

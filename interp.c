@@ -29,7 +29,7 @@ lorito_init()
 int
 lorito_run(Lorito_Interp *interp)
 {
-  interp->ctx = lorito_ctx_new(interp, interp->ctx, interp->last_seg);
+  interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) interp->last_seg);
   core_exec(interp);
   return 0;
 }

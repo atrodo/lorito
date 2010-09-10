@@ -200,7 +200,7 @@ struct lorito_ctx_t
   struct lorito_ctx_t* next_ctx;
   int pc;
   struct lorito_file_t* current_file;
-  struct lorito_codeseg_t* current_codeseg;
+  struct lorito_pmc_t* current_codeseg;
   struct lorito_dataseg_t* current_dataseg;
   struct lorito_reg_t regs;
 

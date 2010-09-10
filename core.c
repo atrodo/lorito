@@ -51,7 +51,7 @@ core_exec(Lorito_Interp *interp)
   Lorito_Reg *reg = &ctx->regs;
   int *pc = &ctx->pc;
 
-  Lorito_Codeseg *codeseg = ctx->current_codeseg;
+  Lorito_Codeseg *codeseg = NULL; //ctx->current_codeseg;
   int ctx_chgd = 1;
 
   while (*pc >= 0)
@@ -63,17 +63,30 @@ core_exec(Lorito_Interp *interp)
       ctx = interp->ctx;
       //printf("typed: %d\n", ctx->pmc.magic);
       //printf("typed: %d\n", ((Lorito_PMC *)ctx)->magic);
+
+      if (IS_C_METHOD(ctx->current_codeseg))
+      {
+        ((Lorito_C_Method *) ctx->current_codeseg)->method(interp, ctx);
+        interp->ctx = old_ctx;
+        continue;
+      }
+
+      if (!IS_CODE_BLOCK(ctx->current_codeseg))
+      {
+        fprintf(stderr, "Current Code Block for Context is not a Code Block\n");
+      }
+
       reg = &ctx->regs;
       pc = &ctx->pc;
 
-      codeseg = ctx->current_codeseg;
+      codeseg = (Lorito_Codeseg *) ctx->current_codeseg;
       ctx_chgd = 0;
       //printf("SegNum:  %d\n", codeseg->segid);
       //printf("SegName: %s\n", codeseg->name);
 
       if (IS_LOOKUP(((Lorito_PMC *) old_ctx)))
       {
-        Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
+        Lorito_Opcode *op = &codeseg->op[*pc];
         int regtype = REG_OF_OP(op->opcode);
         int opcode  =  OP_OF_OP(op->opcode);
 
@@ -103,7 +116,7 @@ core_exec(Lorito_Interp *interp)
       ctx_chgd = 1;
       continue;
     }
-    Lorito_Opcode *op = &ctx->current_codeseg->op[*pc];
+    Lorito_Opcode *op = &codeseg->op[*pc];
     int regtype = REG_OF_OP(op->opcode);
     int opcode  =  OP_OF_OP(op->opcode);
 
@@ -639,7 +652,7 @@ core_exec(Lorito_Interp *interp)
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
-            Lorito_Ctx *new_ctx = lorito_ctx_new(interp, next_ctx, (Lorito_Codeseg *) $P(op->src1));
+            Lorito_Ctx *new_ctx = lorito_ctx_new(interp, next_ctx, $P(op->src1));
             new_ctx->pc = $imm;
             $P(op->dest) = (Lorito_PMC *) new_ctx;
             break;
@@ -662,7 +675,7 @@ core_exec(Lorito_Interp *interp)
         {
           INVALID_OP("loookup: lookup must be code");
         }
-        Lorito_Ctx *lookup_ctx = lorito_lookup_new(interp, ctx, (Lorito_Codeseg *) $P(op->src1)->lookup);
+        Lorito_Ctx *lookup_ctx = lorito_lookup_new(interp, ctx, $P(op->src1)->lookup);
 
         lorito_push_arg(interp, lookup_ctx, $P(op->src1)->vtable);
 
