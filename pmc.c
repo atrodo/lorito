@@ -20,7 +20,7 @@ lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target)
   //if (result->lookup == NULL)
   {
     result->lookup = interp->default_lookup;
-    result->vtable = NULL;
+    result->vtable = null;
   }
 
   if (size > 0)
@@ -59,11 +59,11 @@ lorito_pmc_new(Lorito_Interp *interp, int size)
 Lorito_PMC *
 lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PMC *src)
 {
-  Lorito_PMC * result = NULL;
+  Lorito_PMC * result = null;
   // Sanity checks
   int length = sizeof(int);
 
-  if (dest == NULL)
+  if (dest == null)
   {
     return result;
   }
@@ -99,11 +99,11 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
 Lorito_PMC *
 lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
 {
-  Lorito_PMC * result = NULL;
+  Lorito_PMC * result = null;
   // Sanity checks
   int length = sizeof(int);
 
-  if (src == NULL)
+  if (src == null)
   {
     return result;
   }

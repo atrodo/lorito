@@ -22,6 +22,7 @@ lorito_init()
   result->magic = (unsigned short int) rand();
 
   result->default_lookup = (Lorito_PMC *) lorito_c_method_new(result, lorito_pmc_default_lookup);
+  result->null_pmc = lorito_pmc_new(result, 0);
 
   return result;
 }

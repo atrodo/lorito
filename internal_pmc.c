@@ -68,6 +68,7 @@ lorito_box_num_new(Lorito_Interp *interp, double data)
 Lorito_PMC *
 lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str)
 {
+  return null;
 }
 
 Lorito_File *

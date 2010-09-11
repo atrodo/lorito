@@ -39,7 +39,9 @@ struct lorito_interp_t
   //
   struct lorito_codeseg_t *last_seg;
 
+  // Special PMCs
   struct lorito_pmc_t *default_lookup;
+  struct lorito_pmc_t *null_pmc;
 };
 typedef struct lorito_interp_t Lorito_Interp;
 
