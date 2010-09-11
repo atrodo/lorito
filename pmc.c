@@ -125,4 +125,9 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
 void
 lorito_pmc_default_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
 {
+  Lorito_PMC *key = lorito_pop_arg(interp, ctx);
+  Lorito_PMC *vtable = lorito_pop_arg(interp, ctx);
+  lorito_clr_arg(interp, ctx);
+
+  lorito_push_arg(interp, ctx, null);
 }
