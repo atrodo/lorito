@@ -15,4 +15,7 @@ lorito_push_arg(Lorito_Interp *interp, Lorito_Ctx *target, Lorito_PMC *item);
 Lorito_PMC *
 lorito_pop_arg(Lorito_Interp *interp, Lorito_Ctx *target);
 
+void
+lorito_clr_arg(Lorito_Interp *interp, Lorito_Ctx *target);
+
 #endif /* LORITO_INTERP_H_GUARD */
