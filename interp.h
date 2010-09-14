@@ -9,6 +9,9 @@ lorito_init();
 int
 lorito_run(Lorito_Interp *interp);
 
+Lorito_Str *
+lorito_string(Lorito_Interp *interp, int length, const char *original);
+
 void
 lorito_push_arg(Lorito_Interp *interp, Lorito_Ctx *target, Lorito_PMC *item);
 

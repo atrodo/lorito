@@ -34,10 +34,15 @@ struct lorito_interp_t
 
   unsigned short magic;
 
+  // Files
   int allocated_file;
   struct lorito_file_t **files;
   //
   struct lorito_codeseg_t *last_seg;
+
+  //Intern Strings (Symbols)
+  int symbol_len;
+  struct lorito_str_t *symbols;
 
   // Special PMCs
   struct lorito_pmc_t *default_lookup;
@@ -69,7 +74,12 @@ struct lorito_reg_t
 };
 typedef struct lorito_reg_t Lorito_Reg;
 
-
+struct lorito_str_t
+{
+  int length;
+  const char *original;
+};
+typedef struct lorito_str_t Lorito_Str;
 
 // The enum of internal PMCs
 enum INTERNAL_PMC_ENUM {
@@ -150,13 +160,13 @@ typedef struct lorito_pmc_t Lorito_PMC;
 
 // Internal PMCs
 
-struct lorito_str_t
+struct lorito_box_str_t
 {
   struct lorito_pmc_t pmc;
   int size;
   void *data;
 };
-typedef struct lorito_str_t Lorito_Str;
+typedef struct lorito_str_t Lorito_BoxStr;
 
 struct lorito_file_t
 {
