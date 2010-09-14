@@ -2,6 +2,7 @@
 
 #include "lorito.h"
 #include "pmc.h"
+#include "interp.h"
 #include "internal_pmc.h"
 
 Lorito_PMC *
