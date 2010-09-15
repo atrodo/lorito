@@ -68,7 +68,14 @@ lorito_box_num_new(Lorito_Interp *interp, double data)
 Lorito_PMC *
 lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str)
 {
-  return null;
+  Lorito_BoxStr *result = (Lorito_BoxStr *) malloc(sizeof(Lorito_BoxStr));
+
+  result->pmc.size = 0;
+  result->pmc.internal_type = BOX_STR;
+  result->data = str;
+
+  lorito_pmc_init(interp, (Lorito_PMC *) result);
+  return result;
 }
 
 Lorito_File *
