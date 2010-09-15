@@ -123,12 +123,36 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
   return result;
 }
 
+// Default C Methods
+
+void
+lorito_pmc_set_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
+{
+  printf("k n\n");
+}
+
+// Default Lookup
+
 void
 lorito_pmc_default_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
 {
-  Lorito_PMC *key = lorito_pop_arg(interp, ctx);
+  Lorito_PMC *inkey = lorito_pop_arg(interp, ctx);
+  if (!IS_BOX_STR(inkey))
+  {
+    lorito_push_arg(interp, ctx, null);
+    return;
+  }
+  Lorito_Str *key = ((Lorito_BoxStr *) inkey)->data;
+
   Lorito_PMC *vtable = lorito_pop_arg(interp, ctx);
   lorito_clr_arg(interp, ctx);
 
+  printf("k %s\n", lorito_string(interp, 0, "SET_LOOKUP")->original);
+  if (key == lorito_string(interp, 0, "SET_LOOKUP"))
+  {
+    lorito_push_arg(interp, ctx, (Lorito_PMC *) lorito_c_method_new(interp, lorito_pmc_set_lookup));
+    return;
+  }
   lorito_push_arg(interp, ctx, null);
+  return;
 }
