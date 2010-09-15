@@ -567,6 +567,10 @@ core_exec(Lorito_Interp *interp)
           }
           switch (regtype)
           {
+            case OP_PMC: ;
+              src1->args[src1->args_cnt] = $P(op->src2);
+              src1->args_cnt++;
+              break;
             case OP_INT: ;
               src1->args[src1->args_cnt] = lorito_box_int_new(interp, $I(op->src2));
               src1->args_cnt++;
