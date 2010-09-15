@@ -97,7 +97,7 @@ core_exec(Lorito_Interp *interp)
         }
 
         $P(op->dest) = lorito_pop_arg(interp, old_ctx);
-        if (!IS_CODE($P(op->dest)))
+        if (!IS_CODE($P(op->dest)) && $P(op->dest) != null)
         {
           INVALID_OP("loookup: lookup did not return code block");
         }
