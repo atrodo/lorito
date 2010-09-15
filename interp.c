@@ -42,12 +42,17 @@ Lorito_Str *
 lorito_string(Lorito_Interp *interp, int length, const char *original)
 {
   int i = 0;
-
+  
   // See if this char * has been entered before
   for (i = 0; i < interp->symbol_len; i++)
   {
     if (*original == *interp->symbols[i].original)
       return &interp->symbols[i];
+  }
+
+  if (length == 0)
+  {
+    length = strlen(original);
   }
 
   // See if it compares with an existing symbol
