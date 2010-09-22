@@ -245,6 +245,9 @@ core_exec(Lorito_Interp *interp)
       case OP_iseq:
         switch (regtype)
         {
+          case OP_STR:
+            $I(op->dest) = $S(op->src1) == $S(op->src2);
+            break;
           case OP_INT:
             $I(op->dest) = $I(op->src1) == $I(op->src2);
             break;
@@ -583,6 +586,18 @@ core_exec(Lorito_Interp *interp)
       case OP_pop_arg:
         switch (regtype)
         {
+          case OP_PMC: ;
+            $P(op->dest) = lorito_pop_arg(interp, ctx);
+            break;
+          case OP_STR: ;
+            if ((ctx->args_cnt == 0) || (!IS_BOX_STR(ctx->args[ctx->args_cnt-1])))
+            {
+              $S(op->dest) = lorito_string(interp, 0, "");
+              break;
+            }
+            ctx->args_cnt--;
+            $S(op->dest) = ((Lorito_BoxStr *) ctx->args[ctx->args_cnt])->data;
+            break;
           case OP_INT: ;
             if ((ctx->args_cnt == 0) || (!IS_BOX_INT(ctx->args[ctx->args_cnt-1])))
             {
