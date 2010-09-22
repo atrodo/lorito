@@ -47,8 +47,8 @@ lorito_string(Lorito_Interp *interp, int length, const char *original)
   // See if this char * has been entered before
   for (i = 0; i < interp->symbol_len; i++)
   {
-    if (*original == *(interp->symbols[i].original))
-      return &interp->symbols[i];
+    if (*original == *(interp->symbols[i]->original))
+      return interp->symbols[i];
   }
 
   if (length == 0)
