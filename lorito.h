@@ -42,7 +42,7 @@ struct lorito_interp_t
 
   //Intern Strings (Symbols)
   int symbol_len;
-  struct lorito_str_t *symbols;
+  struct lorito_str_t **symbols;
 
   // Special PMCs
   struct lorito_pmc_t *default_lookup;
@@ -163,10 +163,9 @@ typedef struct lorito_pmc_t Lorito_PMC;
 struct lorito_box_str_t
 {
   struct lorito_pmc_t pmc;
-  int size;
-  void *data;
+  struct lorito_str_t *data;
 };
-typedef struct lorito_str_t Lorito_BoxStr;
+typedef struct lorito_box_str_t Lorito_BoxStr;
 
 struct lorito_file_t
 {

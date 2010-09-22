@@ -43,37 +43,42 @@ lorito_string(Lorito_Interp *interp, int length, const char *original)
 {
   int i = 0;
   
+  //printf("Lorito_Str: %s\n", original);
   // See if this char * has been entered before
   for (i = 0; i < interp->symbol_len; i++)
   {
-    if (*original == *interp->symbols[i].original)
+    if (*original == *(interp->symbols[i].original))
       return &interp->symbols[i];
   }
 
   if (length == 0)
   {
-    length = strlen(original);
+    // Lorito counts length as total length, including the Null byte.
+    length = strlen(original) + 1;
   }
 
   // See if it compares with an existing symbol
   for (i = 0; i < interp->symbol_len; i++)
   {
-    if (length != interp->symbols[i].length)
+    if (length != interp->symbols[i]->length)
       continue;
-    if (strncmp(original, interp->symbols[i].original, length))
+    //printf("Lorito_Str Cmp: %s\n", interp->symbols[i]->original);
+    if (strncmp(original, interp->symbols[i]->original, length) == 0)
     {
-      return &interp->symbols[i];
+      return interp->symbols[i];
     }
   }
 
+  //printf("Lorito_Str Create: %s\n", original);
   // Otherwise, create one.
   i = interp->symbol_len;
   interp->symbol_len++;
-  interp->symbols = realloc(interp->symbols, interp->symbol_len * sizeof(Lorito_Str));
+  interp->symbols = realloc(interp->symbols, interp->symbol_len * sizeof(Lorito_Str *));
 
-  interp->symbols[i].length = length;
-  interp->symbols[i].original = original;
-  return &interp->symbols[i];
+  interp->symbols[i] = malloc(sizeof(Lorito_Str));
+  interp->symbols[i]->length = length;
+  interp->symbols[i]->original = original;
+  return interp->symbols[i];
 }
 
 void
