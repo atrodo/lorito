@@ -20,18 +20,18 @@ void file_info(Lorito_Interp *interp)
   for (i = 0; i < interp->next_fileid; i++)
   {
     Lorito_File *file = interp->files[i];
-    printf("%s\n", file->name);
+    //printf("%s\n", file->name);
     for (j = 0; j < file->dataseg_count; j++)
     {
       Lorito_Dataseg *dataseg = file->datasegs[j];
-      printf(" DSegNum:  %d\n", dataseg->segid);
-      printf(" DSegName: %s\n", dataseg->name);
+      //printf(" DSegNum:  %d\n", dataseg->segid);
+      //printf(" DSegName: %s\n", dataseg->name);
     }
     for (j = 0; j < file->codeseg_count; j++)
     {
       Lorito_Codeseg *codeseg = file->codesegs[j];
-      printf(" CSegNum:  %d\n", codeseg->segid);
-      printf(" CSegName: %s\n", codeseg->name);
+      //printf(" CSegNum:  %d\n", codeseg->segid);
+      //printf(" CSegName: %s\n", codeseg->name);
     }
   }
 }
@@ -105,8 +105,8 @@ loadbc(Lorito_Interp *interp, char* filename)
 
       interp->last_seg = codeseg;
 
-      printf("SegNum:  %d\n", codeseg->segid);
-      printf("SegName: %s\n", codeseg->name);
+      //printf("SegNum:  %d\n", codeseg->segid);
+      //printf("SegName: %s\n", codeseg->name);
 
     }
 
@@ -140,8 +140,8 @@ loadbc(Lorito_Interp *interp, char* filename)
       file->datasegs[file->dataseg_count] = dataseg;
       file->dataseg_count++;
 
-      printf("DSegNum:  %d\n", dataseg->segid);
-      printf("DSegName: %s\n", dataseg->name);
+      //printf("DSegNum:  %d\n", dataseg->segid);
+      //printf("DSegName: %s\n", dataseg->name);
 
     }
   }
