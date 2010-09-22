@@ -128,7 +128,20 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
 void
 lorito_pmc_set_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
 {
-  printf("k n\n");
+  Lorito_PMC *self   = lorito_pop_arg(interp, ctx);
+  Lorito_PMC *vtable = lorito_pop_arg(interp, ctx);
+  Lorito_PMC *lookup = lorito_pop_arg(interp, ctx);
+  lorito_clr_arg(interp, ctx);
+
+  if (!IS_CODE(lookup))
+  {
+    // Bah
+    return;
+  }
+
+  self->lookup = lookup;
+  self->vtable = vtable;
+  return;
 }
 
 // Default Lookup
@@ -147,7 +160,6 @@ lorito_pmc_default_lookup(Lorito_Interp *interp, Lorito_Ctx *ctx)
   Lorito_PMC *vtable = lorito_pop_arg(interp, ctx);
   lorito_clr_arg(interp, ctx);
 
-  printf("k %s\n", lorito_string(interp, 0, "SET_LOOKUP")->original);
   if (key == lorito_string(interp, 0, "SET_LOOKUP"))
   {
     lorito_push_arg(interp, ctx, (Lorito_PMC *) lorito_c_method_new(interp, lorito_pmc_set_lookup));
