@@ -153,6 +153,13 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
   result->args_cnt = 0;
   result->rets_cnt = 0;
 
+  // We are going to blank out $S0 and $P0, but the rest may still cause
+  //  a seg fault.  TODO
+  result->regs.regs_s[0] = lorito_string(interp, 0, "");
+  result->regs.regs_p[0] = null;
+
+  result->current_dataseg = (Lorito_Dataseg *) null;
+
   if (codeseg != NULL && IS_CODE_BLOCK(((Lorito_PMC *) codeseg)))
   {
     Lorito_File *file = ((Lorito_Codeseg *) codeseg)->file;
