@@ -12,7 +12,6 @@ Lorito_Interp *
 lorito_init()
 {
   Lorito_Interp *result = (Lorito_Interp *) malloc(sizeof(Lorito_Interp));
-  result->ctx = lorito_ctx_new(result, NULL, NULL);
 
   result->next_fileid = 0;
   result->allocated_file = 0;
@@ -24,6 +23,7 @@ lorito_init()
 
   result->magic = (unsigned short int) rand();
 
+  result->ctx = lorito_ctx_new(result, NULL, NULL);
   result->default_lookup = (Lorito_PMC *) lorito_c_method_new(result, lorito_pmc_default_lookup);
   result->null_pmc = lorito_pmc_new(result, 0);
 

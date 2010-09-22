@@ -3,6 +3,7 @@
 #include "lorito.h"
 #include "pmc.h"
 #include "internal_pmc.h"
+#include "interp.h"
 
 /*
 Lorito_PMC *
@@ -75,7 +76,7 @@ lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str)
   result->data = str;
 
   lorito_pmc_init(interp, (Lorito_PMC *) result);
-  return result;
+  return (Lorito_PMC *) result;
 }
 
 Lorito_File *
