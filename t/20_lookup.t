@@ -91,6 +91,9 @@
 .end;
 
 .sub 'main'
+  $S1 = STR LOAD_CONST :[plan];
+  STR SAY $S1;
+
   $P1 = INT NEW :0;
   $S1 = STR LOAD_CONST :[method1];
   $P2 = STR LOOKUP $P1, $S1;
