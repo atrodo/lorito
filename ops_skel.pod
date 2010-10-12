@@ -372,13 +372,66 @@ to do conditional branching.  Therfore, it is extremely vital.
 
 =item Registers
 
-$dest, $src1, $src2, $imm
+$dest, INT($src1), INT($src2), $imm
+
+=item Description
+
+This operator will load data from the context data block into a register.
+The data loaded will start at $src1+$imm and will read $src2 bytes and store
+the results into $dest.
+
+In the case that INT($src2) is 0, the "natural" length will be read.  For
+STR, the number of bytes until the first null charecter that is found is used 
+as the length.  For INT, the natueral length is 4 bytes, and NUM is 8 bytes.
+
+=item Example
+
+  $S1 = STR LOAD_CONST :[method_ok]
+
+This will take the string starting at method_ok in the data block and read
+the entire string until a null charecter or the end of the block into the
+$S1 register.
+
+  $I1 = INT LOAD_IMM :4;
+  $I2 = INT LOAD_IMM :2;
+  $I3 = INT LOAD_CONST $I1, $I2;
+
+This will load the first two bytes ($I2) starting at the fourth byte ($I1)
+of the data block and store the integer into $I3.
+
+=item Reason
+
+Loading constants from the data block is the only way that you can do useful
+stuff with by any manner of effenceny.
+
+However, this might be obsolete with a constant PMC that you can load from
+the context.
 
 =back
 
 =head3 load_imm
 
+=item Registers
 
+$dest, $imm
+
+=item Description
+
+Loads an immediate value from $imm into a register.  Because of the size of
+$imm, the only registers you can load this way are INT types.
+
+=item Example
+
+  $I1 = INT LOAD_IMM :4;
+
+Loads the number 4 into the register $I1.
+
+=item Reason
+
+Without the ablity to have and load immediate values, loading data into
+registers becomes cumbersome, difficult and complex.
+
+=back
 
 =head3 coerce_int
 
