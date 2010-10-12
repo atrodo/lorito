@@ -139,8 +139,19 @@ of silly.
 =over
 
 =item Registers
+
+$dest, $src1, $src2
+
 =item Description
+
+Divide $src1 by $src2 and store the remainder in $dest.
+
 =item Reason
+
+It's up to debate to include this instead of forcing a divide, cast, multiply
+and subtract.  The speed up given by this instruction over how often some
+common problems need this operator outweighs reducing the operators by one.
+
 =back
 
 
@@ -519,13 +530,60 @@ other type.
 =back
 
 
+
 =head3 coerce_str
 
+=over
+
+=item Registers
+
+$dest, STR($src1)
+
+=item Description
+
+Convert the string in $src1 into the form of $dest and stores the result into 
+$dest.
+
+=item Example
+
+  $I1 = NUM COERCE_STR $S1;
+
+$I1 will contain the integer version of $S1.
+
+=back
 
 =head2 PMC Ops
 
 
+
 =head3 new
+
+=over
+
+=item Registers
+
+PMC($dest), $src1, $imm
+
+=item Description
+
+This creates a new PMC.  The operation of creating the PMC depends on the 
+type of $src1:
+
+=over
+
+=item INT
+
+This will create a blank PMC of size $src1+$imm.  All other details need
+to be taken care of manually.
+
+=item PMC
+
+This will create an identically sized PMC as $src1.  The lookup and vtable
+PMCs are copied over, but the data from $src1 is not.
+
+=back
+
+=back
 
 
 
@@ -608,6 +666,8 @@ other type.
 
 
 =head3 hcf
+
+=over
 
 =item Registers
 
