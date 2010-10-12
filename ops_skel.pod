@@ -6,7 +6,9 @@
 
 =end verify_begin
 
+
 =head2 Execution Ops
+
 
 =head3 noop
 
@@ -20,9 +22,17 @@ None
 
 Do nothing.  Waste a cycle.
 
+=item Reason
+
+Sometimes, you just need to be lazy.
+
 =back
 
+
+
 =head3 end
+
+=over
 
 =item Registers
 
@@ -32,7 +42,18 @@ None
 
 Stop the interperter, cleanly.
 
+=item Reason
+
+Although this could be dangerous, code should have the ablity to stop
+execution.
+
+=back
+
+
+
 =head3 add
+
+=over
 
 =item Registers
 
@@ -42,7 +63,17 @@ $dest, $src1, $src2
 
 Add $src1 and $src2 and store result in $dest.
 
+=item Reason
+
+Math becomes very difficult without being able to add.
+
+=back
+
+
+
 =head3 sub
+
+=over
 
 =item Registers
 
@@ -52,47 +83,306 @@ $dest, $src1, $src2
 
 Subtract $src1 and $src2 and store result in $dest.
 
+=item Reason
+
+Likewise, subtraction is vital to quick and efficient math.
+
+=back
+
+
+
 =head3 mul
+
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Multiply $src1 and $src2 and store the result into $dest
+
+=item Reason
+
+Making multiplication a addition loop is unadvisable, no matter how minimal
+you're trying to be
+
+=back
+
+
 
 =head3 div
 
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Divide $src1 by $src2 and store the result in $dest.  With the Int form, only
+the quotient is stored in $dest.
+
+=item Reason
+
+A loop of subtractions would be possible to emulate a div, but that's kind
+of silly.
+
+=back
+
+
+
 =head3 mod
+
+=item Registers
+=item Description
+=item Reason
+=back
+
+
 
 =head3 and
 
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Performs a binary AND on $src1 and $src2.  The result is stored in $dest.
+
+=item Reason
+
+AND is a basic building block of all logic.  Not including this opcode would
+needlessly complicate all logic.
+
+=back
+
+
+
 =head3 or
+
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Perfoms a binary OR on $src1 and $src2.  The result is stored in $dest.
+
+=item Reason
+
+Just like AND, OR is a basic logic building block, removing it would be
+burdensome to users.
+
+=back
+
+
 
 =head3 xor
 
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Perfoms a binary XOR on $src1 and $src2.  The result is stored in $dest.
+
+=item Reason
+
+XOR is not as fundemental as AND and OR, but simplifies a lot of operations
+that would otherwise be complicated and happen often and.
+
+=back
+
+
+
 =head3 not
+
+=item Registers
+
+$dest, $src1
+
+=item Description
+
+Perfoms a binary NOT on $src1.  The result is stored in $dest.
+
+=item Reason
+
+NOT could be emulated with XOR, and in a fairly simple manner.  It would be
+replaced by two operations instead of one, a load constant and an xor.
+
+=back
+
+
 
 =head3 shl
 
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Shifts the bits in $src1 by $src2 bits to the left and stores the result in
+$dest.
+
+=back
+
+
+
 =head3 shr
+
+=item Registers
+
+$dest, $src1, $src2
+
+=item Description
+
+Shifts the bits in $src1 by $src2 bits to the right and stores the result in
+$dest.
+
+=back
+
 
 =head2 Comparison Ops
 
+
+
 =head3 iseq
+
+=item Registers
+
+INT($dest), $src1, $src2
+
+=item Description
+
+This is the equals operator.  It takes $src1 and $src2 and checks if they are
+equal and sets INT($dest) to 1 or 0, depending if they are equal or not.
+For INT and NUM, it does a mathmatical equavalance.  For STR, it will return
+1 if the two STRs are identical.  For PMC, the two PMCs must point to the
+exact same PMC.
+
+=item Reason
+
+We could use a logical operator for the INT version of iseq, but that would not
+work for NUM, STR and PMC.
+
+=back
+
+
 
 =head3 isgt
 
+=item Registers
+
+INT($dest), $src1, $src2
+
+=item Description
+
+Comparse $src1 and $src2.  If $src1 is greater than $src2, it sets INT($dest)
+to 1, otherwise it sets INT($dest) to 0.
+
+=item Reason
+
+This really has no alternative but to be included.  The less than version has
+been left out since it can be reasonably done by simply reversing $src1 and
+$src2.
+
+=back
+
+
+
 =head3 isge
+
+=item Registers
+
+INT($dest), $src1, $src2
+
+=item Description
+
+This operator is identical to isgt, except it will also set INT($dest) to 1
+if $src1 and $src2 are equal.
+
+=item Reason
+
+This might have been left out in favor of checking isgt and iseq.  But that
+would be ineffecient compared to adding one more op to the group.
+
+Just like isgt, isle is not included since it is easy to emulate by reversing
+$src1 and $src2.
+
+=back
+
 
 =head2 Flow Control Ops
 
+
+
 =head3 goto
+
+=item Registers
+
+$imm
+
+=item Description
+
+Takes an $imm address and moves the program counter there.  Execution will
+start there as the next instruction.
+
+Note that this does not cross code block bounds.
+
+=item Reason
+
+The machine needs to be able to branch unconditionaly.  While it might be
+possible to get away with only if, goto gives some optimzation possiblities.
+
+=back
+
+
 
 =head3 if
 
+=item Registers
+
+$src1, $imm
+
+=item Description
+
+Checks $src1 to be 0.  If it is 0, the program counter is unchanged, otherwise
+the program counter is changed to the value in $imm.
+
+=item Reason
+
+Without doing very complicated things with call, this is the only other way
+to do conditional branching.  Therfore, it is extremely vital.
+
+=back
+
+
 =head2 Register Manipulation Ops
+
 
 =head3 set
 
+
+
 =head3 load_const
+
+=over
+
+=item Registers
+
+$dest, $src1, $src2, $imm
+
+=back
 
 =head3 load_imm
 
+
+
 =head3 coerce_int
+
+=over
 
 =item Registers
 
@@ -109,55 +399,146 @@ $dest.
 
 $P1 will contain a boxed integer.
 
+=item Reason
+
+This is the basic form of integer casting.  In order to load data from another
+type, some kind of basic casting is required.  Without this, there would be
+no way to do any kind of casting.
+
+=back
+
+
+
 =head3 coerce_num
+
+=over
+
+=item Registers
+
+$dest, NUM($src1)
+
+=item Description
+
+Convert the floating point number  in $src1 into the form of $dest and stores 
+the result into $dest.
+
+=item Example
+
+  $S1 = STR COERCE_NUM $N1;
+
+$N1 will contain string version of $N1.
+
+=item Reason
+
+Just like the integer casting, we need a way to cast from an integer to any
+other type.
+
+=back
+
 
 =head3 coerce_str
 
+
 =head2 PMC Ops
+
 
 =head3 new
 
+
+
 =head3 store
+
+
 
 =head3 load
 
+
+
 =head3 push_arg
+
+
 
 =head3 pop_arg
 
+
+
 =head3 cnt_arg
+
+
 
 =head3 call
 
+
+
 =head3 push_ret
+
+
 
 =head3 pop_ret
 
+
+
 =head3 cnt_ret
+
+
 
 =head3 lookup
 
+
+
 =head3 ctx
+
+
 
 =head3 new_ctx
 
+
+
 =head3 block
+
 
 =head2 Environment Ops
 
+
+
 =head3 loadlib
+
+
 
 =head3 read
 
+
+
 =head3 write
+
+
 
 =head3 say
 
+
+
 =head3 gripe
+
 
 =head2 These Ops
 
+
+
 =head3 hcf
+
+=item Registers
+
+None
+
+=item Description
+
+Halt, and Catch any instance of skynet on Fire.
+
+=item Reason
+
+Just in case.
+
+=back
 
 =begin verify_end
 
