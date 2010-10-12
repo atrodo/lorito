@@ -93,6 +93,8 @@ Likewise, subtraction is vital to quick and efficient math.
 
 =head3 mul
 
+=over
+
 =item Registers
 
 $dest, $src1, $src2
@@ -111,6 +113,8 @@ you're trying to be
 
 
 =head3 div
+
+=over
 
 =item Registers
 
@@ -132,6 +136,8 @@ of silly.
 
 =head3 mod
 
+=over
+
 =item Registers
 =item Description
 =item Reason
@@ -140,6 +146,8 @@ of silly.
 
 
 =head3 and
+
+=over
 
 =item Registers
 
@@ -160,6 +168,8 @@ needlessly complicate all logic.
 
 =head3 or
 
+=over
+
 =item Registers
 
 $dest, $src1, $src2
@@ -178,6 +188,8 @@ burdensome to users.
 
 
 =head3 xor
+
+=over
 
 =item Registers
 
@@ -198,6 +210,8 @@ that would otherwise be complicated and happen often and.
 
 =head3 not
 
+=over
+
 =item Registers
 
 $dest, $src1
@@ -217,6 +231,8 @@ replaced by two operations instead of one, a load constant and an xor.
 
 =head3 shl
 
+=over
+
 =item Registers
 
 $dest, $src1, $src2
@@ -231,6 +247,8 @@ $dest.
 
 
 =head3 shr
+
+=over
 
 =item Registers
 
@@ -249,6 +267,8 @@ $dest.
 
 
 =head3 iseq
+
+=over
 
 =item Registers
 
@@ -273,6 +293,8 @@ work for NUM, STR and PMC.
 
 =head3 isgt
 
+=over
+
 =item Registers
 
 INT($dest), $src1, $src2
@@ -293,6 +315,8 @@ $src2.
 
 
 =head3 isge
+
+=over
 
 =item Registers
 
@@ -320,6 +344,8 @@ $src1 and $src2.
 
 =head3 goto
 
+=over
+
 =item Registers
 
 $imm
@@ -341,6 +367,8 @@ possible to get away with only if, goto gives some optimzation possiblities.
 
 
 =head3 if
+
+=over
 
 =item Registers
 
@@ -410,6 +438,8 @@ the context.
 =back
 
 =head3 load_imm
+
+=over
 
 =item Registers
 
