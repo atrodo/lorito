@@ -589,6 +589,8 @@ PMCs are copied over, but the data from $src1 is not.
 
 =head3 store
 
+=over
+
 =item Registers
 
 PMC($dest), $src1, INT($src2), $imm
@@ -765,57 +767,206 @@ this is done often enough.
 
 =head3 push_arg
 
+=over
+
+=item Registers
+
+PMC($src1), $src2
+
+=item Description
+
+Take $src2, box it as a PMC, and push it onto the argument stack for the
+context PMC($src1).  If PMC($src1) is null, the current context is used.  The 
+argument stack should be used for arguments and return values.
+
+=item Reason
+
+There were two options for passing arguments between function calls.  Either
+arguments are passed in registers or passed on a stack.  Since passing 
+arguments in registers meant that register pools are leaked between function
+calls, that's less than desirable.  So, the decision was to make everything
+a PMC and have an argument stack.
+
+=back
+
 
 
 =head3 pop_arg
+
+=over
+
+=item Registers
+
+$dest, PMC($src1)
+
+=item Description
+
+Pop the next argument off the top of the argument stack for the context in
+PMC($src1) and store it in $dest, unboxing it if it is not a PMC.  If 
+PMC($src1) is null, the current context is used.
+
+=item Reason
+
+This operator exists since push_arg exists.  What use is an argument stack
+if you can never retrieve the arguments.
+
+=back
 
 
 
 =head3 cnt_arg
 
+=over
+
+=item Registers
+
+$dest, $PMC($src1)
+
+=item Descrption
+
+Counts the number of arguments in the argument stack of the context in 
+PMC($src1) and stores that count in $dest.  If PMC($src1) is null, then the
+current context is used.
+
+
+=item Reason
+
+The choice was between being able to clear all of the arguments with clr_arg
+or have the count of arguments.  Since you can do clr_arg with cnt_arg and
+cnt_arg has more possible uses, cnt_arg was used.
+
+=back
+
 
 
 =head3 call
 
+=over
 
+=item Registers
 
-=head3 push_ret
+PMC($src1)
 
+=item Description
 
+Invoke the context in PMC($src1) by setting it as the current context.
 
-=head3 pop_ret
+=item Reason
 
+This is the key operator that allows changing of current context, and thus
+the ablity to change which code block is running.
 
-
-=head3 cnt_ret
+=back
 
 
 
 =head2 Environment Ops
 
 
-
 =head3 loadlib
+
+=over
+
+=item Registers
+
+PMC($dest), $src1
+
+=item Description
+
+Take the library refrenced by $src1, make sure it has been loaded into the
+virtual machine, and put a refrence to the file PMC in PMC($dest).
+
+At this point, $src2 is the file name of the library.
+
+=item Reason
+
+This allows the loading and inspection of outside libraries.
+
+=back
 
 
 
 =head3 read
 
+=over
+
+=item Registers
+
+$dest
+
+=item Description
+
+Read from the input and put the value read into $dest.
+
+=item Reason
+
+This is a bootstrap op, and may not be available long term.
+
+=back
+
 
 
 =head3 write
+
+=over
+
+=item Registers
+
+$src1
+
+=item Description
+
+Print the value in $src1 to the output device.
+
+=item Reason
+
+This is a bootstrap op, and may not be available long term.
+
+=back
 
 
 
 =head3 say
 
+=over
+
+=item Registers
+
+$src1
+
+=item Description
+
+Print the value in $src1, along with a line terminator, to the output device.
+
+=item Reason
+
+This is a bootstrap op, and may not be available long term.
+
+=back
+
 
 
 =head3 gripe
 
+=over
+
+=item Registers
+
+$src1
+
+=item Description
+
+Print the value in $src1 to the error device.
+
+=item Reason
+
+This is a bootstrap op, and may not be available long term.
+
+=back
+
+
 
 =head2 These Ops
-
 
 
 =head3 hcf
