@@ -38,7 +38,7 @@ my $suffix = "";
 
         if ($line =~ m/case \s+ OP_(INT|NUM|STR|PMC) \s* :/xms)
         {
-          $core->{$current}->{$1} = $op_cnt++;
+          $core->{$current}->{$1} = 1; #$op_cnt;
         }
       }
       elsif ($line =~ m/case \s+ OP_(\w+) \s* :/xms)
@@ -54,7 +54,7 @@ my $suffix = "";
     }
   }
 
-  print Dumper($core);
+  #print Dumper($core);
 }
 
 # lasm.pl
@@ -74,7 +74,7 @@ my $suffix = "";
     }
   }
 
-  print Dumper($lasm)
+  #print Dumper($lasm)
 }
 
 # ops_skel.pod
@@ -126,6 +126,14 @@ my $suffix = "";
           $current->{example} .= $line;
         }
       }
+      if ($line =~ m[^=item \s+ Reason]xms ... $line =~ m[^=(item|back) \s+]xms)
+      {
+        $current->{reason} = "" if !exists $current->{reason};
+        if ($line !~ m[^=]xms)
+        {
+          $current->{reason} .= $line;
+        }
+      }
     }
     else
     {
@@ -134,7 +142,7 @@ my $suffix = "";
     }
   }
 
-  print Dumper($skel)
+  #print Dumper($skel)
 }
 
 # micrcode.h
@@ -154,13 +162,13 @@ my $suffix = "";
     }
   }
 
-#  print Dumper($micr)
+  #print Dumper($micr)
 }
 
 # Compare everything to microcode.h, make sure it's all legit.
 my @ops = sort { $micr->{$a} <=> $micr->{$b} } keys %$micr;
 
-print Dumper(\@ops);
+#print Dumper(\@ops);
 
 foreach my $op (@ops)
 {
@@ -174,13 +182,16 @@ foreach my $op (@ops)
     if !exists $core->{$op};
 
   warn sprintf("%-10s is not in order in core.c\n", $op)
-    if ($core->{$op}->{cnt} || -1) != $micr->{$op};
+    if ($core->{$op}->{cnt} || 0) != $micr->{$op};
 
   warn sprintf("%-10s does not have a register section in ops_skel.pod\n", $op)
     if !exists $skel->{$op}->{reg};
 
   warn sprintf("%-10s does not have a description section in ops_skel.pod\n", $op)
     if !exists $skel->{$op}->{desc};
+
+  warn sprintf("%-10s does not have a reason section in ops_skel.pod\n", $op)
+    if !exists $skel->{$op}->{reason};
 }
 
 # Generate ops.pod
@@ -231,6 +242,10 @@ foreach my $op (@ops)
       print $skel->{$op}->{example} || "";
       print "\n";
     }
+
+    print "=item Reason\n\n";
+    print $skel->{$op}->{reason} || "";
+    print "\n";
 
     print "=back\n\n";
   }
