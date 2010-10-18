@@ -93,13 +93,13 @@ core_exec(Lorito_Interp *interp)
         if (opcode != OP_lookup)
         {
           // Shouldn't happen, but
-          INVALID_OP("loookup: lookup did not return to lookup opcode");
+          INVALID_OP("lookup: lookup did not return to lookup opcode");
         }
 
         $P(op->dest) = lorito_pop_arg(interp, old_ctx);
         if (!IS_CODE($P(op->dest)) && $P(op->dest) != null)
         {
-          INVALID_OP("loookup: lookup did not return code block");
+          INVALID_OP("lookup: lookup did not return code block");
         }
         (*pc)++;
       }
@@ -695,7 +695,7 @@ core_exec(Lorito_Interp *interp)
       case OP_lookup:;
         if (!IS_CODE($P(op->src1)->lookup))
         {
-          INVALID_OP("loookup: lookup must be code");
+          INVALID_OP("lookup: lookup must be code");
         }
         Lorito_Ctx *lookup_ctx = lorito_lookup_new(interp, ctx, $P(op->src1)->lookup);
 
