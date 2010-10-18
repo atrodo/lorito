@@ -589,9 +589,177 @@ PMCs are copied over, but the data from $src1 is not.
 
 =head3 store
 
+=item Registers
 
+PMC($dest), $src1, INT($src2), $imm
+
+=item Description
+
+Store a register into a PMC at a particular address.  The first $imm bytes of
+of the data in $src1 is placed into the $dest PMC at address $src2.  If the
+type of $src1 is an INT or NUM, the INT or NUM is stored.  If $src1 is a PMC,
+a refrence to the PMC is stored in the pmc_ptr table and the slot number used
+is written.
+
+=item Example
+
+  $I1 = INT LOAD_IMM :4;
+  $P1 = INT STORE $I1, $I1, :2;
+
+Store the first 2 bytes of the integer 4 at address 4 of $P1 data area.
+
+  $I1 = INT LOAD_IMM :8;
+  $P2 = PMC STORE $P1, $I1;
+ 
+Stores $P1 into the pmc_ptr table and stores the slot number starting at byte
+8 of $P2 data area.
+
+=item Reason
+
+A fundamental part of the operation of PMCs is the ablity to treat them as
+simple chunks of data.  There has to be a fast, effecient way to store data
+into a PMC.
+
+=back
 
 =head3 load
+
+=over
+
+=item Registers
+
+$dest, PMC($src1), INT($src2), $imm
+
+=item Description
+
+Load data in a PMC into a register.  This is the opposite of a store.  The
+first $imm bytes of the data in $src1 at offset $src2 are loaded into $dest.
+If $dest is an INT or NUM, the INT or NUM is loaded into the register.  If
+$dest is a PMC, length is ignored and the integer at offset $src2 is used to
+lookup the PMC in the pmc_ptr table, and is loaded into $dest.
+
+=item Example
+
+  $I1 = INT LOAD_IMM :4;
+  $I2 = INT LOAD $P1, $I1, :2;
+
+Load the first 2 bytes of $P1 at address 4 into $I2.
+
+  $I1 = INT LOAD_IMM :8;
+  $P2 = PMC LOAD $P1, $I1;
+
+Loads the PMC refrenced in the pmc_ptr by the integer stored at byte 8 in $P1
+into $P2.
+
+=back
+
+
+
+=head3 lookup
+
+=over
+
+=item Registers
+
+PMC($dest), PMC($src1), $src2
+
+=item Description
+
+Perform a lookup on the PMC in $src1.  This will invoke the lookup function 
+that is associated with the PMC.  This function will be passed the PMC, the
+vtable saved in the PMC and the boxed paramater passed in $src2.  Once the
+lookup function returns, $dest will hold a code PMC.
+
+=item Example
+
+  $S1 = STR LOAD_CONST :[method_a];
+  $P2 = STR LOOKUP $P1, $S1;
+
+This loads the constant string of method_a into $S1 and uses it to lookup
+up the method by that name in $P1.  $P2 is the method by that name, or null.
+
+=item Reason
+
+Lorito should not force a particular object model, so a simple compromise
+was made.  Whichever object model is used for a PMC is able to install and
+use a custom lookup method by implementing this call on a PMC.  This gives
+all users of the PMC the ablity to invoke any method of a PMC/object without
+having to know and understand the object model.  
+
+Also, lookups happen a lot in a dynamic language.  As such, having this
+operator simplifies and speeds up the process of doing method lookups.
+
+=back
+
+
+
+=head3 ctx
+
+=over
+
+=item Registers
+
+$dest
+
+=item Description
+
+Retrieve the current context PMC and puts it into $dest.
+
+=item Reason
+
+The context is the gateway PMC to the rest of the virtual machine.  Anything
+that is important to get, but not important to have an operator for, can
+be accessed through this PMC.
+
+=back
+
+
+
+=head3 new_ctx
+
+=over
+
+=item Registers
+
+$dest, $src1, $src2, $imm
+
+=item Description
+
+Create a new context.  $src1 is the code block that the context is for, 
+$src2 is the result context and $imm is the inital program counter.  If
+$src2 is null, the current context is used instead.  The new context is stored
+in $dest.
+
+=item Reason
+
+Creating a new context is going to happen quite frequently.  While this could
+have been simply a method off of the context, the question becomes is how
+do you call a method to create a context if you can't create a context?
+
+=back
+
+
+
+=head3 block
+
+=over
+
+=item Registers
+
+PMC($dest), $src1, $imm
+
+=item Description
+
+Look up in the current file the code block refrenced by $src1.  If the type
+of $src1 is INT, lookup is done as $src1 + $imm.
+
+=item Reason
+
+This is possibly a temporary, bootstrap operator.  These look ups could be
+done with the context PMC.  However, it may provide a nice speed boost if
+this is done often enough.
+
+=back
 
 
 
@@ -621,21 +789,6 @@ PMCs are copied over, but the data from $src1 is not.
 
 =head3 cnt_ret
 
-
-
-=head3 lookup
-
-
-
-=head3 ctx
-
-
-
-=head3 new_ctx
-
-
-
-=head3 block
 
 
 =head2 Environment Ops
