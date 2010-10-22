@@ -1,0 +1,38 @@
+=head1 Lorito - A minimal VM prototype
+
+This is Lorito, a minimal VM prototype.  It was started as a refactoring of
+the core of ParrotVM.
+
+=head2 Building Lorito
+
+Lorito is written in C.  The Lorito assembler is written in perl.
+Today, Lorito is not written at all portable.  It assumes 32-bit, x86 linux.
+That will change eventually.
+A simple F<Makefile> is included, so running C<make> will produce the lorito
+executable.
+
+=head2 Running Lorito
+
+  lasm.pl < file.lasm > file.ito
+  lorito file.ito
+
+Currently Lorito is a two step process.  First you have to take an lasm file
+and produce a Lorito Bytecode file (C<.ito>).  This is done with the lasm.pl
+tool.  Once you have an C<.ito> you can use the compiled lorito executable
+to run the bytecode.
+
+=head2 Other Documentation
+
+=over
+
+=item L<Design|design.pod>
+
+=item L<Opcodes|ops.pod>
+
+=back
+
+=head2 And remember
+
+Less magic == More magic
+
+=cut
