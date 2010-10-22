@@ -1,13 +1,15 @@
 =pod
 
-=head1 lorito opcode definitions
+=head1 Lorito Opcode Definitions
 
 =begin verify_begin
 
 =end verify_begin
 
 
+
 =head2 Execution Ops
+
 
 
 =head3 noop
@@ -273,6 +275,7 @@ $dest.
 =back
 
 
+
 =head2 Comparison Ops
 
 
@@ -349,6 +352,7 @@ $src1 and $src2.
 =back
 
 
+
 =head2 Flow Control Ops
 
 
@@ -398,7 +402,9 @@ to do conditional branching.  Therfore, it is extremely vital.
 =back
 
 
+
 =head2 Register Manipulation Ops
+
 
 
 =head3 set
@@ -448,6 +454,8 @@ the context.
 
 =back
 
+
+
 =head3 load_imm
 
 =over
@@ -474,6 +482,8 @@ registers becomes cumbersome, difficult and complex.
 
 =back
 
+
+
 =head3 coerce_int
 
 =over
@@ -484,8 +494,10 @@ $dest, INT($src1)
 
 =item Description
 
-Convert the int in $src1 into the form of $dest and stores the result into
+Convert the int in INT($src1) into the form of $dest and stores the result into
 $dest.
+
+Can also be used to copy data between registers.
 
 =item Example
 
@@ -513,8 +525,10 @@ $dest, NUM($src1)
 
 =item Description
 
-Convert the floating point number  in $src1 into the form of $dest and stores 
-the result into $dest.
+Convert the floating point number in NUM($src1) into the form of $dest and
+stores the result into $dest.
+
+Can also be used to copy data between registers.
 
 =item Example
 
@@ -524,7 +538,7 @@ $N1 will contain string version of $N1.
 
 =item Reason
 
-Just like the integer casting, we need a way to cast from an integer to any
+Just like the integer casting, we need a way to cast from a number to any
 other type.
 
 =back
@@ -541,8 +555,10 @@ $dest, STR($src1)
 
 =item Description
 
-Convert the string in $src1 into the form of $dest and stores the result into 
-$dest.
+Convert the string in STR($src1) into the form of $dest and stores the result
+into $dest.
+
+Can also be used to copy data between registers.
 
 =item Example
 
@@ -550,7 +566,14 @@ $dest.
 
 $I1 will contain the integer version of $S1.
 
+=item Reason
+
+Just like the integer casting, we need a way to cast from a string to any
+other type.
+
 =back
+
+
 
 =head2 PMC Ops
 
@@ -582,6 +605,11 @@ This will create an identically sized PMC as $src1.  The lookup and vtable
 PMCs are copied over, but the data from $src1 is not.
 
 =back
+
+=item Reason
+
+This operator is required since there is no other reasonable way to create new
+PMCs without it.
 
 =back
 
@@ -624,6 +652,8 @@ into a PMC.
 
 =back
 
+
+
 =head3 load
 
 =over
@@ -652,6 +682,11 @@ Load the first 2 bytes of $P1 at address 4 into $I2.
 
 Loads the PMC refrenced in the pmc_ptr by the integer stored at byte 8 in $P1
 into $P2.
+
+=item Reason
+
+If it's possible to put data into a PMC, then it is only reasonable to be
+able to get the data back out in a quick and effecient manner.
 
 =back
 
@@ -863,6 +898,7 @@ the ablity to change which code block is running.
 =head2 Environment Ops
 
 
+
 =head3 loadlib
 
 =over
@@ -967,6 +1003,7 @@ This is a bootstrap op, and may not be available long term.
 
 
 =head2 These Ops
+
 
 
 =head3 hcf
