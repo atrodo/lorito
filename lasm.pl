@@ -6,11 +6,13 @@ use POSIX qw/ceil/;
 
 =for grammar
 
-#<goal> -> ( <code> | <data> )*
+#<goal> -> ( <code> | <data> | <struct> )*
 #<code> -> .sub <str> <stmt>* .end;
 #<data> -> .data <str> <data_stmt>* .end;
+#<struct> -> .struct <str> <struct_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
 #<data_stmt> -> <label>? <const> ;
+#<struct_stmt> -> <label>? size <int> ;
 #<label> -> <id>? :
 #<dest>  -> <reg> =
 #<regtype> -> ( INT | NUM | STR | PMC )
@@ -128,7 +130,7 @@ sub max
   #warn "$max\n";
 }
 
-#<goal> -> ( <code> | <data> )*
+#<goal> -> ( <code> | <data> | <struct> )*
 sub goal
 {
   my $str = shift;
@@ -150,6 +152,12 @@ sub goal
     if (defined $data)
     {
       push @$result, $data;
+      next;
+    }
+    my $struct = &struct($str);
+    if (defined $struct)
+    {
+      push @$result, $struct;
       next;
     }
     last;
@@ -211,7 +219,7 @@ sub data
   my $pos = pos $$str;
   my $result  = {};
 
-  if ($$str !~ m/$som [.]data /ixmsgc)
+  if ($$str !~ m/$som [.] data /ixmsgc)
   {
     max($str, $pos);
     return;
@@ -231,6 +239,44 @@ sub data
   while (my $data_stmt = &data_stmt($str))
   {
     push @{$result->{datas}}, $data_stmt;
+  }
+
+  if ($$str !~ m/$som [.]end; /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  return $result;
+}
+
+#<struct> -> .struct <str> <struct_stmt>* .end;
+sub struct
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result  = {};
+
+  if ($$str !~ m/$som [.] struct /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  $result->{typed} = "struct";
+
+  my $named = &str($str);
+  if (!defined $named)
+  {
+    max($str, $pos);
+    return;
+  }
+  $result->{named} = $named;
+
+  $result->{datas} = [];
+  while (my $struct_stmt = &struct_stmt($str))
+  {
+    push @{$result->{datas}}, $struct_stmt;
   }
 
   if ($$str !~ m/$som [.]end; /ixmsgc)
@@ -329,6 +375,39 @@ sub data_stmt
 
   $result->{type} = $type;
   $result->{const} = $const;
+
+  if ($$str !~ m/$som ; /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  return $result;
+}
+
+#<struct_stmt> -> <label>? size <int> ;
+sub struct_stmt
+{
+  my $str = shift;
+  my $pos = pos $$str;
+  my $result = {};
+
+  $result->{label} = label($str);
+
+  if ($$str !~ m/$som size /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  my $size = &int($str);
+  if (!defined $size)
+  {
+    max($str, $pos);
+    return;
+  }
+
+  $result->{size} = $size;
 
   if ($$str !~ m/$som ; /ixmsgc)
   {
@@ -657,6 +736,20 @@ my $data_output = "";
 
 foreach my $seg (@$ast)
 {
+  if ($seg->{typed} eq "struct")
+  {
+    $data{$seg->{named}} = {};
+    my $current = $data{$seg->{named}};
+    my $curr_size = 0;
+    foreach my $data (@{$seg->{datas}})
+    {
+      if (defined $data->{label})
+      {
+        $current->{$data->{label}} = $curr_size;
+      }
+      $curr_size += $data->{size};
+    }
+  }
   if ($seg->{typed} eq "data")
   {
     $data{$seg->{named}} = {};
