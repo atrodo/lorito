@@ -314,32 +314,26 @@ core_exec(Lorito_Interp *interp)
         break;
       case OP_load_const:
         ;  // C oddity that stops the declare below working
-        Lorito_Dataseg *data = ctx->current_dataseg;
+        Lorito_Constseg *consts = ctx->current_constseg;
 
         switch (regtype)
         {
-          // Read src2 bytes from the data block at offset src1+imm
+          // Read src2 bytes from the const block at offset src1+imm
           case OP_STR:
             {
               unsigned int offset = $imm + $I(op->src1);
 
               int length = $I(op->src2) == 0 
-                  ? strlen(&((char *)data->data)[offset])+1
+                  ? strlen(&((char *)consts->data)[offset])+1
                   : $I(op->src2)
                 ;
 
-              if (offset+length > data->length)
+              if (offset+length > consts->length)
               {
                 INVALID_OP("load_const: outside range");
               }
 
-              $S(op->dest) = lorito_string(interp, length, &((char *) data->data)[offset]);
-              /*
-              $S(op->dest) = malloc(sizeof(Lorito_Str));
-              $S(op->dest)->size = length;
-              $S(op->dest)->data = malloc(sizeof(char) * length);
-              strcpy($S(op->dest)->data, &((char *) data->data)[offset]);
-              */
+              $S(op->dest) = lorito_string(interp, length, &((char *) consts->data)[offset]);
               break;
             }
           case OP_INT:
@@ -352,11 +346,11 @@ core_exec(Lorito_Interp *interp)
               {
                 INVALID_OP("load_const: length too long");
               }
-              if (offset+length >= data->length)
+              if (offset+length >= consts->length)
               {
                 INVALID_OP("load_const: outside range");
               }
-              $I(op->dest) = ((int *) data->data)[offset];
+              $I(op->dest) = ((int *) consts->data)[offset];
               $I(op->dest) &= (~0 >> ((4 - length) * 8));
               break;
             }

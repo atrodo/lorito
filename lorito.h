@@ -13,7 +13,7 @@
 #include <ctype.h>
 
 #define SEG_code 0
-#define SEG_data 1
+#define SEG_const 1
 
 struct lorito_interp_t;
 struct lorito_opcode_t;
@@ -23,7 +23,7 @@ struct lorito_pmc_t;
 struct lorito_str_t;
 struct lorito_file_t;
 struct lorito_codeseg_t;
-struct lorito_dataseg_t;
+struct lorito_constseg_t;
 struct lorito_ctx_t;
 struct lorito_c_method_t;
 
@@ -91,7 +91,7 @@ enum INTERNAL_PMC_ENUM {
 
   FILE_BLOCK   = 4,
   CODE_BLOCK   = 5,
-  DATA_BLOCK   = 6,
+  CONST_BLOCK   = 6,
  
   CONTEXT      = 7,
   LOOKUP       = 8,
@@ -124,7 +124,7 @@ struct lorito_pmc_t
     struct lorito_str_t *boxed_str;
     struct lorito_file_t *file;
     struct lorito_codeseg_t *code;
-    struct lorito_dataseg_t *data;
+    struct lorito_constseg_t *const;
     struct lorito_ctx_t *ctx;
   };
   */
@@ -138,7 +138,7 @@ typedef struct lorito_pmc_t Lorito_PMC;
 #define IS_BOX_STR(p)    (p->internal_type == BOX_STR     )
 #define IS_FILE_BLOCK(p) (p->internal_type == FILE_BLOCK  )
 #define IS_CODE_BLOCK(p) (p->internal_type == CODE_BLOCK  )
-#define IS_DATA_BLOCK(p) (p->internal_type == DATA_BLOCK  )
+#define IS_CONST_BLOCK(p)(p->internal_type == CONST_BLOCK )
 #define IS_CONTEXT(p)    (p->internal_type == CONTEXT     )
 #define IS_LOOKUP(p)     (p->internal_type == LOOKUP      )
 #define IS_C_METHOD(p)   (p->internal_type == C_METHOD    )
@@ -174,8 +174,8 @@ struct lorito_file_t
   char* name;
   int codeseg_count;
   struct lorito_codeseg_t** codesegs;
-  int dataseg_count;
-  struct lorito_dataseg_t** datasegs;
+  int constseg_count;
+  struct lorito_constseg_t** constsegs;
 };
 typedef struct lorito_file_t Lorito_File;
 
@@ -192,7 +192,7 @@ struct lorito_codeseg_t
 };
 typedef struct lorito_codeseg_t Lorito_Codeseg;
 
-struct lorito_dataseg_t
+struct lorito_constseg_t
 {
   struct lorito_pmc_t pmc;
   int fileid;
@@ -203,7 +203,7 @@ struct lorito_dataseg_t
   int length;
   void* data;
 };
-typedef struct lorito_dataseg_t Lorito_Dataseg;
+typedef struct lorito_constseg_t Lorito_Constseg;
 
 struct lorito_ctx_t
 {
@@ -212,7 +212,7 @@ struct lorito_ctx_t
   int pc;
   struct lorito_file_t* current_file;
   struct lorito_pmc_t* current_codeseg;
-  struct lorito_dataseg_t* current_dataseg;
+  struct lorito_constseg_t* current_constseg;
   struct lorito_reg_t regs;
 
   unsigned int args_cnt;

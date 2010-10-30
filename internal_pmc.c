@@ -89,9 +89,9 @@ lorito_file_new(Lorito_Interp *interp, char *name)
   result->name = name;
 
   result->codeseg_count = 0;
-  result->dataseg_count = 0;
+  result->constseg_count = 0;
   result->codesegs = NULL;
-  result->datasegs = NULL;
+  result->constsegs = NULL;
 
   lorito_pmc_init(interp, (Lorito_PMC *) result);
 
@@ -114,13 +114,13 @@ lorito_code_block_new(Lorito_Interp *interp, char *name, int length, Lorito_Opco
   return result;
 }
 
-Lorito_Dataseg *
-lorito_data_block_new(Lorito_Interp *interp, char *name, int length, void *data)
+Lorito_Constseg *
+lorito_const_block_new(Lorito_Interp *interp, char *name, int length, void *data)
 {
-  Lorito_Dataseg *result = (Lorito_Dataseg *) malloc(sizeof(Lorito_Dataseg));
+  Lorito_Constseg *result = (Lorito_Constseg *) malloc(sizeof(Lorito_Constseg));
 
   result->pmc.size = 0;
-  result->pmc.internal_type = DATA_BLOCK;
+  result->pmc.internal_type = CONST_BLOCK;
   result->name = name;
   result->length = length * sizeof(Lorito_Opcode);
   result->data = data;
@@ -158,22 +158,22 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
   result->regs.regs_s[0] = lorito_string(interp, 0, "");
   result->regs.regs_p[0] = null;
 
-  result->current_dataseg = (Lorito_Dataseg *) null;
+  result->current_constseg = (Lorito_Constseg *) null;
 
   if (codeseg != NULL && IS_CODE_BLOCK(((Lorito_PMC *) codeseg)))
   {
     Lorito_File *file = ((Lorito_Codeseg *) codeseg)->file;
     result->current_file = file;
 
-    // Figure out which data block to use
+    // Figure out which const block to use
 
-    // If there is no data segements, use a blank one
+    // If there is no const segements, use a blank one
     //  TODO
 
     // If there is only one, use it
-    if (file->dataseg_count == 1)
+    if (file->constseg_count == 1)
     {
-      result->current_dataseg = file->datasegs[0];
+      result->current_constseg = file->constsegs[0];
     }
 
     // If there is one with the same name, use it

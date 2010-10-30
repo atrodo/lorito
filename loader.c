@@ -3,11 +3,13 @@
 // Since this is temporary, and we'll end up throwing it away in favor of
 //  integrating with parrot's packfile format, this will be real simple.
 //
-// Integer: segment type (0 = code, 1 = data)
+// Integer: segment type (0 = code, 1 = const, 2 = datadef)
 //   Integer: Size of segement name
 //   String: segment name, null terminated
 //   Integer: Count (in 8 bytes, so a count of 1 == 8 bytes)
 //   Data
+//
+// The datadef segment has no data.  It is equivalent to a bss in asm terms.
 
 #include "lorito.h"
 #include "internal_pmc.h"
@@ -21,11 +23,11 @@ void file_info(Lorito_Interp *interp)
   {
     Lorito_File *file = interp->files[i];
     //printf("%s\n", file->name);
-    for (j = 0; j < file->dataseg_count; j++)
+    for (j = 0; j < file->constseg_count; j++)
     {
-      Lorito_Dataseg *dataseg = file->datasegs[j];
-      //printf(" DSegNum:  %d\n", dataseg->segid);
-      //printf(" DSegName: %s\n", dataseg->name);
+      Lorito_Constseg *constseg = file->constsegs[j];
+      //printf(" DSegNum:  %d\n", constseg->segid);
+      //printf(" DSegName: %s\n", constseg->name);
     }
     for (j = 0; j < file->codeseg_count; j++)
     {
@@ -91,7 +93,7 @@ loadbc(Lorito_Interp *interp, char* filename)
       read = fread(op, sizeof(Lorito_Opcode), length, input);
       // or die
 
-      file->codesegs = realloc(file->codesegs, (file->codeseg_count+1)  * sizeof(Lorito_Dataseg *));
+      file->codesegs = realloc(file->codesegs, (file->codeseg_count+1)  * sizeof(Lorito_Constseg *));
       if (interp->files == NULL)
         abort();
 
@@ -110,7 +112,7 @@ loadbc(Lorito_Interp *interp, char* filename)
 
     }
 
-    if (typed == SEG_data)
+    if (typed == SEG_const)
     {
       int length = 0;
 
@@ -127,21 +129,21 @@ loadbc(Lorito_Interp *interp, char* filename)
       read = fread(data, sizeof(Lorito_Opcode), length, input);
       // or die
 
-      file->datasegs = realloc(file->datasegs, (file->dataseg_count+1) * sizeof(Lorito_Dataseg *));
+      file->constsegs = realloc(file->constsegs, (file->constseg_count+1) * sizeof(Lorito_Constseg *));
       if (interp->files == NULL)
         abort();
 
-      Lorito_Dataseg *dataseg = lorito_data_block_new(interp, name, length, data);
+      Lorito_Constseg *constseg = lorito_const_block_new(interp, name, length, data);
 
-      dataseg->fileid = fileid;
-      dataseg->file = file;
-      dataseg->segid = segid++;
+      constseg->fileid = fileid;
+      constseg->file = file;
+      constseg->segid = segid++;
 
-      file->datasegs[file->dataseg_count] = dataseg;
-      file->dataseg_count++;
+      file->constsegs[file->constseg_count] = constseg;
+      file->constseg_count++;
 
-      //printf("DSegNum:  %d\n", dataseg->segid);
-      //printf("DSegName: %s\n", dataseg->name);
+      //printf("DSegNum:  %d\n", constseg->segid);
+      //printf("DSegName: %s\n", constseg->name);
 
     }
   }
