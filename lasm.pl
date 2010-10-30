@@ -732,7 +732,6 @@ use Data::Dumper;
 # Generate all the data block labels
 my %data;
 my %data_cache;
-my $data_output = "";
 
 foreach my $seg (@$ast)
 {
@@ -754,6 +753,7 @@ foreach my $seg (@$ast)
   {
     $data{$seg->{named}} = {};
     my $current = $data{$seg->{named}};
+    my $data_output = "";
     foreach my $data (@{$seg->{datas}})
     {
       if (defined $data->{label})
@@ -775,20 +775,18 @@ foreach my $seg (@$ast)
         $data_output .= pack("d", $data->{const});
       }
     }
+    if (length $data_output > 0)
+    {
+      my $output = "";
+      $output .= pack("I", 1);
+      $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
+      my $len = ceil(length($data_output) / 8);
+      $output .= pack("I", $len);
+      $output .= $data_output;
+      $output .= pack("a".($len * 8 - length($data_output)), "");
+      print $output;
+    }
   }
-}
-if (length $data_output > 0)
-{
-  #$DB::single = 1;
-
-  my $output = "";
-  $output .= pack("I", 1);
-  $output .= pack("IZ*", length("data")+1, "data");
-  my $len = ceil(length($data_output) / 8);
-  $output .= pack("I", $len);
-  $output .= $data_output;
-  $output .= pack("a".($len * 8 - length($data_output)), "");
-  print $output;
 }
 
 # Generate all the output for the segments
