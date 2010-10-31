@@ -6,10 +6,10 @@ use POSIX qw/ceil/;
 
 =for grammar
 
-#<goal> -> ( <code> | <const> | <struct> )*
-#<code> -> .sub <str> <stmt>* .end;
-#<const> -> .const <str> <const_stmt>* .end;
-#<struct> -> .struct <str> <struct_stmt>* .end;
+#<goal> -> ( <code_blk> | <const_blk> | <struct_blk> )*
+#<code_blk> -> .sub <str> <stmt>* .end;
+#<const_blk> -> .const <str> <const_stmt>* .end;
+#<struct_blk> -> .struct <str> <struct_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
 #<const_stmt> -> <label>? <const> ;
 #<struct_stmt> -> <label>? size <int> ;
@@ -130,7 +130,7 @@ sub max
   #warn "$max\n";
 }
 
-#<goal> -> ( <code> | <const> | <struct> )*
+#<goal> -> ( <code_blk> | <const_blk> | <struct_blk> )*
 sub goal
 {
   my $str = shift;
@@ -142,22 +142,22 @@ sub goal
   #while (my $code = &code($str))
   while (pos($$str) || 0 != length($$str))
   {
-    my $code = &code($str);
-    if (defined $code)
+    my $code_blk = &code_blk($str);
+    if (defined $code_blk)
     {
-      push @$result, $code;
+      push @$result, $code_blk;
       next;
     }
-    my $const = &const($str);
-    if (defined $const)
+    my $const_blk = &const_blk($str);
+    if (defined $const_blk)
     {
-      push @$result, $const;
+      push @$result, $const_blk;
       next;
     }
-    my $struct = &struct($str);
-    if (defined $struct)
+    my $struct_blk = &struct_blk($str);
+    if (defined $struct_blk)
     {
-      push @$result, $struct;
+      push @$result, $struct_blk;
       next;
     }
     last;
@@ -174,8 +174,8 @@ sub goal
   return $result;
 }
 
-#<code> -> .sub <str> <stmt>* .end;
-sub code
+#<code_blk> -> .sub <str> <stmt>* .end;
+sub code_blk
 {
   my $str = shift;
   my $pos = pos $$str;
@@ -212,8 +212,8 @@ sub code
   return $result;
 }
 
-#<const> -> .const <str> <const_stmt>* .end;
-sub const
+#<const_blk> -> .const <str> <const_stmt>* .end;
+sub const_blk
 {
   my $str = shift;
   my $pos = pos $$str;
@@ -250,8 +250,8 @@ sub const
   return $result;
 }
 
-#<struct> -> .struct <str> <struct_stmt>* .end;
-sub struct
+#<struct_blk> -> .struct <str> <struct_stmt>* .end;
+sub struct_blk
 {
   my $str = shift;
   my $pos = pos $$str;
