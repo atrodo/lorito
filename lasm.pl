@@ -6,12 +6,12 @@ use POSIX qw/ceil/;
 
 =for grammar
 
-#<goal> -> ( <code> | <data> | <struct> )*
+#<goal> -> ( <code> | <const> | <struct> )*
 #<code> -> .sub <str> <stmt>* .end;
-#<data> -> .data <str> <data_stmt>* .end;
+#<const> -> .const <str> <const_stmt>* .end;
 #<struct> -> .struct <str> <struct_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
-#<data_stmt> -> <label>? <const> ;
+#<const_stmt> -> <label>? <const> ;
 #<struct_stmt> -> <label>? size <int> ;
 #<label> -> <id>? :
 #<dest>  -> <reg> =
@@ -130,7 +130,7 @@ sub max
   #warn "$max\n";
 }
 
-#<goal> -> ( <code> | <data> | <struct> )*
+#<goal> -> ( <code> | <const> | <struct> )*
 sub goal
 {
   my $str = shift;
@@ -148,10 +148,10 @@ sub goal
       push @$result, $code;
       next;
     }
-    my $data = &data($str);
-    if (defined $data)
+    my $const = &const($str);
+    if (defined $const)
     {
-      push @$result, $data;
+      push @$result, $const;
       next;
     }
     my $struct = &struct($str);
@@ -212,20 +212,20 @@ sub code
   return $result;
 }
 
-#<data> -> .data <str> <data_stmt>* .end;
-sub data
+#<const> -> .const <str> <const_stmt>* .end;
+sub const
 {
   my $str = shift;
   my $pos = pos $$str;
   my $result  = {};
 
-  if ($$str !~ m/$som [.] data /ixmsgc)
+  if ($$str !~ m/$som [.] const /ixmsgc)
   {
     max($str, $pos);
     return;
   }
 
-  $result->{typed} = "data";
+  $result->{typed} = "const";
 
   my $named = &str($str);
   if (!defined $named)
@@ -235,10 +235,10 @@ sub data
   }
   $result->{named} = $named;
 
-  $result->{datas} = [];
-  while (my $data_stmt = &data_stmt($str))
+  $result->{consts} = [];
+  while (my $const_stmt = &const_stmt($str))
   {
-    push @{$result->{datas}}, $data_stmt;
+    push @{$result->{consts}}, $const_stmt;
   }
 
   if ($$str !~ m/$som [.]end; /ixmsgc)
@@ -273,10 +273,10 @@ sub struct
   }
   $result->{named} = $named;
 
-  $result->{datas} = [];
+  $result->{consts} = [];
   while (my $struct_stmt = &struct_stmt($str))
   {
-    push @{$result->{datas}}, $struct_stmt;
+    push @{$result->{consts}}, $struct_stmt;
   }
 
   if ($$str !~ m/$som [.]end; /ixmsgc)
@@ -357,8 +357,8 @@ sub stmt
   return $result;
 }
 
-#<data_stmt> -> <label>? <const> ;
-sub data_stmt
+#<const_stmt> -> <label>? <const> ;
+sub const_stmt
 {
   my $str = shift;
   my $pos = pos $$str;
@@ -729,61 +729,60 @@ use Data::Dumper;
 
 # Generate the output
 
-# Generate all the data block labels
-my %data;
-my %data_cache;
+# Generate all the block labels
+my %block;
+my %block_cache;
 
 foreach my $seg (@$ast)
 {
   if ($seg->{typed} eq "struct")
   {
-    $data{$seg->{named}} = {};
-    my $current = $data{$seg->{named}};
+    $block{$seg->{named}} = {};
+    my $current = $block{$seg->{named}};
     my $curr_size = 0;
-    foreach my $data (@{$seg->{datas}})
+    foreach my $const (@{$seg->{consts}})
     {
-      if (defined $data->{label})
+      if (defined $const->{label})
       {
-        $current->{$data->{label}} = $curr_size;
+        $current->{$const->{label}} = $curr_size;
       }
-      $curr_size += $data->{size};
+      $curr_size += $const->{size};
     }
   }
-  if ($seg->{typed} eq "data")
+  if ($seg->{typed} eq "const")
   {
-    $data{$seg->{named}} = {};
-    my $current = $data{$seg->{named}};
-    my $data_output = "";
-    foreach my $data (@{$seg->{datas}})
+    $block{$seg->{named}} = {};
+    my $current = $block{$seg->{named}};
+    my $block_output = "";
+    foreach my $const (@{$seg->{consts}})
     {
-      if (defined $data->{label})
+      if (defined $const->{label})
       {
-        $current->{$data->{label}} = length($data_output);
+        $current->{$const->{label}} = length($block_output);
       }
-      if ($data->{type} eq "str")
+      if ($const->{type} eq "str")
       {
-        $data_output .= pack("U0Z*", $data->{const});
-        #$data_output .= pack("IU*", length($data->{const})+1, $data->{const});
-      } elsif ($data->{type} eq "int") {
-        if ($data->{const} < 0)
+        $block_output .= pack("U0Z*", $const->{const});
+      } elsif ($const->{type} eq "int") {
+        if ($const->{const} < 0)
         {
-          $data_output .= pack("I", $data->{const});
+          $block_output .= pack("I", $const->{const});
         } else {
-          $data_output .= pack("i", $data->{const});
+          $block_output .= pack("i", $const->{const});
         }
-      } elsif ($data->{type} eq "num") {
-        $data_output .= pack("d", $data->{const});
+      } elsif ($const->{type} eq "num") {
+        $block_output .= pack("d", $const->{const});
       }
     }
-    if (length $data_output > 0)
+    if (length $block_output > 0)
     {
       my $output = "";
       $output .= pack("I", 1);
       $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
-      my $len = ceil(length($data_output) / 8);
+      my $len = ceil(length($block_output) / 8);
       $output .= pack("I", $len);
-      $output .= $data_output;
-      $output .= pack("a".($len * 8 - length($data_output)), "");
+      $output .= $block_output;
+      $output .= pack("a".($len * 8 - length($block_output)), "");
       print $output;
     }
   }
@@ -820,21 +819,21 @@ foreach my $seg (@$ast)
         $stmt->{const} = $labels{$stmt->{jmp}}+0;
       } elsif (exists $stmt->{offset}) {
         #die "offsets are awkward right now, sorry";
-        my $data_block;
+        my $ref_block;
         if (defined $stmt->{offset}->{block})
         {
-          $data_block = $data{$stmt->{offset}->{block}};
+          $ref_block = $block{$stmt->{offset}->{block}};
         }
-        elsif (defined $data{$seg->{named}})
+        elsif (defined $block{$seg->{named}})
         {
-          $data_block = $data{$seg->{named}};
+          $ref_block = $block{$seg->{named}};
         } else {
-          $data_block = $data{''};
+          $ref_block = $block{''};
         }
         die "Could not find a usable block name"
-          if !defined $data_block;
+          if !defined $ref_block;
 
-        my $offset = $data_block->{$stmt->{offset}->{id}};
+        my $offset = $ref_block->{$stmt->{offset}->{id}};
         die "Could not find a usable id in block"
           if !defined $offset;
         $stmt->{const} = $offset + ($stmt->{offset}->{offset} || 0);
@@ -845,7 +844,7 @@ foreach my $seg (@$ast)
       $output .= gen_op($stmt);
     }
   }
-  elsif ($seg->{typed} eq "data")
+  elsif ($seg->{typed} eq "const")
   {
     #$output .= pack("I", 1);
     #$output .= pack("IZ*", length($seg->{named})+1, $seg->{named});

@@ -76,7 +76,7 @@
   end: NOOP;
 .end;
 
-.data 'block'
+.const 'block'
   s1: " - ";
   i0: 1;
   i1: 200;

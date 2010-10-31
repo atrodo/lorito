@@ -71,7 +71,7 @@
   end: NOOP;
 .end;
 
-.data ''
+.const ''
   s0: "Hello World!";
   s1: " - ";
   s2: "Hello!";

@@ -25,7 +25,7 @@
   STR SAY   $S1;
 .end;
 
-.data ''
+.const ''
   plan: "1..4";
   ok:   "ok";
   nok:  "not ok";

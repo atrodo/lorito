@@ -125,7 +125,7 @@
 
 .end;
 
-.data ''
+.const ''
   method1:    "SET_LOOKUP";
   method_add: "add";
   method_sub: "sub";
