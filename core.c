@@ -591,33 +591,44 @@ core_exec(Lorito_Interp *interp)
           break;
         }
       case OP_pop_arg:
-        switch (regtype)
         {
-          case OP_PMC: ;
-            $P(op->dest) = lorito_pop_arg(interp, ctx);
-            break;
-          case OP_STR: ;
-            if ((ctx->args_cnt == 0) || (!IS_BOX_STR(ctx->args[ctx->args_cnt-1])))
+          Lorito_Ctx *src1 = ctx;
+          if ($P(op->src1) != NULL)
+          {
+            if (!IS_CTX($P(op->src1)))
             {
-              $S(op->dest) = lorito_string(interp, 0, "");
-              break;
+              INVALID_OP("pop_arg: missing required context pmc");
             }
-            ctx->args_cnt--;
-            $S(op->dest) = ((Lorito_BoxStr *) ctx->args[ctx->args_cnt])->data;
-            break;
-          case OP_INT: ;
-            if ((ctx->args_cnt == 0) || (!IS_BOX_INT(ctx->args[ctx->args_cnt-1])))
-            {
-              $I(op->dest) = 0;
+            src1 = (Lorito_Ctx *) $P(op->src1);
+          }
+          switch (regtype)
+          {
+            case OP_PMC: ;
+              $P(op->dest) = lorito_pop_arg(interp, src1);
               break;
-            }
-            ctx->args_cnt--;
-            $I(op->dest) = *(int *) ctx->args[ctx->args_cnt]->data;
-            break;
-          default:
-            INVALID_OP("pop_arg");
+            case OP_STR: ;
+              if ((src1->args_cnt == 0) || (!IS_BOX_STR(src1->args[src1->args_cnt-1])))
+              {
+                $S(op->dest) = lorito_string(interp, 0, "");
+                break;
+              }
+              src1->args_cnt--;
+              $S(op->dest) = ((Lorito_BoxStr *) src1->args[src1->args_cnt])->data;
+              break;
+            case OP_INT: ;
+              if ((src1->args_cnt == 0) || (!IS_BOX_INT(src1->args[src1->args_cnt-1])))
+              {
+                $I(op->dest) = 0;
+                break;
+              }
+              src1->args_cnt--;
+              $I(op->dest) = *(int *) src1->args[src1->args_cnt]->data;
+              break;
+            default:
+              INVALID_OP("pop_arg");
+          }
+          break;
         }
-        break;
       case OP_push_ret:
         switch (regtype)
         {
