@@ -123,6 +123,12 @@
   PMC PUSH_ARG $P6, $P1;
   CALL $P6;
 
+  $P1 = INT NEW :20;
+  $P2 = NEW_CTX;
+  PMC PUSH_ARG $P2, $P1;
+  $S1 = STR LOAD_CONST :[pmc_size];
+  CALL $P2, $S1;
+
 .end;
 
 .const ''
@@ -132,9 +138,12 @@
   method_eq:  "eq";
   method_ok:  "ok";
 
-  plan:  "1..3";
+  pmc_size:   "size";
+
+  plan:  "1..4";
   ok:    "ok";
   t_add: " 1 # We call 'add'";
   t_sub: " 2 # We call 'sub'";
   t_eq:  " 3 # We call 'eq'";
+  t_str: " 4 # We called the STR version of CALL";
 .end;
