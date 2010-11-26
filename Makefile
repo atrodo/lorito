@@ -1,6 +1,6 @@
 PERL = perl
-HEADERS = config.h lorito.h microcode.h interp.h loader.h pmc.h internal_pmc.h
-COMPILED = main.o interp.o core.o loader.o pmc.o internal_pmc.o
+HEADERS = config.h lorito.h microcode.h interp.h loader.h pmc.h internal_pmc.h pmc_func.h
+COMPILED = main.o interp.o core.o loader.o pmc.o internal_pmc.o pmc_func.o
 TEST_FILES = $(wildcard t/*.t)
 COMPILED_TESTS = $(patsubst %.t,%.ito,$(TEST_FILES))
 
