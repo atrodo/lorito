@@ -127,7 +127,22 @@
   $P2 = NEW_CTX;
   PMC PUSH_ARG $P2, $P1;
   $S1 = STR LOAD_CONST :[pmc_size];
-  CALL $P2, $S1;
+  STR CALL $P2, $S1;
+  $I1 = INT POP_ARG $P2;
+  $I2 = INT LOAD_IMM :20;
+  $I3 = INT ISEQ $I1, $I2;
+
+  INT IF $I3 :t4_ok;
+    $S2 = STR LOAD_CONST :[nok];
+    STR WRITE $S2;
+    :GOTO :t4;
+  t4_ok:
+    $S2 = STR LOAD_CONST :[ok];
+    STR WRITE $S2;
+
+  t4:
+  $S2 = STR LOAD_CONST :[t_str];
+  STR SAY $S2;
 
 .end;
 
@@ -142,6 +157,7 @@
 
   plan:  "1..4";
   ok:    "ok";
+  nok:   "nok";
   t_add: " 1 # We call 'add'";
   t_sub: " 2 # We call 'sub'";
   t_eq:  " 3 # We call 'eq'";
