@@ -133,10 +133,10 @@ lorito_const_block_new(Lorito_Interp *interp, char *name, int length, void *data
 Lorito_Ctx *
 lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
 {
-  if (codeseg != NULL && !IS_CODE(codeseg))
+  if (codeseg != null && !IS_CODE(codeseg))
   {
     fprintf(stderr, "Invalid code block to lorito_ctx_new\n");
-    return NULL;
+    return null;
   }
   Lorito_Ctx *result = (Lorito_Ctx *) malloc(sizeof(Lorito_Ctx));
 
