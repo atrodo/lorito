@@ -14,6 +14,9 @@ lorito: $(COMPILED) $(HEADERS)
 clean:
 	rm lorito $(COMPILED)
 
+%.ito: %.lasm
+	$(PERL) lasm.pl < $< > $@
+
 %.ito: %.t
 	$(PERL) lasm.pl < $< > $@
 
