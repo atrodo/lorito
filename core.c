@@ -110,7 +110,7 @@ core_exec(Lorito_Interp *interp)
     if (*pc >= codeseg->length)
     {
       interp->ctx = ctx->next_ctx;
-      if ((interp->ctx == NULL) || (interp->ctx->current_codeseg == NULL))
+      if ((interp->ctx == null) || (interp->ctx->current_codeseg == null))
       {
         return;
       }
