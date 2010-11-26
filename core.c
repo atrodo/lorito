@@ -5,6 +5,7 @@
 #include "interp.h"
 #include "pmc.h"
 #include "internal_pmc.h"
+#include "pmc_func.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -547,10 +548,19 @@ core_exec(Lorito_Interp *interp)
         {
           INVALID_OP("call: missing required context pmc");
         }
-        interp->ctx = (Lorito_Ctx *) $P(op->src1);
-        ctx_chgd = 1;
-        (*pc)++;
-        continue;
+        switch (regtype)
+        {
+          case OP_PMC: ;
+            interp->ctx = (Lorito_Ctx *) $P(op->src1);
+            $P(op->dest) = lorito_pop_arg(interp, ctx);
+            ctx_chgd = 1;
+            (*pc)++;
+            continue;
+          case OP_STR: ;
+            lorito_pmc_func(interp, $P(op->src1), $S(op->src2));
+            break;
+        };
+        break;
       case OP_push_arg:
         {
           Lorito_Ctx *src1 = ctx;
