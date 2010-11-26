@@ -136,7 +136,7 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
   if (codeseg != null && !IS_CODE(codeseg))
   {
     fprintf(stderr, "Invalid code block to lorito_ctx_new\n");
-    return null;
+    return (Lorito_Ctx *) null;
   }
   Lorito_Ctx *result = (Lorito_Ctx *) malloc(sizeof(Lorito_Ctx));
 
@@ -160,7 +160,7 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
 
   result->current_constseg = (Lorito_Constseg *) null;
 
-  if (codeseg != NULL && IS_CODE_BLOCK(((Lorito_PMC *) codeseg)))
+  if (codeseg != null && IS_CODE_BLOCK(((Lorito_PMC *) codeseg)))
   {
     Lorito_File *file = ((Lorito_Codeseg *) codeseg)->file;
     result->current_file = file;
