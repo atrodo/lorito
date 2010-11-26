@@ -880,11 +880,18 @@ cnt_arg has more possible uses, cnt_arg was used.
 
 =item Registers
 
-PMC($src1)
+PMC($src1), $src2
 
 =item Description
 
 Invoke the context in PMC($src1) by setting it as the current context.
+
+If the STR version of this is invoked, then $src2 is used as the function
+name to call and PMC($src1) is the context to call with.  This will only use
+the argument fields for paramater passing and returning, the return context
+will not mean anything.  The only functions available with this method are the
+static PMC inspection functions.  A full list of available functions 
+is available in the L<PMC Inspection|pmc_func.pod> documentation.
 
 =item Reason
 
