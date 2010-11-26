@@ -667,10 +667,12 @@ core_exec(Lorito_Interp *interp)
             {
               next_ctx = (Lorito_Ctx *) $P(op->src2);
             }
+            /*
             if (!IS_CODE($P(op->src1)))
             {
               INVALID_OP("new_ctx: must pass a code block");
             }
+            */
             Lorito_Ctx *new_ctx = lorito_ctx_new(interp, next_ctx, $P(op->src1));
             new_ctx->pc = $imm;
             $P(op->dest) = (Lorito_PMC *) new_ctx;
