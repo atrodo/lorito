@@ -29,4 +29,5 @@ main(int argc, const char *argv[])
   {
     fprintf(stderr, "%s\n", interp->last_error->original);
   }
+  return retval;
 }
