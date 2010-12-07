@@ -593,7 +593,7 @@ core_exec(Lorito_Interp *interp)
       case OP_pop_arg:
         {
           Lorito_Ctx *src1 = ctx;
-          if ($P(op->src1) != NULL)
+          if ($P(op->src1) != null)
           {
             if (!IS_CTX($P(op->src1)))
             {
