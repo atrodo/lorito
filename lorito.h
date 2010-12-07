@@ -12,9 +12,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#define SEG_code 0
-#define SEG_const 1
-
 struct lorito_interp_t;
 struct lorito_opcode_t;
 struct lorito_reg_t;

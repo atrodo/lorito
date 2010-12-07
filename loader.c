@@ -13,6 +13,7 @@
 
 #include "lorito.h"
 #include "internal_pmc.h"
+#include "loader.h"
 #include <stdio.h>
 
 void file_info(Lorito_Interp *interp)
