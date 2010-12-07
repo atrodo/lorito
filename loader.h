@@ -8,5 +8,7 @@
 
 void
 loadbc(Lorito_Interp *interp, const char* filename);
+Lorito_File *
+loadbc(Lorito_Interp *interp, char* filename);
 
 #endif /* LORITO_LOADER_H_GUARD */

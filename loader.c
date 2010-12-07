@@ -39,7 +39,7 @@ void file_info(Lorito_Interp *interp)
   }
 }
 
-void
+Lorito_File *
 loadbc(Lorito_Interp *interp, char* filename)
 {
   int fileid = interp->next_fileid++;
@@ -149,4 +149,5 @@ loadbc(Lorito_Interp *interp, char* filename)
     }
   }
 
+  return file;
 }
