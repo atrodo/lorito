@@ -4,12 +4,17 @@
 //  integrating with parrot's packfile format, this will be real simple.
 //
 // Integer: segment type (0 = code, 1 = const, 2 = datadef)
+//   Integer: Flags of the segment
 //   Integer: Size of segement name
 //   String: segment name, null terminated
 //   Integer: Count (in 8 bytes, so a count of 1 == 8 bytes)
 //   Data
 //
 // The datadef segment has no data.  It is equivalent to a bss in asm terms.
+
+// Flags for code segment:
+//   0b0001: Init, Ran after file is loaded
+//   0b0010: Main, This segement is an entry point
 
 #include "lorito.h"
 #include "internal_pmc.h"
@@ -72,8 +77,14 @@ loadbc(Lorito_Interp *interp, char* filename)
   {
     int read = 0;
     int typed = 0;
+    int flags = 0;
 
     read = fread(&typed, sizeof(int), 1, input);
+    if (read == 0)
+      break;
+    // or die
+
+    read = fread(&flags, sizeof(int), 1, input);
     if (read == 0)
       break;
     // or die
@@ -105,6 +116,7 @@ loadbc(Lorito_Interp *interp, char* filename)
       codeseg->fileid = fileid;
       codeseg->file = file;
       codeseg->segid = segid++;
+      codeseg->flags = flags;
 
       interp->last_seg = codeseg;
 
@@ -139,6 +151,7 @@ loadbc(Lorito_Interp *interp, char* filename)
       constseg->fileid = fileid;
       constseg->file = file;
       constseg->segid = segid++;
+      constseg->flags = flags;
 
       file->constsegs[file->constseg_count] = constseg;
       file->constseg_count++;
@@ -149,5 +162,16 @@ loadbc(Lorito_Interp *interp, char* filename)
     }
   }
 
+  /* Run the init code for every init codeseg */
+  int i;
+  for (i=0; i < file->codeseg_count; i++)
+  {
+    if ((file->codesegs[i]->flags & SEG_FLAG_init) == SEG_FLAG_init)
+    {
+      interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) file->codesegs[i]);
+      core_exec(interp);
+    }
+  }
+  
   return file;
 }

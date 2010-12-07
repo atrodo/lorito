@@ -33,6 +33,7 @@ lorito_init()
   return result;
 }
 
+/* Run the interp.  Uses the last file's first main code segment. */
 int
 lorito_run(Lorito_Interp *interp)
 {
@@ -44,7 +45,26 @@ lorito_run(Lorito_Interp *interp)
     return -1;
   }
 
-  interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) interp->last_seg);
+  Lorito_File *file = interp->files[interp->next_fileid-1];
+  Lorito_Codeseg *main = NULL;
+
+  int i;
+  for (i=0; i < file->codeseg_count; i++)
+  {
+    if ((file->codesegs[i]->flags & SEG_FLAG_main) == SEG_FLAG_main)
+    {
+      main = file->codesegs[i];
+      break;
+    }
+  }
+
+  if (main == NULL)
+  {
+    interp->last_error = lorito_string(interp, 0, "No entry point found");
+    return -1;
+  }
+
+  interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) main);
   core_exec(interp);
   return 0;
 }

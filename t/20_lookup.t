@@ -90,7 +90,7 @@
   end: noop;
 .end;
 
-.sub 'main'
+.main 'main'
   $S1 = STR LOAD_CONST :[plan];
   STR SAY $S1;
 

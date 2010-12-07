@@ -1,4 +1,4 @@
-.sub 'block'
+.main sub 'block'
   $S0 = STR LOAD_CONST :[plan];
   STR SAY $S0;
 

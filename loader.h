@@ -6,8 +6,9 @@
 #define SEG_code 0
 #define SEG_const 1
 
-void
-loadbc(Lorito_Interp *interp, const char* filename);
+#define SEG_FLAG_init 0x01
+#define SEG_FLAG_main 0x02
+
 Lorito_File *
 loadbc(Lorito_Interp *interp, char* filename);
 

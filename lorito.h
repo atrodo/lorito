@@ -185,6 +185,7 @@ struct lorito_codeseg_t
   int fileid;
   struct lorito_file_t *file;
   int segid;
+  int flags;
   char* name;
   // In opcodes
   int length;
@@ -198,6 +199,7 @@ struct lorito_constseg_t
   int fileid;
   struct lorito_file_t *file;
   int segid;
+  int flags;
   char* name;
   // In bytes
   int length;

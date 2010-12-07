@@ -6,8 +6,11 @@ use POSIX qw/ceil/;
 
 =for grammar
 
-#<goal> -> ( <code_blk> | <const_blk> | <struct_blk> )*
-#<code_blk> -> .sub <str> <stmt>* .end;
+#<goal> -> ( <any_code_blk> | <const_blk> | <struct_blk> )*
+#<any_code_blk> -> ( <code_blk> | <init_blk> | <main_blk> ) <str> <stmt>* .end;
+#<code_blk> -> .sub
+#<init_blk> -> .init
+#<main_blk> -> .main
 #<const_blk> -> .const <str> <const_stmt>* .end;
 #<struct_blk> -> .struct <str> <struct_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
@@ -113,6 +116,11 @@ my %op_types = (
 
 );
 
+my %flags = (
+  INIT => 0x01,
+  MAIN => 0x02,
+);
+
 # Start of pattern.  Items common to all parsing patterns, including ignoring
 #  comments
 my $som = qr/\G (?: \s* [#] [^\n]* $)* \s* /xms;
@@ -130,7 +138,7 @@ sub max
   #warn "$max\n";
 }
 
-#<goal> -> ( <code_blk> | <const_blk> | <struct_blk> )*
+#<goal> -> ( <any_code_blk> | <const_blk> | <struct_blk> )*
 sub goal
 {
   my $str = shift;
@@ -142,7 +150,7 @@ sub goal
   #while (my $code = &code($str))
   while (pos($$str) || 0 != length($$str))
   {
-    my $code_blk = &code_blk($str);
+    my $code_blk = &any_code_blk($str);
     if (defined $code_blk)
     {
       push @$result, $code_blk;
@@ -174,17 +182,21 @@ sub goal
   return $result;
 }
 
-#<code_blk> -> .sub <str> <stmt>* .end;
-sub code_blk
+#<any_code_blk> -> ( <code_blk> | <init_blk> | <main_blk> ) <str> <stmt>* .end;
+sub any_code_blk
 {
   my $str = shift;
   my $pos = pos $$str;
   my $result  = {};
 
-  if ($$str !~ m/$som [.]sub /ixmsgc)
+  for my $blk (\&code_blk, \&init_blk, \&main_blk)
   {
-    max($str, $pos);
-    return;
+    my $flags = $blk->($str);
+    if (defined $flags)
+    {
+      $result = {%$flags};
+      last;
+    }
   }
 
   $result->{typed} = "code";
@@ -211,6 +223,52 @@ sub code_blk
 
   return $result;
 }
+
+#<code_blk> -> .sub
+sub code_blk
+{
+  my $str = shift;
+  my $pos = pos $$str;
+
+  if ($$str !~ m/$som [.]sub /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+  
+  return { flags => 0 };
+}
+
+#<init_blk> -> .init
+sub init_blk
+{
+  my $str = shift;
+  my $pos = pos $$str;
+
+  if ($$str !~ m/$som [.]init /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+  
+  return { flags => $flags{INIT} };
+}
+
+#<main_blk> -> .main
+sub main_blk
+{
+  my $str = shift;
+  my $pos = pos $$str;
+
+  if ($$str !~ m/$som [.]main /ixmsgc)
+  {
+    max($str, $pos);
+    return;
+  }
+  
+  return { flags => $flags{MAIN} };
+}
+
 
 #<const_blk> -> .const <str> <const_stmt>* .end;
 sub const_blk
@@ -778,6 +836,7 @@ foreach my $seg (@$ast)
     {
       my $output = "";
       $output .= pack("I", 1);
+      $output .= pack("I", $seg->{flags} || 0);
       $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
       my $len = ceil(length($block_output) / 8);
       $output .= pack("I", $len);
@@ -795,6 +854,7 @@ foreach my $seg (@$ast)
   if ($seg->{typed} eq "code")
   {
     $output .= pack("I", 0);
+    $output .= pack("I", $seg->{flags} || 0);
     $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
     $output .= pack("I", scalar(@{$seg->{stmts}}));
 
