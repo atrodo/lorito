@@ -24,5 +24,9 @@ main(int argc, const char *argv[])
     loadbc(interp, argv[i]);
   }
 
-  return lorito_run(interp);
+  int retval = lorito_run(interp);
+  if (retval != 0)
+  {
+    fprintf(stderr, "%s\n", interp->last_error->original);
+  }
 }

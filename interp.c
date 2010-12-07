@@ -36,6 +36,14 @@ lorito_init()
 int
 lorito_run(Lorito_Interp *interp)
 {
+  interp->last_error = lorito_string(interp, 0, "");
+
+  if (interp->next_fileid == 0)
+  {
+    interp->last_error = lorito_string(interp, 0, "No bytecode loaded.");
+    return -1;
+  }
+
   interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) interp->last_seg);
   core_exec(interp);
   return 0;
