@@ -29,5 +29,4 @@ help:
 
 .PHONY: test
 test: $(COMPILED_TESTS)
-	prove --exec ./lorito t/00_sanity.ito
-	prove --exec ./lorito t/90_fib.ito
+	prove --exec ./lorito t/*.ito
