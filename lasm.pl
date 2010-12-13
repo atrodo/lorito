@@ -12,7 +12,7 @@ use POSIX qw/ceil/;
 #<init_blk> -> .init
 #<main_blk> -> .main
 #<const_blk> -> .const <str> <const_stmt>* .end;
-#<struct_blk> -> .struct <str> <struct_stmt>* .end;
+#<struct_blk> -> ( .struct | .data ) <str> <struct_stmt>* .end;
 #<stmt> -> <label>? <dest>? <regtype>? <opcode> ( <lhs> ( ,?  | , <rhs> ) )? ( : ( <imm> | <offset> | <jmp> ) )? ;
 #<const_stmt> -> <label>? <const> ;
 #<struct_stmt> -> <label>? size <int> ;
@@ -119,6 +119,12 @@ my %op_types = (
 my %flags = (
   INIT => 0x01,
   MAIN => 0x02,
+);
+
+my %seg_types = (
+  CODE    => 0,
+  CONST   => 1,
+  DATADEF => 2,
 );
 
 # Start of pattern.  Items common to all parsing patterns, including ignoring
@@ -308,20 +314,24 @@ sub const_blk
   return $result;
 }
 
-#<struct_blk> -> .struct <str> <struct_stmt>* .end;
+#<struct_blk> -> ( .struct | .data ) <str> <struct_stmt>* .end;
 sub struct_blk
 {
   my $str = shift;
   my $pos = pos $$str;
   my $result  = {};
 
+  $result->{typed} = "struct";
+
   if ($$str !~ m/$som [.] struct /ixmsgc)
   {
-    max($str, $pos);
-    return;
+    if ($$str !~ m/$som [.] data /ixmsgc)
+    {
+      max($str, $pos);
+      return;
+    }
+    $result->{typed} = "data";
   }
-
-  $result->{typed} = "struct";
 
   my $named = &str($str);
   if (!defined $named)
@@ -807,6 +817,27 @@ foreach my $seg (@$ast)
       $curr_size += $const->{size};
     }
   }
+  if ($seg->{typed} eq "data")
+  {
+    $block{$seg->{named}} = {};
+    my $current = $block{$seg->{named}};
+    my $curr_size = 0;
+    foreach my $const (@{$seg->{consts}})
+    {
+      if (defined $const->{label})
+      {
+        $current->{$const->{label}} = $curr_size;
+      }
+      $curr_size += $const->{size};
+    }
+    my $output = "";
+    $output .= pack("I", $seg_types{DATADEF});
+    $output .= pack("I", $seg->{flags} || 0);
+    $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
+    my $len = ceil(length($curr_size) / 8);
+    $output .= pack("I", $curr_size);
+    print $output;
+  }
   if ($seg->{typed} eq "const")
   {
     $block{$seg->{named}} = {};
@@ -835,7 +866,7 @@ foreach my $seg (@$ast)
     if (length $block_output > 0)
     {
       my $output = "";
-      $output .= pack("I", 1);
+      $output .= pack("I", $seg_types{CONST});
       $output .= pack("I", $seg->{flags} || 0);
       $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
       my $len = ceil(length($block_output) / 8);
@@ -853,7 +884,7 @@ foreach my $seg (@$ast)
   my $output = "";
   if ($seg->{typed} eq "code")
   {
-    $output .= pack("I", 0);
+    $output .= pack("I", $seg_types{CODE});
     $output .= pack("I", $seg->{flags} || 0);
     $output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
     $output .= pack("I", scalar(@{$seg->{stmts}}));

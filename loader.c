@@ -160,6 +160,38 @@ loadbc(Lorito_Interp *interp, char* filename)
       //printf("DSegName: %s\n", constseg->name);
 
     }
+
+    if (typed == SEG_datadef)
+    {
+      int length = 0;
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+      char *name = (char *) malloc(sizeof(char) * length);
+      read = fread(name, sizeof(char), length, input);
+      // or die
+
+      read = fread(&length, sizeof(int), 1, input);
+      // or die
+
+      file->datadefsegs = realloc(file->datadefsegs, (file->datadefseg_count+1) * sizeof(Lorito_Datadefseg *));
+      if (file->datadefsegs == NULL)
+        abort();
+
+      Lorito_Datadefseg *datadefseg = lorito_datadef_block_new(interp, name, length);
+
+      datadefseg->fileid = fileid;
+      datadefseg->file = file;
+      datadefseg->segid = segid++;
+      datadefseg->flags = flags;
+
+      file->datadefsegs[file->datadefseg_count] = datadefseg;
+      file->datadefseg_count++;
+
+      //printf("DSegNum:  %d\n", constseg->segid);
+      //printf("DSegName: %s\n", constseg->name);
+
+    }
   }
 
   /* Run the init code for every init codeseg */

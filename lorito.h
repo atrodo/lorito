@@ -176,6 +176,8 @@ struct lorito_file_t
   struct lorito_codeseg_t** codesegs;
   int constseg_count;
   struct lorito_constseg_t** constsegs;
+  int datadefseg_count;
+  struct lorito_datadefseg_t** datadefsegs;
 };
 typedef struct lorito_file_t Lorito_File;
 
@@ -206,6 +208,20 @@ struct lorito_constseg_t
   void* data;
 };
 typedef struct lorito_constseg_t Lorito_Constseg;
+
+struct lorito_datadefseg_t
+{
+  struct lorito_pmc_t pmc;
+  int fileid;
+  struct lorito_file_t *file;
+  int segid;
+  int flags;
+  char* name;
+  // In bytes
+  int length;
+  void* data;
+};
+typedef struct lorito_datadefseg_t Lorito_Datadefseg;
 
 struct lorito_ctx_t
 {

@@ -38,6 +38,9 @@ lorito_code_block_new(Lorito_Interp *interp, char *name, int length, Lorito_Opco
 Lorito_Constseg *
 lorito_const_block_new(Lorito_Interp *interp, char *name, int length, void *data);
 
+Lorito_Datadefseg *
+lorito_datadef_block_new(Lorito_Interp *interp, char *name, int length);
+
 Lorito_Ctx *
 lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg);
 
