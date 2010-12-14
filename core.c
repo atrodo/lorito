@@ -418,8 +418,9 @@ core_exec(Lorito_Interp *interp)
               {
                 INVALID_OP("store: cannot store to null pmc");
               }
-              if (offset+length >= $P(op->dest)->size)
+              if (offset+length > $P(op->dest)->size)
               {
+                printf("%d >= %d\n", offset+length, $P(op->dest)->size);
                 INVALID_OP("store: outside range");
               }
 

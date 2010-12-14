@@ -68,13 +68,13 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
   {
     return result;
   }
-  if (offset+length >= dest->size)
+  if (offset+length > dest->size)
   {
     return result;
   }
 
   // Reuse a slot if there is one, otherwise make one.
-  int current = *(int *) (src->data + offset);
+  int current = *(int *) (dest->data + offset);
   if ((current > 0) && (current <= dest->ptr_count))
   {
     // Even if the new PMC is null, we're going to keep using it.
