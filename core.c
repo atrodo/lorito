@@ -382,6 +382,16 @@ core_exec(Lorito_Interp *interp)
             INVALID_OP("coerce_int");
         }
         break;
+      case OP_coerce_str:
+        switch (regtype)
+        {
+          case OP_PMC:
+            $P(op->dest) = lorito_box_str_new(interp, $S(op->src1));
+            break;
+          default:
+            INVALID_OP("coerce_int");
+        }
+        break;
       case OP_new:
         switch (regtype)
         {
