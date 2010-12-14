@@ -396,7 +396,7 @@ core_exec(Lorito_Interp *interp)
         switch (regtype)
         {
           case OP_INT:
-            $P(op->dest) = lorito_pmc_new(interp, $imm);
+            $P(op->dest) = lorito_pmc_new(interp, $I(op->src1) + $imm);
             break;
           case OP_PMC:
             $P(op->dest) = lorito_pmc_new(interp, $P(op->src1)->size);
