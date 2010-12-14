@@ -783,7 +783,10 @@ core_exec(Lorito_Interp *interp)
         break;
       default:
         // Error
-        INVALID_OP("unknown");
+        ;
+        char error[15];
+        sprintf(error, "unknown (%d)", opcode);
+        INVALID_OP(error);
         break;
       // END CORE_OPS
     }
