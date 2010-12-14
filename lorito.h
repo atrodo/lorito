@@ -91,11 +91,12 @@ enum INTERNAL_PMC_ENUM {
 
   FILE_BLOCK   = 4,
   CODE_BLOCK   = 5,
-  CONST_BLOCK   = 6,
+  CONST_BLOCK  = 6,
+  DATA_BLOCK   = 7,
  
-  CONTEXT      = 7,
-  LOOKUP       = 8,
-  C_METHOD     = 9
+  CONTEXT      = 8,
+  LOOKUP       = 9,
+  C_METHOD     = 10
 };
 typedef enum INTERNAL_PMC_ENUM Lorito_Internal;
 
@@ -139,6 +140,7 @@ typedef struct lorito_pmc_t Lorito_PMC;
 #define IS_FILE_BLOCK(p) (p->internal_type == FILE_BLOCK  )
 #define IS_CODE_BLOCK(p) (p->internal_type == CODE_BLOCK  )
 #define IS_CONST_BLOCK(p)(p->internal_type == CONST_BLOCK )
+#define IS_DATA_BLOCK(p) (p->internal_type == DATA_BLOCK )
 #define IS_CONTEXT(p)    (p->internal_type == CONTEXT     )
 #define IS_LOOKUP(p)     (p->internal_type == LOOKUP      )
 #define IS_C_METHOD(p)   (p->internal_type == C_METHOD    )
