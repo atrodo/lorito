@@ -136,8 +136,8 @@ lorito_datadef_block_new(Lorito_Interp *interp, char *name, int length)
   void *data = (void *) malloc(sizeof(Lorito_Opcode) * length);
   Lorito_Datadefseg *result = (Lorito_Datadefseg *) malloc(sizeof(Lorito_Datadefseg));
 
-  result->pmc.size = length;
-  result->pmc.internal_type = DATA_BLOCK;
+  result->pmc.size = 0;
+  result->pmc.internal_type = CONST_BLOCK;
   result->name = name;
   result->length = length * sizeof(Lorito_Opcode);
   result->data = data;

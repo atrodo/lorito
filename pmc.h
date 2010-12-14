@@ -4,6 +4,7 @@
 #define LORITO_PMC_H_GUARD
 
 #define null interp->null_pmc
+#define PMC (Lorito_PMC *)
 
 Lorito_PMC *
 lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target);
