@@ -907,6 +907,8 @@ foreach my $seg (@$ast)
       {
         $stmt->{const} = $stmt->{imm}+0;
       } elsif (exists $stmt->{jmp}) {
+        die "No such label: ". $stmt->{jmp}
+          unless defined $labels{$stmt->{jmp}};
         $stmt->{const} = $labels{$stmt->{jmp}}+0;
       } elsif (exists $stmt->{offset}) {
         #die "offsets are awkward right now, sorry";
@@ -925,7 +927,7 @@ foreach my $seg (@$ast)
           if !defined $ref_block;
 
         my $offset = $ref_block->{$stmt->{offset}->{id}};
-        die "Could not find a usable id in block"
+        die "Could not find a usable id in block: " . $stmt->{offset}->{id}
           if !defined $offset;
         $stmt->{const} = $offset + ($stmt->{offset}->{offset} || 0);
       } else {
@@ -936,6 +938,9 @@ foreach my $seg (@$ast)
     }
   }
   elsif ($seg->{typed} eq "const")
+  {
+  }
+  elsif ($seg->{typed} eq "data")
   {
     #$output .= pack("I", 1);
     #$output .= pack("IZ*", length($seg->{named})+1, $seg->{named});
