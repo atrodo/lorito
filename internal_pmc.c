@@ -4,6 +4,7 @@
 #include "pmc.h"
 #include "internal_pmc.h"
 #include "interp.h"
+#include "internal_pmc/context.h"
 
 /*
 Lorito_PMC *
@@ -136,8 +137,8 @@ lorito_datadef_block_new(Lorito_Interp *interp, char *name, int length)
   void *data = (void *) malloc(sizeof(Lorito_Opcode) * length);
   Lorito_Datadefseg *result = (Lorito_Datadefseg *) malloc(sizeof(Lorito_Datadefseg));
 
-  result->pmc.size = 0;
-  result->pmc.internal_type = CONST_BLOCK;
+  result->pmc.size = length;
+  result->pmc.internal_type = DATA_BLOCK;
   result->name = name;
   result->length = length * sizeof(Lorito_Opcode);
   result->data = data;
@@ -165,10 +166,12 @@ lorito_ctx_new(Lorito_Interp *interp, Lorito_Ctx *next_ctx, Lorito_PMC *codeseg)
   result->next_ctx = next_ctx;
   result->pc = 0;
   result->current_codeseg = codeseg;
-  result->current_file = NULL;
+  result->current_file = null;
 
   result->args_cnt = 0;
   result->rets_cnt = 0;
+
+  result->pmc.lookup = (Lorito_PMC *) lorito_c_method_new(interp, lorito_internal_pmc_context_lookup);
 
   // We are going to blank out $S0 and $P0, but the rest may still cause
   //  a seg fault.  TODO
