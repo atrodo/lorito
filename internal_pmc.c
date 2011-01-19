@@ -81,13 +81,13 @@ lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str)
 }
 
 Lorito_File *
-lorito_file_new(Lorito_Interp *interp, char *name)
+lorito_file_new(Lorito_Interp *interp, const char *name)
 {
   Lorito_File *result = (Lorito_File *) malloc(sizeof(Lorito_File));
 
   result->pmc.size = 0;
   result->pmc.internal_type = FILE_BLOCK;
-  result->name = name;
+  result->name = strdup(name);
 
   result->codeseg_count = 0;
   result->constseg_count = 0;

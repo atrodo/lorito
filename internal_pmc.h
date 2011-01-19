@@ -30,7 +30,7 @@ Lorito_PMC *
 lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str);
 
 Lorito_File *
-lorito_file_new(Lorito_Interp *interp, char *name);
+lorito_file_new(Lorito_Interp *interp, const char *name);
 
 Lorito_Codeseg *
 lorito_code_block_new(Lorito_Interp *interp, char *name, int length, Lorito_Opcode *code);
