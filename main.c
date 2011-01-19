@@ -21,7 +21,7 @@ main(int argc, const char *argv[])
 
   for (i = 1; i < argc; i++)
   {
-    loadbc(interp, argv[i]);
+    lorito_load_bytecode(interp, lorito_string(interp, 0, argv[i]));
   }
 
   int retval = lorito_run(interp);

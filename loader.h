@@ -11,6 +11,6 @@
 #define SEG_FLAG_main 0x02
 
 Lorito_File *
-loadbc(Lorito_Interp *interp, char* filename);
+lorito_load_bytecode(Lorito_Interp *interp, Lorito_Str* filename);
 
 #endif /* LORITO_LOADER_H_GUARD */

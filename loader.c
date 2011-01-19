@@ -21,6 +21,10 @@
 #include "loader.h"
 #include <stdio.h>
 
+/* Pre-declare private function */
+Lorito_File *
+loadbc(Lorito_Interp *interp, const char* filename);
+
 void file_info(Lorito_Interp *interp)
 {
   int i, j;
@@ -45,13 +49,37 @@ void file_info(Lorito_Interp *interp)
 }
 
 Lorito_File *
-loadbc(Lorito_Interp *interp, char* filename)
+lorito_load_bytecode(Lorito_Interp *interp, Lorito_Str* filename)
+{
+  // TODO This should have a path
+  Lorito_File *result;
+  result = loadbc(interp, filename->original);
+
+  if (result == NULL)
+  {
+    char *with_ext = (char *) malloc(strlen(filename->original) + 4);
+    strcat(with_ext, filename->original);
+    strcat(with_ext, ".ito");
+    result = loadbc(interp, filename->original);
+    free(with_ext);
+  }
+
+  if (result == NULL)
+  {
+    printf("(%s)\n", filename);
+    perror("Failed to open file");
+  }
+
+  return result;
+}
+
+Lorito_File *
+loadbc(Lorito_Interp *interp, const char* filename)
 {
   int fileid = interp->next_fileid++;
   int segid = 0;
   FILE *input = fopen(filename, "rb");
   if (input == NULL) {
-    perror("Failed to open file");
     return;
   }
 
