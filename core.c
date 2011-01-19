@@ -748,6 +748,14 @@ core_exec(Lorito_Interp *interp)
         continue;
         break;
       case OP_loadlib:
+        switch (regtype)
+        {
+          case OP_STR:
+            $P(op->dest) = PMC lorito_load_bytecode(interp, $S(op->src1));
+            break;
+          default:
+            INVALID_OP("loadlib");
+        }
         break;
       case OP_read:
         break;
