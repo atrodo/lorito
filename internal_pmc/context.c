@@ -37,18 +37,13 @@ lorito_internal_pmc_context_get_dataseg(Lorito_Interp *interp, Lorito_Ctx *ctx)
   Lorito_Str *name;
   lorito_clr_arg(interp, ctx);
 
-  printf("%d\n", self->internal_type);
-
   if (!IS_CONTEXT(self))
   {
     //Bah.
-  printf("2\n");
     return;
   }
-  printf("3\n");
   Lorito_Ctx *self_ctx = (Lorito_Ctx *) self;
 
-  printf("4\n");
   if (IS_BOX_STR(box_name))
   {
     name = ((Lorito_BoxStr *) box_name)->data;
@@ -57,22 +52,18 @@ lorito_internal_pmc_context_get_dataseg(Lorito_Interp *interp, Lorito_Ctx *ctx)
   {
     name = lorito_string(interp, 0, self_ctx->current_constseg->name);
   }
-  printf("%s\n", name);
 
   Lorito_File *file = self_ctx->current_file;
 
   int i;
-  printf("5\n");
   for (i = 0; i < file->datadefseg_count; i++)
   {
     if (lorito_string(interp, 0, file->datadefsegs[i]->name) == name)
     {
       lorito_push_arg(interp, ctx, PMC file->datadefsegs[i]);
-  printf("6\n");
       break;
     }
   }
-  printf("7\n");
 
   return;
 }
