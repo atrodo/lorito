@@ -5,6 +5,7 @@
 #include "internal_pmc.h"
 #include "interp.h"
 #include "internal_pmc/context.h"
+#include "internal_pmc/file.h"
 
 /*
 Lorito_PMC *
@@ -95,6 +96,8 @@ lorito_file_new(Lorito_Interp *interp, Lorito_Str *name)
   result->constsegs = NULL;
 
   lorito_pmc_init(interp, (Lorito_PMC *) result);
+
+  result->pmc.lookup = (Lorito_PMC *) lorito_c_method_new(interp, lorito_internal_pmc_file_lookup);
 
   return result;
 }

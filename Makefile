@@ -1,9 +1,9 @@
 PERL = perl
 
-INTERNAL_PMC_HEADERS = internal_pmc/context.h
+INTERNAL_PMC_HEADERS = internal_pmc/context.h internal_pmc/file.h
 HEADERS = $(INTERNAL_PMC_HEADERS) config.h lorito.h microcode.h interp.h loader.h pmc.h internal_pmc.h pmc_func.h
 
-INTERNAL_PMC_COMPILED = internal_pmc/context.o
+INTERNAL_PMC_COMPILED = internal_pmc/context.o internal_pmc/file.o
 COMPILED = $(INTERNAL_PMC_COMPILED) main.o interp.o core.o loader.o pmc.o internal_pmc.o pmc_func.o
 
 TEST_FILES = $(wildcard t/*.t)
