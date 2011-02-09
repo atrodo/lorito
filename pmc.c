@@ -30,7 +30,7 @@ lorito_pmc_init(Lorito_Interp *interp, Lorito_PMC *target)
     if (result->ptr_count < 4)
       result->ptr_count = 4;
     result->data = malloc(size);
-    result->ptrs = (Lorito_PMC *) malloc(result->ptr_count * sizeof(Lorito_PMC *));
+    result->ptrs = (Lorito_PMC **) malloc(result->ptr_count * sizeof(Lorito_PMC *));
   }
 
   return result;
@@ -78,20 +78,25 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
   if ((current > 0) && (current <= dest->ptr_count))
   {
     // Even if the new PMC is null, we're going to keep using it.
-    dest->ptrs[current] = *src;
+    dest->ptrs[current] = src;
     result = dest;
   } else {
-    if (dest->ptr_count == dest->ptr_last)
+    current = ++dest->ptr_last;
+
+    if (dest->ptr_count <= dest->ptr_last)
     {
-      result->ptr_count += 4;
-      dest->ptrs = (Lorito_PMC *) realloc(dest->ptrs, result->ptr_count * sizeof(Lorito_PMC *));
+      dest->ptr_count += 4;
+      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
       if (dest->ptrs == NULL)
         abort();
     }
-    current = ++dest->ptr_last;
+      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
     *(int *) (dest->data + offset) = current;
-    dest->ptrs[current] = *src;
+      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
+    dest->ptrs[current] = src;
+      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
     result = dest;
+      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
   }
   return result;
 
@@ -118,7 +123,7 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
   {
     // Even if the new PMC is null, we're going to keep using it.
     //dest->ptrs[current] = *src;
-    result = &src->ptrs[current];
+    result = src->ptrs[current];
   }
   return result;
 }

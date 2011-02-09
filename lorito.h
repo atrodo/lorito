@@ -110,7 +110,7 @@ struct lorito_pmc_t
 
   int ptr_count;
   int ptr_last;
-  struct lorito_pmc_t *ptrs;
+  struct lorito_pmc_t **ptrs;
 
   // Lookup method
   struct lorito_pmc_t *lookup;
