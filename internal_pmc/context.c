@@ -50,7 +50,7 @@ lorito_internal_pmc_context_get_dataseg(Lorito_Interp *interp, Lorito_Ctx *ctx)
   }
   else
   {
-    name = lorito_string(interp, 0, self_ctx->current_constseg->name);
+    name = self_ctx->current_constseg->name;
   }
 
   Lorito_File *file = self_ctx->current_file;
@@ -58,7 +58,7 @@ lorito_internal_pmc_context_get_dataseg(Lorito_Interp *interp, Lorito_Ctx *ctx)
   int i;
   for (i = 0; i < file->datadefseg_count; i++)
   {
-    if (lorito_string(interp, 0, file->datadefsegs[i]->name) == name)
+    if (file->datadefsegs[i]->name == name)
     {
       lorito_push_arg(interp, ctx, PMC file->datadefsegs[i]);
       break;

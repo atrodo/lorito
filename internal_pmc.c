@@ -81,13 +81,13 @@ lorito_box_str_new(Lorito_Interp *interp, Lorito_Str *str)
 }
 
 Lorito_File *
-lorito_file_new(Lorito_Interp *interp, const char *name)
+lorito_file_new(Lorito_Interp *interp, Lorito_Str *name)
 {
   Lorito_File *result = (Lorito_File *) malloc(sizeof(Lorito_File));
 
   result->pmc.size = 0;
   result->pmc.internal_type = FILE_BLOCK;
-  result->name = strdup(name);
+  result->name = name;
 
   result->codeseg_count = 0;
   result->constseg_count = 0;
@@ -100,7 +100,7 @@ lorito_file_new(Lorito_Interp *interp, const char *name)
 }
 
 Lorito_Codeseg *
-lorito_code_block_new(Lorito_Interp *interp, char *name, int length, Lorito_Opcode *code)
+lorito_code_block_new(Lorito_Interp *interp, Lorito_Str *name, int length, Lorito_Opcode *code)
 {
   Lorito_Codeseg *result = (Lorito_Codeseg *) malloc(sizeof(Lorito_Codeseg));
 
@@ -116,7 +116,7 @@ lorito_code_block_new(Lorito_Interp *interp, char *name, int length, Lorito_Opco
 }
 
 Lorito_Constseg *
-lorito_const_block_new(Lorito_Interp *interp, char *name, int length, void *data)
+lorito_const_block_new(Lorito_Interp *interp, Lorito_Str *name, int length, void *data)
 {
   Lorito_Constseg *result = (Lorito_Constseg *) malloc(sizeof(Lorito_Constseg));
 
@@ -132,7 +132,7 @@ lorito_const_block_new(Lorito_Interp *interp, char *name, int length, void *data
 }
 
 Lorito_Datadefseg *
-lorito_datadef_block_new(Lorito_Interp *interp, char *name, int length)
+lorito_datadef_block_new(Lorito_Interp *interp, Lorito_Str *name, int length)
 {
   void *data = (void *) malloc(sizeof(Lorito_Opcode) * length);
   Lorito_Datadefseg *result = (Lorito_Datadefseg *) malloc(sizeof(Lorito_Datadefseg));

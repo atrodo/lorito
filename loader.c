@@ -17,6 +17,8 @@
 //   0b0010: Main, This segement is an entry point
 
 #include "lorito.h"
+#include "pmc.h"
+#include "interp.h"
 #include "internal_pmc.h"
 #include "loader.h"
 #include <stdio.h>
@@ -96,7 +98,7 @@ loadbc(Lorito_Interp *interp, const char* filename)
   lorito_pmc_init(interp, (Lorito_PMC *) file);
   */
 
-  Lorito_File *file = lorito_file_new(interp, filename);
+  Lorito_File *file = lorito_file_new(interp, lorito_string(interp, 0, filename));
   interp->files[fileid] = file;
 
   file->fileid = fileid;
@@ -137,7 +139,7 @@ loadbc(Lorito_Interp *interp, const char* filename)
       if (interp->files == NULL)
         abort();
 
-      Lorito_Codeseg *codeseg = lorito_code_block_new(interp, name, length, op);
+      Lorito_Codeseg *codeseg = lorito_code_block_new(interp, lorito_string(interp, 0, name), length, op);
       file->codesegs[file->codeseg_count] = codeseg;
       file->codeseg_count++;
 
@@ -174,7 +176,7 @@ loadbc(Lorito_Interp *interp, const char* filename)
       if (interp->files == NULL)
         abort();
 
-      Lorito_Constseg *constseg = lorito_const_block_new(interp, name, length, data);
+      Lorito_Constseg *constseg = lorito_const_block_new(interp, lorito_string(interp, 0, name), length, data);
 
       constseg->fileid = fileid;
       constseg->file = file;
@@ -206,7 +208,7 @@ loadbc(Lorito_Interp *interp, const char* filename)
       if (file->datadefsegs == NULL)
         abort();
 
-      Lorito_Datadefseg *datadefseg = lorito_datadef_block_new(interp, name, length);
+      Lorito_Datadefseg *datadefseg = lorito_datadef_block_new(interp, lorito_string(interp, 0, name), length);
 
       datadefseg->fileid = fileid;
       datadefseg->file = file;
@@ -228,7 +230,7 @@ loadbc(Lorito_Interp *interp, const char* filename)
   {
     if ((file->codesegs[i]->flags & SEG_FLAG_init) == SEG_FLAG_init)
     {
-      interp->ctx = lorito_ctx_new(interp, interp->ctx, (Lorito_PMC *) file->codesegs[i]);
+      interp->ctx = lorito_ctx_new(interp, (Lorito_Ctx *) null, (Lorito_PMC *) file->codesegs[i]);
       core_exec(interp);
     }
   }

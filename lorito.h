@@ -173,7 +173,7 @@ struct lorito_file_t
 {
   struct lorito_pmc_t pmc;
   int fileid;
-  char* name;
+  struct lorito_str_t *name;
   int codeseg_count;
   struct lorito_codeseg_t** codesegs;
   int constseg_count;
@@ -190,7 +190,7 @@ struct lorito_codeseg_t
   struct lorito_file_t *file;
   int segid;
   int flags;
-  char* name;
+  struct lorito_str_t *name;
   // In opcodes
   int length;
   struct lorito_opcode_t* op;
@@ -204,7 +204,7 @@ struct lorito_constseg_t
   struct lorito_file_t *file;
   int segid;
   int flags;
-  char* name;
+  struct lorito_str_t *name;
   // In bytes
   int length;
   void* data;
@@ -218,7 +218,7 @@ struct lorito_datadefseg_t
   struct lorito_file_t *file;
   int segid;
   int flags;
-  char* name;
+  struct lorito_str_t *name;
   // In bytes
   int length;
   void* data;
