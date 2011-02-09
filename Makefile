@@ -12,10 +12,12 @@ COMPILED_TESTS = $(patsubst %.t,%.ito,$(TEST_FILES))
 INC_PATH=-I./
 
 %.o: %.c $(HEADERS)
-	$(CC) -g -c $(INC_PATH) $(CPPFLAGS) $(CFLAGS) -o $@ $<
+	@echo "=> $@"
+	@$(CC) -g -c $(INC_PATH) $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
 lorito: $(COMPILED) $(HEADERS)
-	$(CC) -g $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
+	@echo "=> $@"
+	@$(CC) -g $(CFLAGS) $(CC_WARN) -o $@ $(COMPILED)
 
 .PHONY: CLEAN
 clean:
