@@ -590,7 +590,7 @@ core_exec(Lorito_Interp *interp)
               src1->args_cnt++;
               break;
             case OP_STR: ;
-              lorito_push_arg(interp, ctx, lorito_box_str_new(interp, $S(op->src2)));
+              lorito_push_arg(interp, src1, lorito_box_str_new(interp, $S(op->src2)));
               break;
             case OP_INT: ;
               src1->args[src1->args_cnt] = lorito_box_int_new(interp, $I(op->src2));
