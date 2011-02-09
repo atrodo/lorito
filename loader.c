@@ -60,9 +60,9 @@ lorito_load_bytecode(Lorito_Interp *interp, Lorito_Str* filename)
   if (result == NULL)
   {
     char *with_ext = (char *) malloc(strlen(filename->original) + 4);
-    strcat(with_ext, filename->original);
+    strcpy(with_ext, filename->original);
     strcat(with_ext, ".ito");
-    result = loadbc(interp, filename->original);
+    result = loadbc(interp, with_ext);
     free(with_ext);
   }
 
@@ -70,6 +70,7 @@ lorito_load_bytecode(Lorito_Interp *interp, Lorito_Str* filename)
   {
     printf("(%s)\n", filename);
     perror("Failed to open file");
+    result = (Lorito_File *) null;
   }
 
   return result;
