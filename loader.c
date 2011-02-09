@@ -79,12 +79,13 @@ lorito_load_bytecode(Lorito_Interp *interp, Lorito_Str* filename)
 Lorito_File *
 loadbc(Lorito_Interp *interp, const char* filename)
 {
-  int fileid = interp->next_fileid++;
-  int segid = 0;
   FILE *input = fopen(filename, "rb");
   if (input == NULL) {
-    return;
+    return NULL;
   }
+
+  int fileid = interp->next_fileid++;
+  int segid = 0;
 
   if (fileid >= interp->allocated_file)
   {
