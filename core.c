@@ -780,6 +780,9 @@ core_exec(Lorito_Interp *interp)
       case OP_write:
         switch (regtype)
         {
+          case OP_PMC:
+            fprintf(stdout, "%s", lorito_pmc_str(interp, $P(op->src1))->original);
+            break;
           case OP_STR:
             fprintf(stdout, "%s", $S(op->src1)->original);
             break;
@@ -793,6 +796,9 @@ core_exec(Lorito_Interp *interp)
       case OP_say:
         switch (regtype)
         {
+          case OP_PMC:
+            fprintf(stdout, "%s\n", lorito_pmc_str(interp, $P(op->src1))->original);
+            break;
           case OP_STR:
             fprintf(stdout, "%s\n", $S(op->src1)->original);
             break;

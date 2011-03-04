@@ -130,6 +130,27 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
   return result;
 }
 
+Lorito_Str *
+lorito_pmc_str(Lorito_Interp *interp, Lorito_PMC *src)
+{
+  if (src == null)
+  {
+    return lorito_string(interp, 0, "null");
+  }
+
+  switch (src->internal_type)
+  {
+    default:
+    {
+      // Error
+      return lorito_string(interp, 0, "Invalid PMC type");
+      break;
+    }
+  }
+
+
+}
+
 // Default C Methods
 
 void
