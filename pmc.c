@@ -92,13 +92,9 @@ lorito_pmc_encode(Lorito_Interp *interp, Lorito_PMC *dest, int offset, Lorito_PM
       if (dest->ptrs == NULL)
         abort();
     }
-      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
     *(int *) (dest->data + offset) = current;
-      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
     dest->ptrs[current] = src;
-      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
     result = dest;
-      dest->ptrs = (Lorito_PMC **) realloc(dest->ptrs, dest->ptr_count * sizeof(Lorito_PMC *));
   }
   return result;
 

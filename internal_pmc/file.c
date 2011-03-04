@@ -13,13 +13,11 @@ lorito_internal_pmc_file_get_method(Lorito_Interp *interp, Lorito_Ctx *ctx)
   Lorito_PMC *inself = lorito_pop_arg(interp, ctx);
   lorito_clr_arg(interp, ctx);
 
-  printf("1\n");
   if (!IS_BOX_STR(inkey))
   {
     lorito_push_arg(interp, ctx, null);
     return;
   }
-  printf("2\n");
   if (!IS_FILE_BLOCK(inself))
   {
     //Bah.
@@ -34,7 +32,6 @@ lorito_internal_pmc_file_get_method(Lorito_Interp *interp, Lorito_Ctx *ctx)
   int i;
   for (i=0; i < self->codeseg_count; i++)
   {
-    printf("%s\n", self->codesegs[i]->name);
     if (self->codesegs[i]->name == key)
     {
       lorito_push_arg(interp, ctx, PMC self->codesegs[i]);
