@@ -74,6 +74,7 @@ my %ops = (
   coerce_int => 21,
   coerce_num => 22,
   coerce_str => 23,
+  coerce_pmc => 43,
 
   # PMC Ops
   new        => 24,

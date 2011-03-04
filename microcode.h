@@ -49,6 +49,7 @@ enum OPS_ENUM {
   OP_coerce_int = 21,
   OP_coerce_num = 22,
   OP_coerce_str = 23,
+  OP_coerce_pmc = 43,
 
   // PMC Ops
   OP_new        = 24,
