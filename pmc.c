@@ -115,7 +115,7 @@ lorito_pmc_decode(Lorito_Interp *interp, Lorito_PMC *src, int offset)
   {
     return result;
   }
-  if (offset+length >= src->size)
+  if (offset+length > src->size)
   {
     return result;
   }
