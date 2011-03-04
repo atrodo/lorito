@@ -30,6 +30,9 @@ lorito_init()
   result->ctx = lorito_ctx_new(result, null_pmc, null_pmc);
   result->default_lookup = (Lorito_PMC *) lorito_c_method_new(result, lorito_pmc_default_lookup);
 
+  // Re-initalize the null pmc
+  lorito_pmc_init(result, null_pmc);
+
   return result;
 }
 
