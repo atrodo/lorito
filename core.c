@@ -514,7 +514,7 @@ core_exec(Lorito_Interp *interp)
                 $P(op->dest) = NULL;
                 break;
               }
-              if (offset+length >= $P(op->src1)->size)
+              if (offset+length > $P(op->src1)->size)
               {
                 INVALID_OP("load: outside range");
               }
