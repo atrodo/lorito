@@ -6,6 +6,9 @@ HEADERS = $(INTERNAL_PMC_HEADERS) config.h lorito.h microcode.h interp.h loader.
 INTERNAL_PMC_COMPILED = internal_pmc/context.o internal_pmc/file.o
 COMPILED = $(INTERNAL_PMC_COMPILED) main.o interp.o core.o loader.o pmc.o internal_pmc.o pmc_func.o
 
+LASM_PMC_FILES = $(wildcard pmc/*.lasm)
+LASM_PMC_COMPILED = $(patsubst %.lasm,%.ito,$(LASM_PMC_FILES))
+
 TEST_FILES = $(wildcard t/*.t)
 COMPILED_TESTS = $(patsubst %.t,%.ito,$(TEST_FILES))
 
@@ -26,7 +29,7 @@ clean:
 %.ito: %.lasm
 	$(PERL) lasm.pl < $< > $@
 
-%.ito: %.t
+%.ito: %.t $(LASM_PMC_COMPILED)
 	$(PERL) lasm.pl < $< > $@
 
 .PHONY: help
