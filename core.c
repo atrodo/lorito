@@ -586,6 +586,7 @@ core_exec(Lorito_Interp *interp)
             (*pc)++;
             continue;
           case OP_STR: ;
+            // TODO? Perhaps we adjust this to allow you not to pass a context?
             lorito_pmc_func(interp, $P(op->src1), $S(op->src2));
             break;
         };
