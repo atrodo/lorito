@@ -1,0 +1,304 @@
+# Refrence Lorito Asm file.
+
+.sub "length"
+  # Decide the length of the array
+  $P10 = CTX;
+  $P2 = PMC POP_ARG $P10;
+
+  $S1 = STR LOAD_CONST :[pmc_size];
+  $P3 = NEW_CTX;
+  PMC PUSH_ARG $P3, $P2;
+  STR CALL $P3, $S1;
+  $I1 = INT POP_ARG $P3;
+.end;
+
+.sub "shift"
+.end;
+
+.sub "unshift"
+.end;
+
+.sub "push"
+  # Add one element to the end of the array
+  $P10 = CTX;
+  $P2 = PMC POP_ARG $P10;
+  $P3 = PMC POP_ARG $P10;
+
+  $P4 = BLOCK :0;
+  $P4 = NEW_CTX $P4;
+  PUSH_ARG $P2;
+  CALL $P4;
+
+  $I1 = INT POP_ARG $P4;
+  $I2 = INT LOAD_IMM :4;
+  $I2 = INT ADD $I1, $I2;
+
+  $S1 = STR LOAD_CONST :[pmc_set_size];
+  $P4 = NEW_CTX;
+  PMC PUSH_ARG $P4, $P2;
+  INT PUSH_ARG $P4, $I2;
+  STR CALL $P4, $S1;
+
+  $P2 = PMC STORE $P3, $I2;
+.end;
+
+.sub "pop"
+  # Remove one element from the end of the array
+  $P10 = CTX;
+  $P2 = PMC POP_ARG $P10;
+
+  $P4 = BLOCK :0;
+  $P4 = NEW_CTX $P4;
+  PUSH_ARG $P2;
+  CALL $P4;
+
+  $I1 = INT POP_ARG $P4;
+  $I2 = INT LOAD_IMM :4;
+  $I2 = INT SUB $I1, $I2;
+
+  $P3 = PMC LOAD $P2, $I2;
+  PUSH_ARG $P10, $P3;
+
+  $S1 = STR LOAD_CONST :[pmc_set_size];
+  $P4 = NEW_CTX;
+  PMC PUSH_ARG $P4, $P2;
+  INT PUSH_ARG $P4, $I2;
+  STR CALL $P4, $S1;
+
+.end;
+
+.sub "resize"
+  # Remove one element from the end of the array
+  $P10 = CTX;
+  $P2 = PMC POP_ARG $P10;
+  $I2 = INT POP_ARG $P10;
+
+  $S1 = STR LOAD_CONST :[pmc_set_size];
+  $P4 = NEW_CTX;
+  PMC PUSH_ARG $P4, $P2;
+  INT PUSH_ARG $P4, $I2;
+  STR CALL $P4, $S1;
+.end;
+
+.sub "get"
+.end;
+
+.sub "put"
+.end;
+
+.sub "splice"
+.end;
+
+.sub "new"
+  # P10 is the context
+  $P10 = CTX;
+
+  $S1 = STR LOAD_CONST :[get_dataseg];
+  $P3 = STR LOOKUP $P10, $S1;
+  $P3 = NEW_CTX $P3;
+  PMC PUSH_ARG $P3, $P10;
+  CALL $P3;
+  $P4 = POP_ARG $P3;
+
+  # $P1 is the vtable
+  $P1 = PMC LOAD $P4, $I0;
+
+  # $P2 is the result
+  $S10 = STR POP_ARG $P10;
+  $P2 = PMC POP_ARG $P10;
+
+  $S1 = STR LOAD_CONST :[pmc_size];
+  $P3 = NEW_CTX;
+  PMC PUSH_ARG $P3, $P2;
+  STR CALL $P3, $S1;
+  $I1 = INT POP_ARG $P3;
+  $P2 = INT NEW :0;
+
+  $S1 = STR LOAD_CONST :[set_lookup];
+  $P5 = STR LOOKUP $P2, $S1;
+  $P3 = PMC NEW_CTX $P5;
+  $P4 = INT BLOCK :10;
+
+  PMC PUSH_ARG $P3, $P4;
+  PMC PUSH_ARG $P3, $P1;
+  PMC PUSH_ARG $P3, $P2;
+  CALL $P3;
+
+  PMC PUSH_ARG $P10, $P2;
+.end;
+
+.sub "lookup"
+  $P10 = CTX;
+
+  $S10 = STR POP_ARG $P10;
+  $P2 = PMC POP_ARG $P10;
+
+  $S1 = STR LOAD_CONST :[pmc_size];
+  $P3 = NEW_CTX;
+  PMC PUSH_ARG $P3, $P2;
+  STR CALL $P3, $S1;
+  $I1 = INT POP_ARG $P3;
+
+  # 4 bytes each, times 2 refrences = 8 bytes each cell
+  $I3 = INT LOAD_IMM :8;
+  $I2 = INT COERCE_INT $I1;
+
+  lookup_loop:
+    $I2 = INT SUB $I2, $I3;
+
+    $I4 = INT LOAD_IMM :4;
+    $I4 = INT ADD $I4, $I2;
+
+    $P3 = PMC LOAD $P2, $I2;
+    $P4 = PMC LOAD $P2, $I4;
+    $S2 = STR COERCE_PMC $P3;
+
+    $I4 = STR ISEQ $S10, $S2;
+    INT IF $I4 :lookup_found;
+
+    $I4 = INT ISEQ $I2, $I0;
+    INT IF $I4 :lookup_loop_end;
+  : GOTO :lookup_loop;
+
+  lookup_found:
+    PMC PUSH_ARG $P10, $P4;
+
+  lookup_loop_end:
+  noop;
+  
+.end;
+
+.init ''
+  $I1 = INT LOAD_IMM :8;
+  $I2 = INT LOAD_IMM :9;
+  $I1 = INT MUL $I1, $I2;
+  $P1 = INT NEW $I1;
+
+  $I4 = INT LOAD_IMM :4;
+  $I5 = INT LOAD_IMM :8;
+
+  $I2 = INT LOAD_IMM :0;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_length];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :1;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_shift];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :2;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_unshift];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :3;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_push];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :4;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_pop];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :5;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_resize];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :6;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_get];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :7;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_put];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $I2 = INT LOAD_IMM :8;
+  $P3 = INT BLOCK $I2;
+  $I3 = INT MUL $I2, $I5;
+  $I2 = INT ADD $I3, $I4;
+  $S2 = STR LOAD_CONST :[method_splice];
+  $P2 = PMC COERCE_STR $S2;
+  $P1 = PMC STORE $P2, $I3;
+  $P1 = PMC STORE $P3, $I2;
+
+  $P2 = ctx;
+
+  $P5 = INT NEW :0;
+  $S1 = STR LOAD_CONST :[set_lookup];
+  $P3 = STR LOOKUP $P5, $S1;
+  $P3 = PMC NEW_CTX $P3;
+  $P4 = INT BLOCK :9;
+
+  PMC PUSH_ARG $P3, $P4;
+  PMC PUSH_ARG $P3, $P1;
+  PMC PUSH_ARG $P3, $P5;
+  CALL $P3;
+
+  $S1 = STR LOAD_CONST :[get_dataseg];
+  $P3 = STR LOOKUP $P2, $S1;
+  $P3 = NEW_CTX $P3;
+  PMC PUSH_ARG $P3, $P2;
+  CALL $P3;
+  $P4 = POP_ARG $P3;
+  $P4 = PMC STORE $P1;
+
+.end;
+
+.data ''
+  vtable: size 4;
+.end;
+
+.const ''
+  method_length : "length";
+  method_shift  : "shift";
+  method_unshift: "unshift";
+  method_push   : "push";
+  method_pop    : "pop";
+  method_resize : "resize";
+  method_get    : "get";
+  method_put    : "put";
+  method_splice : "splice";
+  method_new    : "new";
+  get_dataseg   : "GET_DATASEG";
+  set_lookup    : "SET_LOOKUP";
+
+  pmc_size      : "size";
+  pmc_set_size  : "set_size";
+.end;
